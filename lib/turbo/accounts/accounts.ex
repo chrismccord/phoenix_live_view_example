@@ -8,6 +8,12 @@ defmodule Turbo.Accounts do
 
   alias Turbo.Accounts.User
 
+  @topic inspect(__MODULE__)
+
+  def subscribe do
+    Phoenix.PubSub.subscribe(Turbo.PubSub, @topic)
+  end
+
   @doc """
   Returns the list of users.
 
@@ -53,6 +59,7 @@ defmodule Turbo.Accounts do
     %User{}
     |> User.changeset(attrs)
     |> Repo.insert()
+    |> notify_subscribers(:user_created)
   end
 
   @doc """
@@ -71,6 +78,7 @@ defmodule Turbo.Accounts do
     user
     |> User.changeset(attrs)
     |> Repo.update()
+    |> notify_subscribers(:user_updated)
   end
 
   @doc """
@@ -86,7 +94,9 @@ defmodule Turbo.Accounts do
 
   """
   def delete_user(%User{} = user) do
-    Repo.delete(user)
+    user
+    |> Repo.delete()
+    |> notify_subscribers(:user_deleted)
   end
 
   @doc """
@@ -101,4 +111,10 @@ defmodule Turbo.Accounts do
   def change_user(user, attrs \\ %{}) do
     User.changeset(user, attrs)
   end
+
+  defp notify_subscribers({:ok, result}, event) do
+    Phoenix.PubSub.broadcast(Turbo.PubSub, @topic, {__MODULE__, event, result})
+    {:ok, result}
+  end
+  defp notify_subscribers({:error, reason}, _event), do: {:error, reason}
 end

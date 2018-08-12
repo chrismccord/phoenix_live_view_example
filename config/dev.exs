@@ -8,11 +8,19 @@ use Mix.Config
 # with webpack to recompile .js and .css sources.
 config :turbo, TurboWeb.Endpoint,
   http: [port: 4000],
+  # https: [port: 4001, certfile: "priv/cert/selfsigned.pem", keyfile: "priv/cert/selfsigned_key.pem"],
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
+  protocol_options: [
+    max_header_name_length: 64,
+    max_header_value_length: 140096,
+    max_headers: 100
+  ],
   watchers: [node: ["node_modules/webpack/bin/webpack.js", "--mode", "development", "--watch-stdin",
                     cd: Path.expand("../assets", __DIR__)]]
+
+
 
 # ## SSL Support
 #

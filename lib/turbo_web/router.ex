@@ -18,6 +18,10 @@ defmodule TurboWeb.Router do
 
     resources "/users", UserController
     get "/", PageController, :index
+    get "/testing", PageController, :index
+    get "/products/:foo", ProductController, :show
+    get "/products/:foo/:bar", ProductController, :show
+    get "/products/:foo/:bar/:rebar", ProductController, :show
   end
 
   # Other scopes may use custom stacks.

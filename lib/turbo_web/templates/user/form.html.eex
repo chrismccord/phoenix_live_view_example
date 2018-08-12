@@ -6,7 +6,7 @@
   <% end %>
 
   <%= label f, :username %>
-  <%= text_input f, :username, phx_keyup: :user %>
+  <%= text_input f, :username %>
   <%= error_tag f, :username %>
 
   <%= label f, :email %>
@@ -22,6 +22,6 @@
   <%= error_tag f, :country %>
 
   <div>
-    <%= submit "Save", phx_click: :save %>
+    <%= submit "Save" %>
   </div>
 <% end %>

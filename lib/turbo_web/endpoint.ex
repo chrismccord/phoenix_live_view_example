@@ -1,7 +1,9 @@
 defmodule TurboWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :turbo
 
-  socket "/socket", TurboWeb.UserSocket
+  socket "/socket", TurboWeb.UserSocket,
+    websocket: true,
+    longpoll: false
 
   # Serve at "/" the static files from "priv/static" directory.
   #

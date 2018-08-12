@@ -13,7 +13,7 @@ defmodule TurboWeb.UserView do
 
   def handle_event("validate", _id, %{"user" => params}, state) do
     changeset =
-      %Turbo.Accounts.User{}
+      state.changeset.data
       |> Turbo.Accounts.change_user(params)
       |> Map.put(:action, :insert)
 
