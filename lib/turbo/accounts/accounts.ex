@@ -13,6 +13,9 @@ defmodule Turbo.Accounts do
   def subscribe do
     Phoenix.PubSub.subscribe(Turbo.PubSub, @topic)
   end
+  def subscribe(user_id) do
+    Phoenix.PubSub.subscribe(Turbo.PubSub, @topic <> "#{user_id}")
+  end
 
   @doc """
   Returns the list of users.
@@ -24,7 +27,7 @@ defmodule Turbo.Accounts do
 
   """
   def list_users do
-    Repo.all(User)
+    Repo.all(from u in User, order_by: [asc: u.id])
   end
 
   @doc """
@@ -114,6 +117,7 @@ defmodule Turbo.Accounts do
 
   defp notify_subscribers({:ok, result}, event) do
     Phoenix.PubSub.broadcast(Turbo.PubSub, @topic, {__MODULE__, event, result})
+    Phoenix.PubSub.broadcast(Turbo.PubSub, @topic <> "#{result.id}", {__MODULE__, event, result})
     {:ok, result}
   end
   defp notify_subscribers({:error, reason}, _event), do: {:error, reason}

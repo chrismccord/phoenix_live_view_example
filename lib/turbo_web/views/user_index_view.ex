@@ -1,30 +1,26 @@
 defmodule TurboWeb.UserIndexView do
   use TurboWeb, :view
-  use Phoenix.TurboView, components: ~w(index.html)
+  use Phoenix.TurboView
 
   alias Turbo.Accounts
-  alias Turbo.Accounts.User
 
-  def init(%{users: users} = assigns) do
+  def init(assigns) do
     Turbo.Accounts.subscribe()
-
-    {:ok, %{assigns | users: for(u <- users, into: %{}, do: {u.id, u})}}
+    :timer.send_interval(1000, self(), :count)
+    {:ok, fetch(Map.merge(assigns, %{count: 0}))}
   end
 
-  def handle_info({Accounts, :user_updated, %User{id: id} = user}, state) do
-    case Map.fetch(state.users, id) do
-      {:ok, _user} ->  {:ok, put_in(state, [:users, id], user)}
-      :error -> {:ok, state}
-    end
+  defp fetch(assigns) do
+    Map.merge(assigns, %{users: Accounts.list_users()})
   end
 
-  def handle_info({Accounts, :user_created, user}, state) do
-    {:ok, %{state | users: Map.put(state.users, user.id, user)}}
+  def handle_info(:count, state) do
+    {:ok, %{state | count: state.count + 1}}
   end
 
-  def handle_info({Accounts, :user_deleted, user}, state) do
-    {:ok, %{state | users: Map.delete(state.users, user.id)}}
-  end
+  def handle_info({Accounts, :user_updated, _}, state), do: {:ok, fetch(state)}
+  def handle_info({Accounts, :user_created, _}, state), do: {:ok, fetch(state)}
+  def handle_info({Accounts, :user_deleted, _}, state), do: {:ok, fetch(state)}
 
   def handle_event("delete_user", _, id, state) do
     user = Accounts.get_user!(id)

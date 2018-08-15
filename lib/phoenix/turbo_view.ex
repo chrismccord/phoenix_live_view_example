@@ -1,15 +1,28 @@
 defmodule Phoenix.TurboView do
-  use GenServer
+  import Phoenix.HTML, only: [sigil_E: 2]
+  @behaviour Plug
 
-  @timeout 20_000
+  @flash :__phx_flash__
+
+  def put_flash(state, kind, msg) do
+    Map.update(state, @flash, %{kind => msg}, fn flash -> Map.put(flash, kind, msg) end)
+  end
+
+  def redirect(state, opts) do
+    {:stop, {:redirect, to: Keyword.fetch!(opts, :to), flash: flash(state)}, state}
+  end
+  defp flash(%{@flash => flash}), do: flash
+  defp flash(_state), do: nil
 
   defmacro __using__(opts) do
     quote do
-      @phoenix_components unquote(opts)[:components] || []
+      import unquote(__MODULE__)
+      @phoenix_template unquote(opts)[:template] || "template.html"
       @before_compile unquote(__MODULE__)
 
       def init(assigns), do: {:ok, assigns}
-      defoverridable init: 1
+      def terminate(reason, state), do: {:ok, state}
+      defoverridable init: 1, terminate: 2
     end
   end
 
@@ -20,7 +33,7 @@ defmodule Phoenix.TurboView do
       end
 
       defoverridable render: 2
-      def render(template, assigns) when template in @phoenix_components do
+      def render(template = @phoenix_template, assigns) do
         unquote(__MODULE__).spawn_render(__MODULE__, template, assigns)
       end
       def render(template, assigns) do
@@ -29,8 +42,41 @@ defmodule Phoenix.TurboView do
     end
   end
 
-  def start_link(assigns), do: GenServer.start_link(__MODULE__, assigns)
+  def spawn_render(view, template, assigns) do
+    {:ok, pid, ref} = start_view(view, template, assigns)
+    receive do
+      {^ref, rendered_view} ->
+        encoded_pid = pid |> :erlang.term_to_binary() |> Base.encode64()
+        signed_pid = Phoenix.Token.sign(assigns.conn, "view", encoded_pid)
 
+        ~E(
+          <script>window.viewPid = "<%= signed_pid %>"</script>
+          <div id="<%= signed_pid %>">
+            <%= rendered_view %>
+          </div>
+        )
+    end
+  end
+  defp start_view(view, template, assigns) do
+    csrf = Plug.CSRFProtection.get_csrf_token()
+    ref = make_ref()
+
+    case start_dynamic_child(ref, view, template, csrf, assigns) do
+      {:ok, pid} -> {:ok, pid, ref}
+      {:error, {%_{} = exception, [_|_] = stack}} -> reraise(exception, stack)
+    end
+  end
+  defp start_dynamic_child(ref, view, template, csrf, assigns) do
+    args = {{ref, self()}, view, template, csrf, assigns}
+    DynamicSupervisor.start_child(
+      TurboWeb.DynamicSupervisor,
+      Supervisor.child_spec({Phoenix.TurboView.Server, args}, restart: :temporary)
+    )
+  end
+
+  @doc """
+  TODO
+  """
   def attach(pid) do
     try do
       GenServer.call(pid, {:attach, self()})
@@ -38,96 +84,13 @@ defmodule Phoenix.TurboView do
     end
   end
 
-  def init({{ref, request_pid}, csrf, assigns}) do
-    Process.put(:plug_masked_csrf_token, csrf)
+  @impl Plug
+  def init(opts), do: opts
 
-    assigns
-    |> assigns.view_module.init()
-    |> configure_init(assigns, {ref, request_pid})
-  end
-  defp configure_init({:ok, new_assigns}, assigns, {ref, request_pid}) do
-    configure_init({:ok, new_assigns, []}, assigns, {ref, request_pid})
-  end
-  defp configure_init({:ok, new_assigns, opts}, assigns, {ref, request_pid}) do
-    send(request_pid, {ref, new_assigns})
-    state = %{
-      view_module: assigns.view_module,
-      view_template: assigns.view_template,
-      assigns: new_assigns,
-      channel_pid: nil,
-      shutdown_timer: nil,
-      timeout: opts[:timeout] || @timeout,
-    }
-    {:ok, state}
-  end
-
-  def spawn_render(view, template, assigns) do
-    {:ok, pid, ref} = start_view(assigns)
-    receive do
-      {^ref, assigns} ->
-        encoded_pid = pid |> :erlang.term_to_binary() |> Base.encode64()
-        signed_pid = Phoenix.Token.sign(assigns.conn, "view", encoded_pid)
-        rendered_view = view.__render_template__(template, assigns)
-        [
-          {:safe, "<script>window.viewPid = \"#{signed_pid}\"</script>"},
-          {:safe, "<div id=\"#{signed_pid}\">"},
-          rendered_view,
-          {:safe, "</div>"},
-        ]
-    end
-  end
-  defp start_view(assigns) do
-    csrf = Plug.CSRFProtection.get_csrf_token()
-    ref = make_ref()
-    {:ok, pid} =
-      DynamicSupervisor.start_child(
-        TurboWeb.DynamicSupervisor,
-        {__MODULE__, {{ref, self()}, csrf, assigns}}
-      )
-
-    {:ok, pid, ref}
-  end
-
-  def handle_info({:DOWN, _ref, :process, pid, _}, %{channel_pid: pid} = state) do
-    shutdown_timer = Process.send_after(self(), :timeout, @timeout)
-    {:noreply, %{state | shutdown_timer: shutdown_timer}}
-  end
-
-  def handle_info(:timeout, state) do
-    {:stop, {:shutdown, :normal}, state}
-  end
-
-  def handle_info(msg, %{assigns: assigns} = state) do
-    case state.view_module.handle_info(msg, assigns) do
-      {:ok, ^assigns} -> {:noreply, state}
-      {:ok, new_assigns} ->
-        send_channel(state, {:render, rerender(state, new_assigns)})
-        {:noreply, %{state | assigns: new_assigns}}
-     end
-  end
-
-  def handle_call({:attach, channel_pid}, _, state) do
-    if state.shutdown_timer, do: Process.cancel_timer(state.shutdown_timer)
-    Process.monitor(channel_pid)
-    {:reply, :ok, %{state | channel_pid: channel_pid}}
-  end
-
-  def handle_call({:channel_event, event, dom_id, value}, _, %{assigns: assigns} = state) do
-    case state.view_module.handle_event(event, dom_id, value, assigns) do
-      {:ok, ^assigns} ->
-        {:reply, :noop, state}
-
-      {:ok, new_assigns} ->
-        {:reply, {:render, rerender(state, new_assigns)}, %{state | assigns: new_assigns}}
-    end
-  end
-
-  defp rerender(%{view_module: view, view_template: template}, assigns) do
-    view.__render_template__(template, assigns)
-  end
-
-  defp send_channel(%{channel_pid: nil}, _message), do: :noop
-  defp send_channel(%{channel_pid: pid}, message) do
-    send(pid, message)
+  @impl Plug
+  def call(conn, view) do
+    conn
+    |> Phoenix.Controller.put_view(view)
+    |> Phoenix.Controller.render("template.html")
   end
 end

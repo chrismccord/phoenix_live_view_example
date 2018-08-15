@@ -18,5 +18,6 @@ defmodule Turbo.Accounts.User do
     |> cast(attrs, [:username, :email, :state, :country])
     |> validate_required([:username, :email, :state, :country])
     |> validate_format(:email, ~r/.+@.+/, message: "must be a valid email address")
+    |> unique_constraint(:email)
   end
 end
