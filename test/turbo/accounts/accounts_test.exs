@@ -1,10 +1,10 @@
-defmodule Turbo.AccountsTest do
-  use Turbo.DataCase
+defmodule Demo.AccountsTest do
+  use Demo.DataCase
 
-  alias Turbo.Accounts
+  alias Demo.Accounts
 
   describe "users" do
-    alias Turbo.Accounts.User
+    alias Demo.Accounts.User
 
     @valid_attrs %{country: "some country", email: "some email", state: "some state", username: "some username"}
     @update_attrs %{country: "some updated country", email: "some updated email", state: "some updated state", username: "some updated username"}
@@ -44,7 +44,7 @@ defmodule Turbo.AccountsTest do
     test "update_user/2 with valid data updates the user" do
       user = user_fixture()
       assert {:ok, %User{} = user} = Accounts.update_user(user, @update_attrs)
-      
+
       assert user.country == "some updated country"
       assert user.email == "some updated email"
       assert user.state == "some updated state"

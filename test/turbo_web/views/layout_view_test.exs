@@ -1,3 +1,3 @@
-defmodule TurboWeb.LayoutViewTest do
-  use TurboWeb.ConnCase, async: true
+defmodule DemoWeb.LayoutViewTest do
+  use DemoWeb.ConnCase, async: true
 end

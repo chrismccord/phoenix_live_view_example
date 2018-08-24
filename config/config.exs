@@ -6,15 +6,15 @@
 use Mix.Config
 
 # General application configuration
-config :turbo,
-  ecto_repos: [Turbo.Repo]
+config :demo,
+  ecto_repos: [Demo.Repo]
 
 # Configures the endpoint
-config :turbo, TurboWeb.Endpoint,
+config :demo, DemoWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "zlMbr9KIbSMRg9BXFBpsWgVUqeDm09NBI9124BQ8u+2R6ZRk9hcPe9iC4ciM5rZ4",
-  render_errors: [view: TurboWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Turbo.PubSub,
+  render_errors: [view: DemoWeb.ErrorView, accepts: ~w(html json)],
+  pubsub: [name: Demo.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger

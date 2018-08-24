@@ -1,4 +1,4 @@
-defmodule TurboWeb.ChannelCase do
+defmodule DemoWeb.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -21,15 +21,15 @@ defmodule TurboWeb.ChannelCase do
       use Phoenix.ChannelTest
 
       # The default endpoint for testing
-      @endpoint TurboWeb.Endpoint
+      @endpoint DemoWeb.Endpoint
     end
   end
 
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Turbo.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Demo.Repo)
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Turbo.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(Demo.Repo, {:shared, self()})
     end
     :ok
   end

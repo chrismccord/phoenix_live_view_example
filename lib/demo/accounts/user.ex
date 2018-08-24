@@ -1,0 +1,25 @@
+defmodule Demo.Accounts.User do
+  use Ecto.Schema
+  import Ecto.Changeset
+
+
+  schema "users" do
+    field :username, :string
+    field :email, :string
+    field :phone_number, :string
+
+    timestamps()
+  end
+
+  @phone ~r/^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$/
+
+  @doc false
+  def changeset(user, attrs) do
+    user
+    |> cast(attrs, [:username, :email, :phone_number])
+    |> validate_required([:username, :email, :phone_number])
+    |> validate_format(:email, ~r/.+@.+/, message: "must be a valid email address")
+    |> validate_format(:phone_number, @phone, message: "must be a valid number")
+    |> unique_constraint(:email)
+  end
+end

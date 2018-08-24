@@ -1,0 +1,23 @@
+<%= form_for @changeset, "#", [phx_change: :validate, phx_submit: :save], fn f -> %>
+  <%= if @changeset.action do %>
+    <!-- <div class="alert alert-danger"> -->
+    <!--   <p>Oops, something went wrong! Please check the errors below.</p> -->
+    <!-- </div> -->
+  <% end %>
+
+  <%= label f, :username %>
+  <%= text_input f, :username %>
+  <%= error_tag f, :username %>
+
+  <%= label f, :email %>
+  <%= text_input f, :email %>
+  <%= error_tag f, :email %>
+
+  <%= label f, :phone_number %>
+  <%= text_input f, :phone_number %>
+  <%= error_tag f, :phone_number %>
+
+  <div>
+    <%= submit "Save" %>
+  </div>
+<% end %>

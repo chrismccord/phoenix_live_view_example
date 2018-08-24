@@ -1,6 +1,0 @@
-<h2>Edit User <%= @count %></h2>
-
-<%= render TurboWeb.UserNewView, "form.html", assigns %>
-
-
-<span><%= link "Back", to: Routes.user_path(@conn, TurboWeb.UserIndexView) %></span>

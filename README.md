@@ -1,4 +1,4 @@
-# Turbo
+# Demo
 
 To start your Phoenix server:
 

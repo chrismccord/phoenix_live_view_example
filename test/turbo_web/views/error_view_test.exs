@@ -1,16 +1,16 @@
-defmodule TurboWeb.ErrorViewTest do
-  use TurboWeb.ConnCase, async: true
+defmodule DemoWeb.ErrorViewTest do
+  use DemoWeb.ConnCase, async: true
 
   # Bring render/3 and render_to_string/3 for testing custom views
   import Phoenix.View
 
   test "renders 404.html" do
-    assert render_to_string(TurboWeb.ErrorView, "404.html", []) ==
+    assert render_to_string(DemoWeb.ErrorView, "404.html", []) ==
            "Not Found"
   end
 
   test "renders 500.html" do
-    assert render_to_string(TurboWeb.ErrorView, "500.html", []) ==
+    assert render_to_string(DemoWeb.ErrorView, "500.html", []) ==
            "Internal Server Error"
   end
 end

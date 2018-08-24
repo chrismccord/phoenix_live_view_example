@@ -1,0 +1,5 @@
+<h2 phx-click="switch">Create Your Account</h2>
+
+<%= render "form.html", assigns %>
+
+<span><%= link "Back", to: Routes.user_path(@conn, DemoWeb.User.IndexView) %></span>

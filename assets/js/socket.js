@@ -1,6 +1,9 @@
 import {Socket} from "./phoenix"
 import morphdom from "morphdom"
 
+const PHX_HAS_FOCUSED = "phx-has-focused"
+const PHX_HAS_SUBMITTED = "phx-has-submitted"
+
 let socket = new Socket("/socket")
 window.socket = socket
 socket.connect()
@@ -14,7 +17,7 @@ let getCookie = (name) => {
 }
 
 let serializeForm = (form) => {
-  return(new URLSearchParams(new FormData(form)).toString())
+  return((new URLSearchParams(new FormData(form))).toString())
 }
 
 let redirect = (toURL, flash) => {
@@ -32,7 +35,7 @@ let handleClick = (el, channel) => {
         type: "click",
         event: event,
         id: el.id,
-        value: el.getAttribute("phx-value") || el.value
+        value: el.getAttribute("phx-value") || el.value || ""
     })
   })
 }
@@ -57,6 +60,8 @@ let bind = function(channel) { if(isBound){ return }
 
   document.querySelectorAll("form[phx-change] input").forEach(input => {
     input.addEventListener("input", e => {
+      input.setAttribute(PHX_HAS_FOCUSED, true)
+      window.input = input
       channel.push("event", {
         type: "form",
         event: input.form.getAttribute("phx-change"),
@@ -68,8 +73,8 @@ let bind = function(channel) { if(isBound){ return }
 
   document.querySelectorAll("form[phx-submit]").forEach(form => {
     form.addEventListener("submit", e => {
-      console.log("submit")
       e.preventDefault()
+      form.setAttribute(PHX_HAS_SUBMITTED, "true")
       channel.push("event", {
         type: "form",
         event: form.getAttribute("phx-submit"),
@@ -97,11 +102,26 @@ let joinViewChannel = (viewPid) => { if(!viewPid){ return }
 
     morphdom(document.getElementById(id), div, {
       childrenOnly: true,
+      onBeforeNodeAdded: function(el) { 
+        let field = el.getAttribute && el.getAttribute("phx-error-field")
+        if(!field) { return el }
+        let input = document.getElementById(field)
+
+        if(field && (input.getAttribute(PHX_HAS_FOCUSED) || input.form.getAttribute(PHX_HAS_SUBMITTED))){
+          return el
+        } else {
+          return false
+        }
+      },
       onNodeAdded: function(el){
         handleClick(el, channel)
         handleKeyup(el, channel)
       },
       onBeforeElUpdated: function(fromEl, toEl) {
+        if(fromEl.getAttribute && fromEl.getAttribute(PHX_HAS_SUBMITTED)){
+          toEl.setAttribute(PHX_HAS_SUBMITTED, true)
+        }
+
         if(fromEl === focused){
           return false
         } else {
@@ -124,7 +144,7 @@ let joinViewChannel = (viewPid) => { if(!viewPid){ return }
       if(resp.reason === "noproc"){
         channel.leave()
         console.log("session expired")
-        window.location.reload()
+        window.location.reload() // TODO avoid self DDoS on persistent failures
       }
       console.log("Unable to join", resp)
     })

@@ -1,7 +1,7 @@
-defmodule TurboWeb.UserControllerTest do
-  use TurboWeb.ConnCase
+defmodule DemoWeb.UserControllerTest do
+  use DemoWeb.ConnCase
 
-  alias Turbo.Accounts
+  alias Demo.Accounts
 
   @create_attrs %{country: "some country", email: "some email", state: "some state", username: "some username"}
   @update_attrs %{country: "some updated country", email: "some updated email", state: "some updated state", username: "some updated username"}

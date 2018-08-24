@@ -6,7 +6,7 @@ use Mix.Config
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
-config :turbo, TurboWeb.Endpoint,
+config :demo, DemoWeb.Endpoint,
   http: [port: 4000],
   # https: [port: 4001, certfile: "priv/cert/selfsigned.pem", keyfile: "priv/cert/selfsigned_key.pem"],
   debug_errors: true,
@@ -39,13 +39,13 @@ config :turbo, TurboWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-config :turbo, TurboWeb.Endpoint,
+config :demo, DemoWeb.Endpoint,
   live_reload: [
     patterns: [
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
-      ~r{lib/turbo_web/views/.*(ex)$},
-      ~r{lib/turbo_web/templates/.*(eex)$}
+      ~r{lib/demo_web/views/.*(ex)$},
+      ~r{lib/demo_web/templates/.*(eex)$}
     ]
   ]
 
@@ -60,10 +60,10 @@ config :phoenix, :stacktrace_depth, 20
 config :phoenix, :plug_init_mode, :runtime
 
 # Configure your database
-config :turbo, Turbo.Repo,
+config :demo, Demo.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: "postgres",
   password: "postgres",
-  database: "turbo_dev",
+  database: "demo_dev",
   hostname: "localhost",
   pool_size: 10

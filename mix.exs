@@ -1,9 +1,9 @@
-defmodule Turbo.Mixfile do
+defmodule Demo.Mixfile do
   use Mix.Project
 
   def project do
     [
-      app: :turbo,
+      app: :demo,
       version: "0.1.0",
       elixir: "~> 1.5",
       elixirc_paths: elixirc_paths(Mix.env),
@@ -19,7 +19,7 @@ defmodule Turbo.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {Turbo.Application, []},
+      mod: {Demo.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end

@@ -7,7 +7,7 @@ defmodule Phoenix.ViewChannel do
         pid = encoded_pid |> Base.decode64!() |> :erlang.binary_to_term()
         _ref = Process.monitor(pid)
 
-        case Phoenix.TurboView.attach(pid) do
+        case Phoenix.LiveView.attach(pid) do
           :ok ->
             new_socket =
               socket
@@ -55,7 +55,7 @@ defmodule Phoenix.ViewChannel do
   end
   defp decode(_, value), do: value
 
-  defp push_render(socket, {:safe, content}) do
+  defp push_render(socket, content) when is_list(content) do
     push(socket, "render", %{id: socket.assigns.view_id,
                              html: IO.iodata_to_binary(content)})
   end

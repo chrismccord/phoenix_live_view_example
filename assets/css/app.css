@@ -1,3 +1,25 @@
 /* This file is for your main application css. */
 
 @import "./phoenix.css";
+
+.animated-sin-wave {
+  position: relative;
+  height: 150px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.animated-sin-wave > .bar {
+  position: absolute;
+  height: 100%;
+  border-radius: 50%;
+  max-width:10px;
+}
+
+.animated-sin-wave-description {
+  width:100%;
+  text-align:center;
+  font-size:0.8em;
+  color:#747678;
+  padding: 2em
+}

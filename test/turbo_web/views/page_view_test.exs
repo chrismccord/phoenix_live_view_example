@@ -1,3 +1,3 @@
-defmodule TurboWeb.PageViewTest do
-  use TurboWeb.ConnCase, async: true
+defmodule DemoWeb.PageViewTest do
+  use DemoWeb.ConnCase, async: true
 end
