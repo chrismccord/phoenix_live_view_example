@@ -88,6 +88,17 @@ let bind = function(channel) { if(isBound){ return }
   document.querySelectorAll("[phx-keyup]").forEach(el => handleKeyup(el, channel))
 }
 
+
+let discardError = (el) => {
+  let field = el.getAttribute && el.getAttribute("phx-error-field")
+  if(!field) { return }
+  let input = document.getElementById(field)
+
+  if(field && !(input.getAttribute(PHX_HAS_FOCUSED) || input.form.getAttribute(PHX_HAS_SUBMITTED))){
+    el.style.display = "none"
+  }
+}
+
 let joinViewChannel = (viewPid) => { if(!viewPid){ return }
   // setCookie(location.pathname, viewPid)
 
@@ -102,16 +113,9 @@ let joinViewChannel = (viewPid) => { if(!viewPid){ return }
 
     morphdom(document.getElementById(id), div, {
       childrenOnly: true,
-      onBeforeNodeAdded: function(el) { 
-        let field = el.getAttribute && el.getAttribute("phx-error-field")
-        if(!field) { return el }
-        let input = document.getElementById(field)
-
-        if(field && (input.getAttribute(PHX_HAS_FOCUSED) || input.form.getAttribute(PHX_HAS_SUBMITTED))){
-          return el
-        } else {
-          return false
-        }
+      onBeforeNodeAdded: function(el){
+        discardError(el)
+        return el
       },
       onNodeAdded: function(el){
         handleClick(el, channel)
@@ -121,6 +125,10 @@ let joinViewChannel = (viewPid) => { if(!viewPid){ return }
         if(fromEl.getAttribute && fromEl.getAttribute(PHX_HAS_SUBMITTED)){
           toEl.setAttribute(PHX_HAS_SUBMITTED, true)
         }
+        if(fromEl.getAttribute && fromEl.getAttribute(PHX_HAS_FOCUSED)){
+          toEl.setAttribute(PHX_HAS_FOCUSED, true)
+        }
+        discardError(toEl)
 
         if(fromEl === focused){
           return false

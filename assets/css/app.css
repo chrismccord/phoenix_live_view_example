@@ -23,3 +23,8 @@
   color:#747678;
   padding: 2em
 }
+
+.container.rainbow {
+  max-width: 100%;
+  text-align: center;
+}

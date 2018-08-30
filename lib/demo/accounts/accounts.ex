@@ -62,7 +62,7 @@ defmodule Demo.Accounts do
     %User{}
     |> User.changeset(attrs)
     |> Repo.insert()
-    |> notify_subscribers(:user_created)
+    |> notify_subscribers([:user, :created])
   end
 
   @doc """
@@ -81,7 +81,7 @@ defmodule Demo.Accounts do
     user
     |> User.changeset(attrs)
     |> Repo.update()
-    |> notify_subscribers(:user_updated)
+    |> notify_subscribers([:user, :updated])
   end
 
   @doc """
@@ -99,7 +99,7 @@ defmodule Demo.Accounts do
   def delete_user(%User{} = user) do
     user
     |> Repo.delete()
-    |> notify_subscribers(:user_deleted)
+    |> notify_subscribers([:user, :deleted])
   end
 
   @doc """

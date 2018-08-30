@@ -17,6 +17,11 @@ defmodule DemoWeb.Router do
   scope "/" do
     pipe_through :browser
 
+    get "/rainbow", Phoenix.LiveView, DemoWeb.RainbowView
+    get "/clock", Phoenix.LiveView, DemoWeb.ClockView
+    get "/count", DemoWeb.PageController, :count
+    get "/counter", Phoenix.LiveView, DemoWeb.CounterView
+    get "/presence_users", Phoenix.LiveView, DemoWeb.User.PresenceIndexView, as: :user
     get "/users", Phoenix.LiveView, DemoWeb.User.IndexView, as: :user
     get "/users/new", Phoenix.LiveView, DemoWeb.User.NewView, as: :user
     get "/users/:id", Phoenix.LiveView, DemoWeb.User.ShowView, as: :user

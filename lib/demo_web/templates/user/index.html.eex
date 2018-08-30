@@ -1,20 +1,22 @@
-<h2>Listing Users (<%= @count %>)</h2>
+<h2>Listing Users</h2>
 
-<table>
-  <thead>
-    <tr>
-      <th>Username</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-<%= for {user_key, %{metas: metas}} <- @online_users do %>
-    <tr>
-      <td><%= user_key %> (<%= length(metas) %>)</td>
-    </tr>
+<%= if assigns[:online_users] do %>
+  <table>
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= for {user_key, %{metas: metas}} <- assigns[:online_users] do %>
+        <tr>
+          <td><%= user_key %> (<%= length(metas) %>)</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 <% end %>
-  </tbody>
-</table>
 
 <table>
   <thead>

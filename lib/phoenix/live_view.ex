@@ -11,6 +11,9 @@ defmodule Phoenix.LiveView do
       when is_map(attrs) or is_list(attrs) do
     %Socket{socket | assigns: Enum.into(attrs, assigns)}
   end
+  def update(%Socket{assigns: assigns} = socket, key, func) do
+    %Socket{socket | assigns: Map.update!(assigns, key, func)}
+  end
 
   def put_flash(%Socket{private: private} = socket, kind, msg) do
     %Socket{socket | private: Map.update(private, :flash, %{kind => msg}, &Map.put(&1, kind, msg))}
@@ -25,6 +28,7 @@ defmodule Phoenix.LiveView do
   defmacro __using__(_opts) do
     quote do
       import unquote(__MODULE__)
+      import Phoenix.HTML
 
       def init(assigns), do: {:ok, assigns}
       def terminate(reason, state), do: {:ok, state}

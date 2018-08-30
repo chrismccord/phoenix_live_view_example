@@ -6,7 +6,7 @@ defmodule DemoWeb.User.NewView do
   alias Demo.Accounts
   alias Demo.Accounts.User
 
-  def init(socket) do
+  def init(_params, socket) do
     {:ok, assign(socket, %{
       count: 0,
       changeset: Accounts.change_user(%User{}),
@@ -16,7 +16,6 @@ defmodule DemoWeb.User.NewView do
   def render(assigns), do: UserView.render("new.html", assigns)
 
   def handle_event("validate", _id, %{"user" => params}, socket) do
-    IO.inspect(params)
     changeset =
       %User{}
       |> Demo.Accounts.change_user(params)

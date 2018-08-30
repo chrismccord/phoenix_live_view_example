@@ -16,10 +16,11 @@ defmodule Phoenix.LiveView.Server do
 
   def init({{ref, request_pid}, view, csrf, assigns}) do
     Process.put(:plug_masked_csrf_token, csrf)
+    socket = build_socket(assigns)
 
-    assigns
-    |> build_socket()
-    |> view.init()
+
+    assigns.conn.params
+    |> view.init(socket)
     |> configure_init(view, {ref, request_pid})
   end
   defp build_socket(%{} = assigns) do

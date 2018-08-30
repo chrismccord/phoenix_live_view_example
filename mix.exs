@@ -42,7 +42,8 @@ defmodule Demo.Mixfile do
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
-      {:cowboy, "~> 2.0"}
+      {:cowboy, "~> 2.0"},
+      {:calendar, "~> 0.17.4"},
     ]
   end
 
