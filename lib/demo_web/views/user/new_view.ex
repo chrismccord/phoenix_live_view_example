@@ -25,6 +25,7 @@ defmodule DemoWeb.User.NewView do
   end
 
   def handle_event("save", _id, %{"user" => user_params}, socket) do
+    :timer.sleep(1000)
     case Accounts.create_user(user_params) do
       {:ok, user} ->
         socket

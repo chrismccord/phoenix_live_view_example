@@ -17,7 +17,7 @@ defmodule DemoWeb.User.PresenceIndexView do
   defp fetch(socket) do
     assign(socket, %{
       users: Accounts.list_users(),
-      online_users: IO.inspect(DemoWeb.Presence.list("users"))
+      online_users: DemoWeb.Presence.list("users")
     })
   end
 
