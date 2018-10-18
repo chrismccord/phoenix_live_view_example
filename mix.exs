@@ -34,7 +34,7 @@ defmodule Demo.Mixfile do
   defp deps do
     [
       {:phoenix, path: "~/oss/phoenix", override: true},
-      {:plug, path: "~/oss/plug", override: true},
+      {:plug, "~> 1.6.4"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_ecto, "~> 3.2"},
       {:postgrex, ">= 0.0.0"},
