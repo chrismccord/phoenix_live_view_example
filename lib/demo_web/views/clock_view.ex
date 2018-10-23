@@ -11,12 +11,16 @@ defmodule DemoWeb.ClockView do
     """
   end
 
-  def init(_, socket) do
-    :timer.send_interval(1000, self(), :tick)
+  def prepare(_, socket) do
     {:ok, put_date(socket)}
   end
 
-  def handle_info(:tick, socket), do: {:ok, put_date(socket)}
+  def init(socket) do
+    :timer.send_interval(1000, self(), :tick)
+    {:ok, socket}
+  end
+
+  def handle_info(:tick, socket), do: {:noreply, put_date(socket)}
 
   defp put_date(socket) do
     assign(socket, date: :calendar.local_time())

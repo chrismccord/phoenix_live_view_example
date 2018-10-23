@@ -4,7 +4,7 @@ defmodule DemoWeb.Router do
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
-    plug :fetch_live_flash
+    plug Phoenix.LiveView.Flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :put_layout, {DemoWeb.LayoutView, :app}
@@ -43,6 +43,4 @@ defmodule DemoWeb.Router do
   # scope "/api", DemoWeb do
   #   pipe_through :api
   # end
-
-  defp fetch_live_flash(conn, _), do: Phoenix.LiveView.fetch_flash(conn, [])
 end

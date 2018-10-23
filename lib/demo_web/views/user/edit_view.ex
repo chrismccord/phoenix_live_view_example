@@ -5,7 +5,11 @@ defmodule DemoWeb.User.EditView do
   alias DemoWeb.Router.Helpers, as: Routes
   alias Demo.Accounts
 
-  def init(%{"id" => id}, socket) do
+  def upgrade(_conn, %{"id" => id}) do
+    {:ok, %{id: id}}
+  end
+
+  def prepare(%{id: id}, socket) do
     user = Accounts.get_user!(id)
 
     {:ok, assign(socket, %{
@@ -23,7 +27,7 @@ defmodule DemoWeb.User.EditView do
       |> Demo.Accounts.change_user(params)
       |> Map.put(:action, :insert)
 
-    {:ok, assign(socket, changeset: changeset)}
+    {:noreply, assign(socket, changeset: changeset)}
   end
 
   def handle_event("save", _id, %{"user" => user_params}, socket) do
@@ -31,10 +35,10 @@ defmodule DemoWeb.User.EditView do
       {:ok, user} ->
         socket
         |> put_flash(:info, "User updated successfully.")
-        |> redirect(to: Routes.user_path(socket.assigns.conn, DemoWeb.User.ShowView, user))
+        |> redirect(to: Routes.user_path(DemoWeb.Endpoint, DemoWeb.User.ShowView, user))
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        {:ok, assign(socket, changeset: changeset)}
+        {:noreply, assign(socket, changeset: changeset)}
     end
   end
 end

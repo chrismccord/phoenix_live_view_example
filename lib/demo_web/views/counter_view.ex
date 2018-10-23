@@ -11,15 +11,27 @@ defmodule DemoWeb.CounterView do
     """
   end
 
-  def init(_params, socket) do
-    {:ok, assign(socket, val: 0)}
+  def upgrade(_conn, unsigned_params) do
+    {:ok, %{val: String.to_integer(unsigned_params["val"] || "0")}}
+  end
+
+  def prepare(%{val: val}, socket) do
+    {:ok, assign(socket, :val, val + 1)}
+  end
+
+  def init(socket) do
+    {:ok, socket}
   end
 
   def handle_event("inc", _, _, socket) do
-    {:ok, update(socket, :val, &(&1 + 1))}
+    {:noreply, sync_params(update(socket, :val, &(&1 + 1)))}
   end
 
   def handle_event("dec", _, _, socket) do
-    {:ok, update(socket, :val, &(&1 - 1))}
+    {:noreply, sync_params(update(socket, :val, &(&1 - 1)))}
+  end
+
+  defp sync_params(socket) do
+    push_params(socket, val: socket.assigns.val)
   end
 end

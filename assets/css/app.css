@@ -1,6 +1,7 @@
 /* This file is for your main application css. */
 
 @import "./phoenix.css";
+@import "./live_view.css";
 
 .animated-sin-wave {
   position: relative;
@@ -27,4 +28,8 @@
 .container.rainbow {
   max-width: 100%;
   text-align: center;
+}
+
+[data-phx-view]{
+  padding: 1em;
 }

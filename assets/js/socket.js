@@ -1,8 +1,12 @@
 import {Socket} from "./phoenix"
 import morphdom from "morphdom"
 
+const PHX_VIEW_SELECTOR = "[data-phx-view]"
 const PHX_HAS_FOCUSED = "phx-has-focused"
 const PHX_HAS_SUBMITTED = "phx-has-submitted"
+const PARAMS_SELECTOR = "data-params"
+const LOADER_TIMEOUT = 100
+const LOADER_ZOOM = 2
 
 let socket = new Socket("/socket")
 window.socket = socket
@@ -25,69 +29,41 @@ let redirect = (toURL, flash) => {
   window.location = toURL
 }
 
-let handleClick = (el, channel) => {
-  let event = el.getAttribute && el.getAttribute("phx-click")
-  if(!event){ return }
-
-  el.addEventListener("click", e => {
-    e.preventDefault()
-    channel.push("event", {
-        type: "click",
-        event: event,
-        id: el.id,
-        value: el.getAttribute("phx-value") || el.value || ""
-    })
-  })
+let handleClick = (el, view) => {
+  let phxEvent = el.getAttribute && el.getAttribute("phx-click")
+  if(phxEvent){ 
+    el.addEventListener("click", e => view.pushClick(el, e, phxEvent))
+  }
 }
 
-let handleKeyup = (el, channel) => {
-  let event = el.getAttribute && el.getAttribute("phx-keyup")
-  if(!event){ return }
-
-  el.addEventListener("keyup", e => {
-    channel.push("event", {
-      type: "keyup",
-      event: el.getAttribute("phx-keyup"),
-      id: e.target.id,
-      value: e.target.value
-    })
-  })
+let handleKeyup = (el, view) => {
+  let phxEvent = el.getAttribute && el.getAttribute("phx-keyup")
+  if(phxEvent){
+    el.addEventListener("keyup", e => view.pushKeyup(el, e, phxEvent))
+  }
 }
 
-let isBound = false
-let bind = function(channel) { if(isBound){ return }
-  isBound = true
-
+let bindUI = function(view) {
   document.querySelectorAll("form[phx-change] input").forEach(input => {
+    let phxEvent = input.form.getAttribute("phx-change")
     input.addEventListener("input", e => {
       input.setAttribute(PHX_HAS_FOCUSED, true)
-      window.input = input
-      channel.push("event", {
-        type: "form",
-        event: input.form.getAttribute("phx-change"),
-        id: e.target.id,
-        value: serializeForm(input.form)
-      })
+      view.pushInput(input, e, phxEvent)
     })
   })
 
   document.querySelectorAll("form[phx-submit]").forEach(form => {
+    let phxEvent = form.getAttribute("phx-submit")
     form.addEventListener("submit", e => {
       e.preventDefault()
       form.setAttribute(PHX_HAS_SUBMITTED, "true")
-      channel.push("event", {
-        type: "form",
-        event: form.getAttribute("phx-submit"),
-        id: e.target.id,
-        value: serializeForm(form)
-      })
+      view.pushFormSubmit(form, e, phxEvent)
     })
   })
 
-  document.querySelectorAll("[phx-click]").forEach(el => handleClick(el, channel))
-  document.querySelectorAll("[phx-keyup]").forEach(el => handleKeyup(el, channel))
+  document.querySelectorAll("[phx-click]").forEach(el => handleClick(el, view))
+  document.querySelectorAll("[phx-keyup]").forEach(el => handleKeyup(el, view))
 }
-
 
 let discardError = (el) => {
   let field = el.getAttribute && el.getAttribute("phx-error-field")
@@ -99,66 +75,158 @@ let discardError = (el) => {
   }
 }
 
-let joinViewChannel = (viewPid) => { if(!viewPid){ return }
-  // setCookie(location.pathname, viewPid)
+let joinViewChannels = () => {
+  document.querySelectorAll(PHX_VIEW_SELECTOR).forEach(el => {
+    let view = new LiveView(el, socket)
+    view.join()
+  })
+}
 
-  let channel = socket.channel(`views:${location.pathname}`, {view: viewPid})
+let patchDom = (view, container, id, html) => {
+  let focused = document.activeElement
+  let focusedValue = focused.value
+  let {selectionStart, selectionEnd} = focused
+  let div = document.createElement("div")
+  div.innerHTML = html
 
-  channel.on("render", ({id, html}) => {
-    let focused = document.activeElement
-    let focusedValue = focused.value
-    let {selectionStart, selectionEnd} = focused
-    let div = document.createElement("div")
-    div.innerHTML = html
-
-    morphdom(document.getElementById(id), div, {
-      childrenOnly: true,
-      onBeforeNodeAdded: function(el){
-        discardError(el)
-        return el
-      },
-      onNodeAdded: function(el){
-        handleClick(el, channel)
-        handleKeyup(el, channel)
-      },
-      onBeforeElUpdated: function(fromEl, toEl) {
-        if(fromEl.getAttribute && fromEl.getAttribute(PHX_HAS_SUBMITTED)){
-          toEl.setAttribute(PHX_HAS_SUBMITTED, true)
-        }
-        if(fromEl.getAttribute && fromEl.getAttribute(PHX_HAS_FOCUSED)){
-          toEl.setAttribute(PHX_HAS_FOCUSED, true)
-        }
-        discardError(toEl)
-
-        if(fromEl === focused){
-          return false
-        } else {
-          return true
-        }
+  morphdom(container, div, {
+    childrenOnly: true,
+    onBeforeNodeAdded: function(el){
+      discardError(el)
+      return el
+    },
+    onNodeAdded: function(el){
+      handleClick(el, view)
+      handleKeyup(el, view)
+    },
+    onBeforeElUpdated: function(fromEl, toEl) {
+      if(fromEl.getAttribute && fromEl.getAttribute(PHX_HAS_SUBMITTED)){
+        toEl.setAttribute(PHX_HAS_SUBMITTED, true)
       }
-    })
+      if(fromEl.getAttribute && fromEl.getAttribute(PHX_HAS_FOCUSED)){
+        toEl.setAttribute(PHX_HAS_FOCUSED, true)
+      }
+      discardError(toEl)
 
-    focused.focus()
-    if(focused.setSelectionRange){
-      focused.setSelectionRange(selectionStart, selectionEnd)
+      if(fromEl === focused){
+        return false
+      } else {
+        return true
+      }
     }
   })
 
-  channel.on("redirect", ({to, flash}) => redirect(to, flash) )
-
-  channel.join()
-    .receive("ok", resp => { bind(channel) })
-    .receive("error", resp => {
-      if(resp.reason === "noproc"){
-        channel.leave()
-        console.log("session expired")
-        window.location.reload() // TODO avoid self DDoS on persistent failures
-      }
-      console.log("Unable to join", resp)
-    })
+  focused.focus()
+  if(focused.setSelectionRange){
+    focused.setSelectionRange(selectionStart, selectionEnd)
+  }
 }
 
-// joinViewChannel(window.viewPid || getCookie(location.pathname))
-joinViewChannel(window.viewPid)
+class LiveView {
+  constructor(el, socket){
+    this.el = el
+    window.view = this
+    this.loader = this.el.nextElementSibling
+    this.id = this.el.id
+    this.view = this.el.getAttribute("data-view")
+    this.hasBoundUI = false
+    this.joinParams = {params_token: this.el.getAttribute(PARAMS_SELECTOR)}
+    this.channel = socket.channel(`views:${this.id}`, () => this.joinParams)
+    this.loaderTimer = setTimeout(() => this.showLoader(), LOADER_TIMEOUT)
+    this.bindChannel()
+  }
+
+  hideLoader(){
+    clearTimeout(this.loaderTimer)
+    this.loader.style.display = "none"
+  }
+
+  showLoader(){
+    clearTimeout(this.loaderTimer)
+    this.el.classList = "phx-disconnected"
+    this.loader.style.display = "block"
+    let middle = Math.floor(this.el.clientHeight / LOADER_ZOOM)
+    this.loader.style.top = `-${middle}px`
+    console.log(middle)
+  }
+  
+  update(html){
+    patchDom(this, this.el, this.id, html)
+  }
+
+  bindChannel(){
+    this.channel.on("render", ({html}) => this.update(html))
+    this.channel.on("redirect", ({to, flash}) => redirect(to, flash) )
+    this.channel.on("params", ({token}) => this.joinParams.params_token = token)
+    this.channel.onError(() => this.onError())
+  }
+
+  join(){
+    this.channel.join()
+      .receive("ok", data => this.onJoin(data))
+      .receive("error", resp => this.onJoinError(resp))
+  }
+
+  onJoin({html}){
+    this.hideLoader()
+    this.el.classList = "phx-connected"
+    patchDom(this, this.el, this.id, html)
+    if(!this.hasBoundUI){ bindUI(this) }
+    this.hasBoundUI = true
+  }
+
+  onJoinError(resp){
+    this.showLoader()
+    this.el.classList = "phx-disconnected phx-error"
+    console.log("Unable to join", resp)
+  }
+
+  onError(){
+    this.showLoader()
+    this.el.classList = "phx-disconnected phx-error"
+  }
+
+  pushClick(clickedElement, event, phxEvent){
+    event.preventDefault()
+    this.channel.push("event", {
+      type: "click",
+      event: phxEvent,
+      id: clickedElement.id,
+      value: clickedElement.getAttribute("phx-value") || clickedElement.value || ""
+    })
+  }
+
+  pushKeyup(keyElement, event, phxEvent){
+    this.channel.push("event", {
+      type: "keyup",
+      event: phxEvent,
+      id: event.target.id,
+      value: keyElement.value
+    })
+  }
+
+  pushInput(inputEl, event, phxEvent){
+    this.channel.push("event", {
+      type: "form",
+      event: phxEvent,
+      id: event.target.id,
+      value: serializeForm(inputEl.form)
+    })
+  }
+  
+  pushFormSubmit(formEl, event, phxEvent){
+    this.channel.push("event", {
+      type: "form",
+      event: phxEvent,
+      id: event.target.id,
+      value: serializeForm(formEl)
+    })
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("joining")
+  joinViewChannels()
+})
 
 export default socket

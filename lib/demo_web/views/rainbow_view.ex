@@ -3,6 +3,7 @@ defmodule DemoWeb.RainbowView do
   use Phoenix.HTML
 
   @interval (1000 / 60)
+  @inner_window_width 1200
 
   def render(assigns) do
     ~E"""
@@ -20,6 +21,7 @@ defmodule DemoWeb.RainbowView do
     </h3>
     """
   end
+
   defp render_rainbow(%{count: count, bar_count: bar_count}) do
     bar_width = 100 / bar_count
 
@@ -34,26 +36,25 @@ defmodule DemoWeb.RainbowView do
     end
   end
 
-  def init(_params, socket) do
-    inner_window_width = 1200
+  def init(_signed_params, socket) do
     {:ok, _} = :timer.send_interval(trunc(@interval), self(), :next_frame) # 60 FPS
 
-    {:ok, assign(socket,
+    {:ok, assign(socket, %{
       fps: trunc(Float.ceil(1000 / @interval)),
       interval: @interval,
       step: 0.5,
       count: 0,
-      inner_window_width: inner_window_width,
-      bar_count: Enum.min([200, trunc(:math.floor(inner_window_width / 15))])
-    )}
+      inner_window_width: @inner_window_width,
+      bar_count: Enum.min([200, trunc(:math.floor(@inner_window_width / 15))])
+    })}
   end
 
   def handle_info(:next_frame, socket) do
     %{count: count, step: step} = socket.assigns
-    {:ok, assign(socket, count: count + step)}
+    {:noreply, assign(socket, count: count + step)}
   end
 
   def handle_event("switch", _id, _val, %{assigns: assigns} = socket) do
-    {:ok, assign(socket, step: assigns.step * -1)}
+    {:noreply, assign(socket, step: assigns.step * -1)}
   end
 end

@@ -14,14 +14,22 @@ defmodule DemoWeb.User.ShowView do
       <li><b>Email:</b> <%= @user.email %></li>
       <li><b>Phone:</b> <%= @user.phone_number %></li>
     </ul>
-    <span><%= link "Edit", to: Routes.user_path(@conn, DemoWeb.User.EditView, @user) %></span>
-    <span><%= link "Back", to: Routes.user_path(@conn, DemoWeb.User.IndexView) %></span>
+    <span><%= link "Edit", to: Routes.user_path(DemoWeb.Endpoint, DemoWeb.User.EditView, @user) %></span>
+    <span><%= link "Back", to: Routes.user_path(DemoWeb.Endpoint, DemoWeb.User.IndexView) %></span>
     """
   end
 
-  def init(%{"id" => id}, socket) do
-    Demo.Accounts.subscribe(id)
+  def upgrade(_conn, %{"id" => id}) do
+    {:ok, %{id: id}}
+  end
+
+  def prepare(%{id: id}, socket) do
     {:ok, fetch(assign(socket, id: id))}
+  end
+
+  def init(socket) do
+    Demo.Accounts.subscribe(socket.assigns.id)
+    {:ok, socket}
   end
 
   defp fetch(%Socket{assigns: %{id: id}} = socket) do
@@ -29,12 +37,12 @@ defmodule DemoWeb.User.ShowView do
   end
 
   def handle_info({Accounts, [:user, :updated], _}, socket) do
-    {:ok, fetch(socket)}
+    {:noreply, fetch(socket)}
   end
 
   def handle_info({Accounts, [:user, :deleted], _}, socket) do
     socket
     |> put_flash(:error, "This user has been deleted from the system")
-    |> redirect(to: Routes.user_path(socket.assigns.conn, DemoWeb.User.IndexView))
+    |> redirect(to: Routes.user_path(DemoWeb.Endpoint, DemoWeb.User.IndexView))
   end
 end
