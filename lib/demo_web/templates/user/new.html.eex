@@ -1,4 +1,4 @@
-<h2 phx-click="switch">Create Your Account</h2>
+<h2 phx-click="boom">Create Your Account</h2>
 
 <%= render "form.html", assigns %>
 

@@ -3,8 +3,10 @@ import morphdom from "morphdom"
 
 const PHX_VIEW_SELECTOR = "[data-phx-view]"
 const PHX_HAS_FOCUSED = "phx-has-focused"
+const FOCUSABLE_INPUTS = ["text", "textarea", "password"]
 const PHX_HAS_SUBMITTED = "phx-has-submitted"
 const PARAMS_SELECTOR = "data-params"
+const SESSION_SELECTOR = "data-session"
 const LOADER_TIMEOUT = 100
 const LOADER_ZOOM = 2
 
@@ -47,7 +49,7 @@ let bindUI = function(view) {
   document.querySelectorAll("form[phx-change] input").forEach(input => {
     let phxEvent = input.form.getAttribute("phx-change")
     input.addEventListener("input", e => {
-      input.setAttribute(PHX_HAS_FOCUSED, true)
+      if(FOCUSABLE_INPUTS.indexOf(input.type) >= 0){ input.setAttribute(PHX_HAS_FOCUSED, true) }
       view.pushInput(input, e, phxEvent)
     })
   })
@@ -116,10 +118,13 @@ let patchDom = (view, container, id, html) => {
     }
   })
 
+  if(focused.value === ""){ focused.blur()}
   focused.focus()
-  if(focused.setSelectionRange){
+  if(focused.setSelectionRange && focused.type === "text" || focused.type === "textarea"){
+    window.focused = focused
     focused.setSelectionRange(selectionStart, selectionEnd)
   }
+  document.dispatchEvent(new Event("phx:update"))
 }
 
 class LiveView {
@@ -130,7 +135,10 @@ class LiveView {
     this.id = this.el.id
     this.view = this.el.getAttribute("data-view")
     this.hasBoundUI = false
-    this.joinParams = {params_token: this.el.getAttribute(PARAMS_SELECTOR)}
+    this.joinParams = {
+      params: this.el.getAttribute(PARAMS_SELECTOR),
+      session: this.el.getAttribute(SESSION_SELECTOR)
+    }
     this.channel = socket.channel(`views:${this.id}`, () => this.joinParams)
     this.loaderTimer = setTimeout(() => this.showLoader(), LOADER_TIMEOUT)
     this.bindChannel()
@@ -157,7 +165,7 @@ class LiveView {
   bindChannel(){
     this.channel.on("render", ({html}) => this.update(html))
     this.channel.on("redirect", ({to, flash}) => redirect(to, flash) )
-    this.channel.on("params", ({token}) => this.joinParams.params_token = token)
+    this.channel.on("params", ({token}) => this.joinParams.params = token)
     this.channel.onError(() => this.onError())
   }
 

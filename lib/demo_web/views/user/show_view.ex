@@ -19,11 +19,8 @@ defmodule DemoWeb.User.ShowView do
     """
   end
 
-  def upgrade(_conn, %{"id" => id}) do
-    {:ok, %{id: id}}
-  end
 
-  def prepare(%{id: id}, socket) do
+  def authorize(%{"id" => id}, _session, socket) do
     {:ok, fetch(assign(socket, id: id))}
   end
 

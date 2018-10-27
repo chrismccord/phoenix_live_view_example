@@ -5,11 +5,7 @@ defmodule DemoWeb.User.EditView do
   alias DemoWeb.Router.Helpers, as: Routes
   alias Demo.Accounts
 
-  def upgrade(_conn, %{"id" => id}) do
-    {:ok, %{id: id}}
-  end
-
-  def prepare(%{id: id}, socket) do
+  def authorize(%{"id" => id}, _session, socket) do
     user = Accounts.get_user!(id)
 
     {:ok, assign(socket, %{

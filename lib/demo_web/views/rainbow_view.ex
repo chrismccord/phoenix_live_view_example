@@ -2,14 +2,17 @@ defmodule DemoWeb.RainbowView do
   use Phoenix.LiveView
   use Phoenix.HTML
 
-  @interval (1000 / 60)
+  @fps 60
   @inner_window_width 1200
 
   def render(assigns) do
     ~E"""
     <h1>Silky Smooth SSR</h1>
     <h3>Fast enough to power animations <em>[on the server]</em> at <%= @fps %>FPS</h3>
-    <div class="animated-sin-wave" phx-click="switch">
+    <form phx-change="update_fps">
+      <input type="range" min="1" max="100" value="<%= @fps %>" name="fps"/>
+    </form>
+    <div class="animated-sin-wave" phx-click="switch" style="background: <%= @bg %>;">
       <%= render_rainbow(assigns) %>
     </div>
     <br/>
@@ -36,12 +39,10 @@ defmodule DemoWeb.RainbowView do
     end
   end
 
-  def init(_signed_params, socket) do
-    {:ok, _} = :timer.send_interval(trunc(@interval), self(), :next_frame) # 60 FPS
-
+  def authorize(signed_params, _session, socket) do
     {:ok, assign(socket, %{
-      fps: trunc(Float.ceil(1000 / @interval)),
-      interval: @interval,
+      bg: "white",
+      fps: signed_params["fps"] || @fps,
       step: 0.5,
       count: 0,
       inner_window_width: @inner_window_width,
@@ -49,12 +50,32 @@ defmodule DemoWeb.RainbowView do
     })}
   end
 
+  def init(socket) do
+    schedule_next_frame(socket)
+    {:ok, socket}
+  end
+
+  defp schedule_next_frame(socket) do
+    Process.send_after(self(), :next_frame, trunc(1000 / socket.assigns.fps))
+  end
+
   def handle_info(:next_frame, socket) do
+    schedule_next_frame(socket)
     %{count: count, step: step} = socket.assigns
     {:noreply, assign(socket, count: count + step)}
   end
 
   def handle_event("switch", _id, _val, %{assigns: assigns} = socket) do
     {:noreply, assign(socket, step: assigns.step * -1)}
+  end
+
+  def handle_event("update_fps", _, %{"fps" => fps}, socket) do
+    fps = String.to_integer(fps)
+    socket =
+      socket
+      |> assign(fps: fps)
+      |> push_params(%{"fps" => fps})
+
+    {:noreply, socket}
   end
 end

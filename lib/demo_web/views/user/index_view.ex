@@ -4,7 +4,7 @@ defmodule DemoWeb.User.IndexView do
   alias Demo.Accounts
   alias DemoWeb.UserView
 
-  def prepare(_, socket) do
+  def authorize(_params, _session, socket) do
     {:ok, fetch(socket)}
   end
 

@@ -5,13 +5,13 @@ defmodule DemoWeb.ClockView do
   def render(assigns) do
     ~E"""
     <div>
-      <h1>It's time for ElixirConf!</h1>
+      <h1>It's time for Gig City Elixir!</h1>
       <h2>It's <%= strftime!(@date, "%r") %></h2>
     </div>
     """
   end
 
-  def prepare(_, socket) do
+  def authorize(_params, _session, socket) do
     {:ok, put_date(socket)}
   end
 
