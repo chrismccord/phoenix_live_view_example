@@ -4,7 +4,7 @@ defmodule DemoWeb.User.ShowView do
 
   alias DemoWeb.Router.Helpers, as: Routes
   alias Demo.Accounts
-  alias Phoenix.LiveView.Socket
+  alias Phoenix.Socket
 
   def render(assigns) do
     ~E"""

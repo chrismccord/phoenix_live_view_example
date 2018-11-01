@@ -10,9 +10,26 @@ const SESSION_SELECTOR = "data-session"
 const LOADER_TIMEOUT = 100
 const LOADER_ZOOM = 2
 
-let socket = new Socket("/socket")
-window.socket = socket
-socket.connect()
+export default class LiveView {
+  constructor(url, opts){
+    this.url = url
+    this.opts = opts
+    this.socket = new Socket(url, opts)
+  }
+
+  connect(){
+    if(["complete", "loaded","interactive"].indexOf(document.readyState) >= 0){
+      joinViewChannels(this.socket)
+    } else {
+      document.addEventListener("DOMContentLoaded", () => {
+        joinViewChannels(this.socket)
+      })
+    }
+    return this.socket.connect()
+  }
+
+  disconnect(){ return this.socket.disconnect()}
+}
 
 let setCookie = (name, value) => {
   document.cookie = `${name}=${value}`
@@ -77,9 +94,9 @@ let discardError = (el) => {
   }
 }
 
-let joinViewChannels = () => {
+let joinViewChannels = (socket) => {
   document.querySelectorAll(PHX_VIEW_SELECTOR).forEach(el => {
-    let view = new LiveView(el, socket)
+    let view = new View(el, socket)
     view.join()
   })
 }
@@ -127,7 +144,7 @@ let patchDom = (view, container, id, html) => {
   document.dispatchEvent(new Event("phx:update"))
 }
 
-class LiveView {
+class View {
   constructor(el, socket){
     this.el = el
     window.view = this
@@ -223,6 +240,7 @@ class LiveView {
   }
   
   pushFormSubmit(formEl, event, phxEvent){
+    event.target.disabled = true
     this.channel.push("event", {
       type: "form",
       event: phxEvent,
@@ -232,9 +250,3 @@ class LiveView {
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("joining")
-  joinViewChannels()
-})
-
-export default socket

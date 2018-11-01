@@ -2,7 +2,7 @@ defmodule DemoWeb.ClockView do
   use Phoenix.LiveView
   import Calendar.Strftime
 
-  def render(assigns) do
+  def render(%{date: _} = assigns) do
     ~E"""
     <div>
       <h1>It's time for Gig City Elixir!</h1>
@@ -10,12 +10,9 @@ defmodule DemoWeb.ClockView do
     </div>
     """
   end
+  def render(_), do: "Loading..."
 
-  def authorize(_params, _session, socket) do
-    {:ok, put_date(socket)}
-  end
-
-  def init(socket) do
+ def init(socket) do
     :timer.send_interval(1000, self(), :tick)
     {:ok, socket}
   end

@@ -6,7 +6,7 @@ defmodule DemoWeb.BoomView do
     <input type="radio"
       name="<%= name %>"
       value="<%= field_val %>"
-    <%= if field_val == checked_val, do: "checked" %> />
+      <%= if field_val == checked_val, do: "checked" %> />
     """
   end
 
