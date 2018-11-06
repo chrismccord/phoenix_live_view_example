@@ -14,7 +14,7 @@ defmodule DemoWeb.SearchView do
     """
   end
 
-  def init(_session, socket) do
+  def mount(_session, socket) do
     {:ok, assign(socket, query: "", suggestions: [])}
   end
 

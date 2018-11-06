@@ -17,7 +17,7 @@ defmodule DemoWeb.CounterView do
     """
   end
 
-  def init(_session, socket) do
+  def mount(_session, socket) do
     {:ok, assign(socket, :val, 0)}
   end
 

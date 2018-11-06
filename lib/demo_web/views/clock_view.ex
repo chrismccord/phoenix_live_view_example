@@ -10,10 +10,8 @@ defmodule DemoWeb.ClockView do
     """
   end
 
-  def init(_session, socket) do
-    if connected?(socket) do
-      :timer.send_interval(1000, self(), :tick)
-    end
+  def mount(_session, socket) do
+    if connected?(socket), do: :timer.send_interval(1000, self(), :tick)
 
     {:ok, put_date(socket)}
   end

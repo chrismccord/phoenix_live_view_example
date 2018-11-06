@@ -27,7 +27,7 @@ defmodule DemoWeb.ImageView do
     """
   end
 
-  def init(_session, socket) do
+  def mount(_session, socket) do
     {:ok, assign(socket, width: 100, bg: "white")}
   end
 

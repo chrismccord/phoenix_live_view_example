@@ -39,7 +39,7 @@ defmodule DemoWeb.RainbowView do
     end
   end
 
-  def init(_session, socket) do
+  def mount(_session, socket) do
     socket = assign(socket, %{
       bg: "white",
       fps: @fps,
