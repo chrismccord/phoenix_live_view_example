@@ -18,7 +18,7 @@ defmodule DemoWeb.Router do
     pipe_through :browser
 
     get "/search", Phoenix.LiveView, DemoWeb.SearchView
-    get "/boom", Phoenix.LiveView, DemoWeb.BoomView
+    get "/image", Phoenix.LiveView, DemoWeb.ImageView
     get "/rainbow", Phoenix.LiveView, DemoWeb.RainbowView
     get "/clock", Phoenix.LiveView, DemoWeb.ClockView
     get "/count", DemoWeb.PageController, :count

@@ -2,33 +2,54 @@ import {Socket} from "./phoenix"
 import morphdom from "morphdom"
 
 const PHX_VIEW_SELECTOR = "[data-phx-view]"
+const PHX_PARENT_ID = "data-phx-parent-id"
 const PHX_HAS_FOCUSED = "phx-has-focused"
+const PHX_BOUND = "phx-bound"
 const FOCUSABLE_INPUTS = ["text", "textarea", "password"]
 const PHX_HAS_SUBMITTED = "phx-has-submitted"
-const PARAMS_SELECTOR = "data-params"
 const SESSION_SELECTOR = "data-session"
 const LOADER_TIMEOUT = 100
 const LOADER_ZOOM = 2
 
-export default class LiveView {
+export default class LiveSocket {
   constructor(url, opts){
     this.url = url
     this.opts = opts
+    this.views = {}
     this.socket = new Socket(url, opts)
   }
 
   connect(){
     if(["complete", "loaded","interactive"].indexOf(document.readyState) >= 0){
-      joinViewChannels(this.socket)
+      joinViewChannels()
     } else {
       document.addEventListener("DOMContentLoaded", () => {
-        joinViewChannels(this.socket)
+        this.joinViewChannels()
       })
     }
     return this.socket.connect()
   }
 
   disconnect(){ return this.socket.disconnect()}
+
+  channel(topic, params){ return this.socket.channel(topic, params || {}) }
+
+  joinViewChannels(){
+    document.querySelectorAll(PHX_VIEW_SELECTOR).forEach(el => this.joinView(el))
+  }
+
+  joinView(el, parentView){
+    let view = new View(el, this, parentView)
+    this.views[view.id] = view
+    view.join()
+  }
+
+  destroyViewById(id){
+    console.log("destroying", id)
+    let view = this.views[id]
+    if(!view){ throw `cannot destroy view for id ${id} as it does not exist` }
+    view.destroy(() => delete this.views[view.id])
+  }
 }
 
 let setCookie = (name, value) => {
@@ -48,30 +69,31 @@ let redirect = (toURL, flash) => {
   window.location = toURL
 }
 
-let handleClick = (el, view) => {
+let handleClick = (el, view, from) => {
   let phxEvent = el.getAttribute && el.getAttribute("phx-click")
-  if(phxEvent){ 
+  if(phxEvent && !el.getAttribute(PHX_BOUND) && view.ownsElement(el)){ 
+    el.setAttribute(PHX_BOUND, true)
     el.addEventListener("click", e => view.pushClick(el, e, phxEvent))
   }
 }
 
 let handleKeyup = (el, view) => {
   let phxEvent = el.getAttribute && el.getAttribute("phx-keyup")
-  if(phxEvent){
+  if(phxEvent && view.ownsElement(el)){
     el.addEventListener("keyup", e => view.pushKeyup(el, e, phxEvent))
   }
 }
 
 let bindUI = function(view) {
-  document.querySelectorAll("form[phx-change] input").forEach(input => {
+  view.eachChild("form[phx-change] input", input => {
     let phxEvent = input.form.getAttribute("phx-change")
     input.addEventListener("input", e => {
-      if(FOCUSABLE_INPUTS.indexOf(input.type) >= 0){ input.setAttribute(PHX_HAS_FOCUSED, true) }
+      if(isTextualInput(input)){ input.setAttribute(PHX_HAS_FOCUSED, true) }
       view.pushInput(input, e, phxEvent)
     })
   })
 
-  document.querySelectorAll("form[phx-submit]").forEach(form => {
+  view.eachChild("form[phx-submit]", form => {
     let phxEvent = form.getAttribute("phx-submit")
     form.addEventListener("submit", e => {
       e.preventDefault()
@@ -80,8 +102,8 @@ let bindUI = function(view) {
     })
   })
 
-  document.querySelectorAll("[phx-click]").forEach(el => handleClick(el, view))
-  document.querySelectorAll("[phx-keyup]").forEach(el => handleKeyup(el, view))
+  view.eachChild("[phx-click]", el => handleClick(el, view))
+  view.eachChild("[phx-keyup]", el => handleKeyup(el, view))
 }
 
 let discardError = (el) => {
@@ -94,11 +116,9 @@ let discardError = (el) => {
   }
 }
 
-let joinViewChannels = (socket) => {
-  document.querySelectorAll(PHX_VIEW_SELECTOR).forEach(el => {
-    let view = new View(el, socket)
-    view.join()
-  })
+
+let isChild = (node) => {
+  return node.getAttribute && node.getAttribute(PHX_PARENT_ID)
 }
 
 let patchDom = (view, container, id, html) => {
@@ -111,14 +131,35 @@ let patchDom = (view, container, id, html) => {
   morphdom(container, div, {
     childrenOnly: true,
     onBeforeNodeAdded: function(el){
+      //input handling
       discardError(el)
       return el
     },
     onNodeAdded: function(el){
+      // nested view handling
+      if(isChild(el)){
+        setTimeout(() => view.liveSocket.joinView(el, view), 1)
+        return true
+      }
+
+      //input handling
       handleClick(el, view)
       handleKeyup(el, view)
     },
+    onBeforeNodeDiscarded: function(el){
+      // nested view handling
+      if(isChild(el)){
+        view.liveSocket.destroyViewById(el.id)
+        return true
+      }
+    },
     onBeforeElUpdated: function(fromEl, toEl) {
+      // nested view handling
+      if(isChild(toEl)){
+        return false
+      }
+
+      // input handling
       if(fromEl.getAttribute && fromEl.getAttribute(PHX_HAS_SUBMITTED)){
         toEl.setAttribute(PHX_HAS_SUBMITTED, true)
       }
@@ -135,30 +176,44 @@ let patchDom = (view, container, id, html) => {
     }
   })
 
-  if(focused.value === ""){ focused.blur()}
-  focused.focus()
-  if(focused.setSelectionRange && focused.type === "text" || focused.type === "textarea"){
-    window.focused = focused
-    focused.setSelectionRange(selectionStart, selectionEnd)
+  if(isTextualInput(focused)){
+    if(focused.value === ""){ focused.blur()}
+    focused.focus()
+    if(focused.setSelectionRange && focused.type === "text" || focused.type === "textarea"){
+      focused.setSelectionRange(selectionStart, selectionEnd)
+    }
   }
   document.dispatchEvent(new Event("phx:update"))
 }
 
+let isTextualInput = (el) => {
+  return FOCUSABLE_INPUTS.indexOf(el.type) >= 0
+}
+
 class View {
-  constructor(el, socket){
+  constructor(el, liveSocket, parentView){
+    this.liveSocket = liveSocket
+    this.parent = parentView
     this.el = el
-    window.view = this
     this.loader = this.el.nextElementSibling
     this.id = this.el.id
     this.view = this.el.getAttribute("data-view")
     this.hasBoundUI = false
-    this.joinParams = {
-      params: this.el.getAttribute(PARAMS_SELECTOR),
-      session: this.el.getAttribute(SESSION_SELECTOR)
-    }
-    this.channel = socket.channel(`views:${this.id}`, () => this.joinParams)
+    this.joinParams = {session: this.getSession()}
+    this.channel = this.liveSocket.channel(`views:${this.id}`, () => this.joinParams)
     this.loaderTimer = setTimeout(() => this.showLoader(), LOADER_TIMEOUT)
     this.bindChannel()
+  }
+
+  getSession(){
+    return this.el.getAttribute(SESSION_SELECTOR)|| this.parent.getSession()
+  }
+
+  destroy(callback){
+    this.channel.leave()
+      .receive("ok", callback)
+      .receive("error", callback)
+      .receive("timeout", callback)
   }
 
   hideLoader(){
@@ -172,7 +227,6 @@ class View {
     this.loader.style.display = "block"
     let middle = Math.floor(this.el.clientHeight / LOADER_ZOOM)
     this.loader.style.top = `-${middle}px`
-    console.log(middle)
   }
   
   update(html){
@@ -182,7 +236,7 @@ class View {
   bindChannel(){
     this.channel.on("render", ({html}) => this.update(html))
     this.channel.on("redirect", ({to, flash}) => redirect(to, flash) )
-    this.channel.on("params", ({token}) => this.joinParams.params = token)
+    this.channel.on("session", ({token}) => this.joinParams.session = token)
     this.channel.onError(() => this.onError())
   }
 
@@ -207,6 +261,7 @@ class View {
   }
 
   onError(){
+    document.activeElement.blur()
     this.showLoader()
     this.el.classList = "phx-disconnected phx-error"
   }
@@ -247,6 +302,16 @@ class View {
       id: event.target.id,
       value: serializeForm(formEl)
     })
+  }
+
+  eachChild(selector, each){
+    return this.el.querySelectorAll(selector).forEach(child => {
+      if(this.ownsElement(child)){ each(child) }
+    })
+  }
+
+  ownsElement(element){
+    return element.closest(PHX_VIEW_SELECTOR).id === this.id
   }
 }
 

@@ -19,14 +19,9 @@ defmodule DemoWeb.User.ShowView do
     """
   end
 
-
-  def authorize(%{"id" => id}, _session, socket) do
+  def init(%{params: %{"id" => id}}, socket) do
+    if connected?(socket), do: Demo.Accounts.subscribe(id)
     {:ok, fetch(assign(socket, id: id))}
-  end
-
-  def init(socket) do
-    Demo.Accounts.subscribe(socket.assigns.id)
-    {:ok, socket}
   end
 
   defp fetch(%Socket{assigns: %{id: id}} = socket) do

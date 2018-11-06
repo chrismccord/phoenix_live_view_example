@@ -5,7 +5,7 @@ defmodule DemoWeb.User.EditView do
   alias DemoWeb.Router.Helpers, as: Routes
   alias Demo.Accounts
 
-  def authorize(%{"id" => id}, _session, socket) do
+  def init(%{"id" => id}, _session, socket) do
     user = Accounts.get_user!(id)
 
     {:ok, assign(socket, %{

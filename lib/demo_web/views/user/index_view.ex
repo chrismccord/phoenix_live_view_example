@@ -4,13 +4,9 @@ defmodule DemoWeb.User.IndexView do
   alias Demo.Accounts
   alias DemoWeb.UserView
 
-  def authorize(_params, _session, socket) do
+  def init(_session, socket) do
+    if connected?(socket), do: Demo.Accounts.subscribe()
     {:ok, fetch(socket)}
-  end
-
-  def init(socket) do
-    Demo.Accounts.subscribe()
-    {:ok, socket}
   end
 
   def render(assigns), do: UserView.render("index.html", assigns)

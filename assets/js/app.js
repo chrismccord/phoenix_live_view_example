@@ -16,7 +16,7 @@ import "phoenix_html"
 // Local files can be imported directly using relative
 // paths "./socket" or full ones "web/static/js/socket".
 
-import LiveView from "./live_view"
+import LiveSocket from "./live_view"
 
-let liveview = new LiveView("/live")
-liveview.connect()
+let liveSocket = new LiveSocket("/live")
+liveSocket.connect()

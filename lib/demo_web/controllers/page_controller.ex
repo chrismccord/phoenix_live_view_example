@@ -7,6 +7,6 @@ defmodule DemoWeb.PageController do
   end
 
   def count(conn, _) do
-    Phoenix.LiveView.call(conn, Phoenix.LiveView.init(DemoWeb.ClockView))
+    Phoenix.LiveView.live_render(conn, DemoWeb.CounterView, session: %{params: conn.params})
   end
 end

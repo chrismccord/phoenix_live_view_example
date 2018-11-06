@@ -39,19 +39,17 @@ defmodule DemoWeb.RainbowView do
     end
   end
 
-  def authorize(signed_params, _session, socket) do
-    {:ok, assign(socket, %{
+  def init(_session, socket) do
+    socket = assign(socket, %{
       bg: "white",
-      fps: signed_params["fps"] || @fps,
+      fps: @fps,
       step: 0.5,
       count: 0,
       inner_window_width: @inner_window_width,
       bar_count: Enum.min([200, trunc(:math.floor(@inner_window_width / 15))])
-    })}
-  end
+    })
+    if connected?(socket), do: schedule_next_frame(socket)
 
-  def init(socket) do
-    schedule_next_frame(socket)
     {:ok, socket}
   end
 
@@ -71,11 +69,6 @@ defmodule DemoWeb.RainbowView do
 
   def handle_event("update_fps", _, %{"fps" => fps}, socket) do
     fps = String.to_integer(fps)
-    socket =
-      socket
-      |> assign(fps: fps)
-      |> push_params(%{"fps" => fps})
-
-    {:noreply, socket}
+    {:noreply, assign(socket, :fps, fps)}
   end
 end

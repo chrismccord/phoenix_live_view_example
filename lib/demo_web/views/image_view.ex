@@ -1,4 +1,4 @@
-defmodule DemoWeb.BoomView do
+defmodule DemoWeb.ImageView do
   use Phoenix.LiveView
 
   def radio_tag(name, field_val, checked_val) do
@@ -27,7 +27,7 @@ defmodule DemoWeb.BoomView do
     """
   end
 
-  def authorize(_params, _session, socket) do
+  def init(_session, socket) do
     {:ok, assign(socket, width: 100, bg: "white")}
   end
 

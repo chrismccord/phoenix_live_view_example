@@ -14,7 +14,7 @@ defmodule DemoWeb.SearchView do
     """
   end
 
-  def authorize(_params, _session, socket) do
+  def init(_session, socket) do
     {:ok, assign(socket, query: "", suggestions: [])}
   end
 
