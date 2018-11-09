@@ -4,7 +4,7 @@ defmodule DemoWeb.User.IndexView do
   alias Demo.Accounts
   alias DemoWeb.UserView
 
-  def init(_session, socket) do
+  def mount(_session, socket) do
     if connected?(socket), do: Demo.Accounts.subscribe()
     {:ok, fetch(socket)}
   end

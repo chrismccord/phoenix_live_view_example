@@ -3,16 +3,18 @@ import morphdom from "morphdom"
 
 const PHX_VIEW_SELECTOR = "[data-phx-view]"
 const PHX_PARENT_ID = "data-phx-parent-id"
-const PHX_HAS_FOCUSED = "phx-has-focused"
-const PHX_BOUND = "phx-bound"
+const PHX_HAS_FOCUSED = "data-phx-has-focused"
+const PHX_BOUND = "data-phx-bound"
 const FOCUSABLE_INPUTS = ["text", "textarea", "password"]
-const PHX_HAS_SUBMITTED = "phx-has-submitted"
-const SESSION_SELECTOR = "data-session"
+const PHX_HAS_SUBMITTED = "data-phx-has-submitted"
+const SESSION_SELECTOR = "data-phx-session"
 const LOADER_TIMEOUT = 100
 const LOADER_ZOOM = 2
+const BINDING_PREFIX = "phx-"
 
 export default class LiveSocket {
-  constructor(url, opts){
+  constructor(url, opts = {}){
+    this.bindingPrefix = opts.bindingPrefix || BINDING_PREFIX
     this.url = url
     this.opts = opts
     this.views = {}
@@ -50,144 +52,106 @@ export default class LiveSocket {
     if(!view){ throw `cannot destroy view for id ${id} as it does not exist` }
     view.destroy(() => delete this.views[view.id])
   }
+
+  getBindingPrefix(){ return this.bindingPrefix }
 }
 
-let setCookie = (name, value) => {
-  document.cookie = `${name}=${value}`
-}
+let Browser = {
+  setCookie(name, value){
+    document.cookie = `${name}=${value}`
+  },
 
-let getCookie = (name) => {
-  return document.cookie.replace(new RegExp(`(?:(?:^|.*;\s*)${name}\s*\=\s*([^;]*).*$)|^.*$`), "$1")
-}
+  getCookie(name){
+    return document.cookie.replace(new RegExp(`(?:(?:^|.*;\s*)${name}\s*\=\s*([^;]*).*$)|^.*$`), "$1")
+  },
 
-let serializeForm = (form) => {
-  return((new URLSearchParams(new FormData(form))).toString())
-}
-
-let redirect = (toURL, flash) => {
-  if(flash){ setCookie("__phoenix_flash__", flash + "; max-age=60000; path=/") }
-  window.location = toURL
-}
-
-let handleClick = (el, view, from) => {
-  let phxEvent = el.getAttribute && el.getAttribute("phx-click")
-  if(phxEvent && !el.getAttribute(PHX_BOUND) && view.ownsElement(el)){ 
-    el.setAttribute(PHX_BOUND, true)
-    el.addEventListener("click", e => view.pushClick(el, e, phxEvent))
-  }
-}
-
-let handleKeyup = (el, view) => {
-  let phxEvent = el.getAttribute && el.getAttribute("phx-keyup")
-  if(phxEvent && view.ownsElement(el)){
-    el.addEventListener("keyup", e => view.pushKeyup(el, e, phxEvent))
-  }
-}
-
-let bindUI = function(view) {
-  view.eachChild("form[phx-change] input", input => {
-    let phxEvent = input.form.getAttribute("phx-change")
-    input.addEventListener("input", e => {
-      if(isTextualInput(input)){ input.setAttribute(PHX_HAS_FOCUSED, true) }
-      view.pushInput(input, e, phxEvent)
-    })
-  })
-
-  view.eachChild("form[phx-submit]", form => {
-    let phxEvent = form.getAttribute("phx-submit")
-    form.addEventListener("submit", e => {
-      e.preventDefault()
-      form.setAttribute(PHX_HAS_SUBMITTED, "true")
-      view.pushFormSubmit(form, e, phxEvent)
-    })
-  })
-
-  view.eachChild("[phx-click]", el => handleClick(el, view))
-  view.eachChild("[phx-keyup]", el => handleKeyup(el, view))
-}
-
-let discardError = (el) => {
-  let field = el.getAttribute && el.getAttribute("phx-error-field")
-  if(!field) { return }
-  let input = document.getElementById(field)
-
-  if(field && !(input.getAttribute(PHX_HAS_FOCUSED) || input.form.getAttribute(PHX_HAS_SUBMITTED))){
-    el.style.display = "none"
+  redirect(toURL, flash){
+    if(flash){ Browser.setCookie("__phoenix_flash__", flash + "; max-age=60000; path=/") }
+    window.location = toURL
   }
 }
 
 
-let isChild = (node) => {
-  return node.getAttribute && node.getAttribute(PHX_PARENT_ID)
-}
+let DOM = {
+  discardError(el){
+    let field = el.getAttribute && el.getAttribute("phx-error-field")
+    if(!field) { return }
+    let input = document.getElementById(field)
 
-let patchDom = (view, container, id, html) => {
-  let focused = document.activeElement
-  let focusedValue = focused.value
-  let {selectionStart, selectionEnd} = focused
-  let div = document.createElement("div")
-  div.innerHTML = html
-
-  morphdom(container, div, {
-    childrenOnly: true,
-    onBeforeNodeAdded: function(el){
-      //input handling
-      discardError(el)
-      return el
-    },
-    onNodeAdded: function(el){
-      // nested view handling
-      if(isChild(el)){
-        setTimeout(() => view.liveSocket.joinView(el, view), 1)
-        return true
-      }
-
-      //input handling
-      handleClick(el, view)
-      handleKeyup(el, view)
-    },
-    onBeforeNodeDiscarded: function(el){
-      // nested view handling
-      if(isChild(el)){
-        view.liveSocket.destroyViewById(el.id)
-        return true
-      }
-    },
-    onBeforeElUpdated: function(fromEl, toEl) {
-      // nested view handling
-      if(isChild(toEl)){
-        return false
-      }
-
-      // input handling
-      if(fromEl.getAttribute && fromEl.getAttribute(PHX_HAS_SUBMITTED)){
-        toEl.setAttribute(PHX_HAS_SUBMITTED, true)
-      }
-      if(fromEl.getAttribute && fromEl.getAttribute(PHX_HAS_FOCUSED)){
-        toEl.setAttribute(PHX_HAS_FOCUSED, true)
-      }
-      discardError(toEl)
-
-      if(fromEl === focused){
-        return false
-      } else {
-        return true
-      }
+    if(field && !(input.getAttribute(PHX_HAS_FOCUSED) || input.form.getAttribute(PHX_HAS_SUBMITTED))){
+      el.style.display = "none"
     }
-  })
+  },
 
-  if(isTextualInput(focused)){
+  isPhxChild(node){
+    return node.getAttribute && node.getAttribute(PHX_PARENT_ID)
+  },
+
+  patch(view, container, id, html){
+    let focused = document.activeElement
+    let {selectionStart, selectionEnd} = focused
+    let div = document.createElement("div")
+    div.innerHTML = html
+
+    morphdom(container, div, {
+      childrenOnly: true,
+      onBeforeNodeAdded: function(el){
+        //input handling
+        DOM.discardError(el)
+        return el
+      },
+      onNodeAdded: function(el){
+        // nested view handling
+        if(DOM.isPhxChild(el)){
+          setTimeout(() => view.liveSocket.joinView(el, view), 1)
+          return true
+        }
+        view.maybeBindAddedNode(el)
+      },
+      onBeforeNodeDiscarded: function(el){
+        // nested view handling
+        if(DOM.isPhxChild(el)){
+          view.liveSocket.destroyViewById(el.id)
+          return true
+        }
+      },
+      onBeforeElUpdated: function(fromEl, toEl) {
+        // nested view handling
+        if(DOM.isPhxChild(toEl)){ return false }
+
+        // input handling
+        if(fromEl.getAttribute && fromEl.getAttribute(PHX_HAS_SUBMITTED)){
+          toEl.setAttribute(PHX_HAS_SUBMITTED, true)
+        }
+        if(fromEl.getAttribute && fromEl.getAttribute(PHX_HAS_FOCUSED)){
+          toEl.setAttribute(PHX_HAS_FOCUSED, true)
+        }
+        DOM.discardError(toEl)
+
+        if(fromEl === focused){
+          return false
+        } else {
+          return true
+        }
+      }
+    })
+
+    DOM.restoreFocus(focused, selectionStart, selectionEnd)
+    document.dispatchEvent(new Event("phx:update"))
+  },
+
+  restoreFocus(focused, selectionStart, selectionEnd){
+    if(!DOM.isTextualInput(focused)){ return }
     if(focused.value === ""){ focused.blur()}
     focused.focus()
     if(focused.setSelectionRange && focused.type === "text" || focused.type === "textarea"){
       focused.setSelectionRange(selectionStart, selectionEnd)
     }
-  }
-  document.dispatchEvent(new Event("phx:update"))
-}
+  },
 
-let isTextualInput = (el) => {
-  return FOCUSABLE_INPUTS.indexOf(el.type) >= 0
+  isTextualInput(el){
+    return FOCUSABLE_INPUTS.indexOf(el.type) >= 0
+  }
 }
 
 class View {
@@ -195,6 +159,7 @@ class View {
     this.liveSocket = liveSocket
     this.parent = parentView
     this.el = el
+    this.bindingPrefix = liveSocket.getBindingPrefix()
     this.loader = this.el.nextElementSibling
     this.id = this.el.id
     this.view = this.el.getAttribute("data-view")
@@ -230,12 +195,12 @@ class View {
   }
   
   update(html){
-    patchDom(this, this.el, this.id, html)
+    DOM.patch(this, this.el, this.id, html)
   }
 
   bindChannel(){
     this.channel.on("render", ({html}) => this.update(html))
-    this.channel.on("redirect", ({to, flash}) => redirect(to, flash) )
+    this.channel.on("redirect", ({to, flash}) => Browser.redirect(to, flash) )
     this.channel.on("session", ({token}) => this.joinParams.session = token)
     this.channel.onError(() => this.onError())
   }
@@ -249,8 +214,8 @@ class View {
   onJoin({html}){
     this.hideLoader()
     this.el.classList = "phx-connected"
-    patchDom(this, this.el, this.id, html)
-    if(!this.hasBoundUI){ bindUI(this) }
+    DOM.patch(this, this.el, this.id, html)
+    if(!this.hasBoundUI){ this.bindUI() }
     this.hasBoundUI = true
   }
 
@@ -290,7 +255,7 @@ class View {
       type: "form",
       event: phxEvent,
       id: event.target.id,
-      value: serializeForm(inputEl.form)
+      value: this.serializeForm(inputEl.form)
     })
   }
   
@@ -300,7 +265,7 @@ class View {
       type: "form",
       event: phxEvent,
       id: event.target.id,
-      value: serializeForm(formEl)
+      value: this.serializeForm(formEl)
     })
   }
 
@@ -313,5 +278,60 @@ class View {
   ownsElement(element){
     return element.closest(PHX_VIEW_SELECTOR).id === this.id
   }
+
+  bindUI(){
+    this.bindForms()
+    this.eachChild(`[${this.binding("click")}]`, el => this.bindClick(el))
+    this.eachChild(`[${this.binding("keyup")}]`, el => this.bindKeyUp(el, view))
+  }
+
+  bindClick(el){
+    let phxEvent = el.getAttribute(this.binding("click"))
+    if(phxEvent && !el.getAttribute(PHX_BOUND) && this.ownsElement(el)){
+      el.setAttribute(PHX_BOUND, true)
+      el.addEventListener("click", e => this.pushClick(el, e, phxEvent))
+    } 
+  }
+
+  bindKeyUp(el){
+    let phxEvent = el.getAttribute(this.binding("keyup"))
+    if(phxEvent){
+      el.addEventListener("keyup", e => this.pushKeyup(el, e, phxEvent))
+    }
+  }
+
+  bindForms(){
+    let change = this.binding("change")
+    this.eachChild(`form[${change}] input`, input => {
+      let phxEvent = input.form.getAttribute(change)
+      input.addEventListener("input", e => {
+      if(DOM.isTextualInput(input)){ input.setAttribute(PHX_HAS_FOCUSED, true) }
+        this.pushInput(input, e, phxEvent)
+      })
+    })
+
+    let submit = this.binding("submit")
+    this.eachChild(`form[${submit}]`, form => {
+      let phxEvent = form.getAttribute(submit)
+      form.addEventListener("submit", e => {
+        e.preventDefault()
+        form.setAttribute(PHX_HAS_SUBMITTED, "true")
+        this.pushFormSubmit(form, e, phxEvent)
+      })
+    })
+  }
+
+  maybeBindAddedNode(el){ if(!el.getAttribute){ return }
+    this.bindClick(el)
+    this.bindKeyUp(el)
+  }
+
+  binding(kind){ return `${this.bindingPrefix}${kind}` }
+
+  // private
+
+  serializeForm(form){
+   return((new URLSearchParams(new FormData(form))).toString())
+ }
 }
 

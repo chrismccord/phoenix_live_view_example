@@ -4,7 +4,7 @@ defmodule DemoWeb.User.ShowView do
 
   alias DemoWeb.Router.Helpers, as: Routes
   alias Demo.Accounts
-  alias Phoenix.Socket
+  alias Phoenix.LiveView.Socket
 
   def render(assigns) do
     ~E"""
@@ -19,7 +19,7 @@ defmodule DemoWeb.User.ShowView do
     """
   end
 
-  def init(%{params: %{"id" => id}}, socket) do
+  def mount(%{params: %{"id" => id}}, socket) do
     if connected?(socket), do: Demo.Accounts.subscribe(id)
     {:ok, fetch(assign(socket, id: id))}
   end

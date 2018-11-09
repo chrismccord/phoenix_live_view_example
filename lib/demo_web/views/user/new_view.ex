@@ -6,7 +6,7 @@ defmodule DemoWeb.User.NewView do
   alias Demo.Accounts
   alias Demo.Accounts.User
 
-  def init(_session, socket) do
+  def mount(_session, socket) do
     {:ok, assign(socket, %{
       count: 0,
       changeset: Accounts.change_user(%User{}),
