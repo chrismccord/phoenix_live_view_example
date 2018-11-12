@@ -6,9 +6,10 @@ defmodule DemoWeb.SearchView do
     <form phx-change="search">
       <input type="text" name="query" list="suggestions" placeholder="Search..."/>
       <datalist id="suggestions">
-        <%= for match <- @suggestions do %>
-          <option value="<%= match %>">
-        <% end %>
+          <%= for match <- @suggestions do %>
+            <option value="<%= match %>"><%= match %></option>
+          <% end %>
+        </select>
       </datalist>
     </form>
     """

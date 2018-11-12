@@ -1,7 +1,9 @@
 defmodule DemoWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :demo
 
-  socket "/live", Phoenix.LiveView.Socket, websocket: true
+  socket "/live", Phoenix.LiveView.Socket,
+    websocket: [serializer: [{Phoenix.LiveView.Serializer, "~> 2.0.0"}]]
+
 
   socket "/socket", DemoWeb.UserSocket,
     websocket: true,

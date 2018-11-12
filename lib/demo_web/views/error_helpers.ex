@@ -12,7 +12,7 @@ defmodule DemoWeb.ErrorHelpers do
     Enum.map(Keyword.get_values(form.errors, field), fn error ->
       content_tag(:span, translate_error(error),
         class: "help-block",
-        phx_error_field: "#{form.name}_#{field}"
+        data: [phx_error_for: input_id(form, field)]
       )
     end)
   end
