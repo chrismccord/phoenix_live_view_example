@@ -2,7 +2,7 @@ defmodule DemoWeb.CounterView do
   use Phoenix.LiveView
 
   def render(assigns) do
-    ~E"""
+    ~L"""
     <div>
       <h1 phx-click="boom">The count is: <%= @val %></h1>
       <button phx-click="boom" class="alert-danger">BOOM</button>

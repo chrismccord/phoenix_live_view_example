@@ -2,6 +2,7 @@
 
 @import "./phoenix.css";
 @import "./live_view.css";
+@import "./keyboarding.css";
 
 .animated-sin-wave {
   position: relative;

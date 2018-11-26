@@ -8,7 +8,7 @@ defmodule Demo.Application do
       Demo.Repo,
       DemoWeb.Endpoint,
       DemoWeb.DynamicSupervisor,
-      DemoWeb.Presence,
+      DemoWeb.Presence
     ]
 
     opts = [strategy: :one_for_one, name: Demo.Supervisor]

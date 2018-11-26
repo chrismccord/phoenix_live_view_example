@@ -1,0 +1,170 @@
+.keyboarding{
+	width: 840px;
+	font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 28px;
+	margin: 0 auto;
+}
+
+#doc-text span{
+	text-align: center;
+	width: 18px;
+	padding-left: 4px;
+	padding-right: 4px;
+	margin-left: 1px;
+	margin-right: 1px;
+	float: left;
+	font-size: 28px;
+	font-family: "Courier New", Courier, monospace;
+}
+.new-line{
+	clear: both;
+	border-bottom: 1px solid #dddddd;
+}
+.highlight-char{
+	background-color: #dddddd;
+}
+.underline-char{
+	margin-bottom: -2px;
+	border-bottom: 2px solid;
+}
+.dim-char{
+	color: #888888;
+}
+.mark-char{
+	background-color: #FFaabb;
+}
+.keyboarding .nav ul{
+	margin: 10px 10px 26px 10px;
+}
+.keyboarding .nav ul li{
+	display: inline;
+	font-size: 20px;
+}
+.keyboarding .nav ul li.title{
+	font-weight: bold;
+	margin-left: 20px;
+}
+
+/* keyboard */
+.keyboard{
+	clear: both;
+	float: left;
+	margin-top: 40px;
+	width: 736px;
+	background-color: #bcbdc0;
+	height: 252px;
+
+    -moz-border-radius: 10px; /* Mozilla */
+    -webkit-border-radius: 10px; /* Webkit */
+    border-radius: 10px;
+}
+.keyboard ul{
+	clear: both;
+}
+.keyboard ul li{
+	display: inline;
+	width: 40px;
+	height: 40px;
+	float: left;
+	margin: 4px;
+	line-height: 42px;
+    -moz-border-radius: 6px; /* Mozilla */
+    -webkit-border-radius: 6px; /* Webkit */
+    border-radius: 6px;
+	background-color: #f6f6f7;
+	border: 1px solid #a7a9ac;
+	text-align: center;
+	font-family: Verdana;
+	font-size: 18px;
+	color: #212121;
+	text-transform: uppercase;
+}
+.keyboard ul li.capslock_key{
+	width: 80px;
+	text-transform: lowercase;
+}
+.keyboard ul li.shift-key{
+	width: 105px;
+	text-transform: lowercase;
+}
+.keyboard ul li.tab-key{
+	width: 68px;
+	text-transform: lowercase;
+}
+.keyboard ul li.key-bottom-left{
+	font-size: 13px;
+	text-align: left;
+	text-indent: 4px;
+	line-height: 58px;
+}
+.keyboard ul li.enter_key{
+	width: 80px;
+	text-transform: lowercase;
+}
+.keyboard ul li.space-bar-key{
+	width: 402px;
+	text-transform: lowercase;
+}
+.keyboard ul li.key-bottom-right{
+	font-size: 13px;
+	text-align: right;
+	line-height: 58px;
+	padding-right: 5px;
+}
+
+.keyboard ul li p{
+	display: block;
+	font-weight: bold;
+	color: #4c4c4c;
+	position: relative;
+	top: -37px;
+}
+.top-bottom-key{
+	margin-top: 4px;
+}
+.top-bottom-key div{
+	display: block;
+	padding: 6px;
+	font-size: 14px;
+	line-height: 0;
+}
+.highlight_key{
+	background-color: #66ccff;
+}
+.hands{
+/*	filter:alpha(opacity=85);
+    -moz-opacity:0.85;
+    -khtml-opacity: 0.85;
+    opacity: 0.85;*/
+}
+.left-hand{
+	position: relative;
+	top: -144px;
+	left: 60px;
+	float: left;
+}
+.left-hand img{
+	width: 260px;
+	height: 325px;
+}
+.right_hand{
+	position: relative;
+	top: -144px;
+	left: 100px;
+	float: left;
+}
+.right_hand img{
+	width: 260px;
+	height: 325px;
+}
+.preload-hands{
+	position: absolute;
+	top: -800px;
+	left: -800px;
+}
+
+.keyboard-container{
+	width: 740px;
+	margin: 0 auto;
+}
+/* /keyboard */

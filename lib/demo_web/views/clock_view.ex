@@ -3,9 +3,9 @@ defmodule DemoWeb.ClockView do
   import Calendar.Strftime
 
   def render(assigns) do
-    ~E"""
+    ~L"""
     <div phx-click="boom">
-      <h2>It's <%= strftime!(@date, "%r") %></h2>
+      <h2>It's <%= strftime!(@date, "%r") %>(<%= @mod %>)</h2>
     </div>
     """
   end
@@ -21,6 +21,8 @@ defmodule DemoWeb.ClockView do
   end
 
   defp put_date(socket) do
-    assign(socket, date: :calendar.local_time())
+    {_, {_, _, sec}} = time = :calendar.local_time()
+
+    assign(socket, mod: rem(sec, 10) == 0, date: time)
   end
 end

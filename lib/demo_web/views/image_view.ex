@@ -11,7 +11,7 @@ defmodule DemoWeb.ImageView do
   end
 
   def render(assigns) do
-    ~E"""
+    ~L"""
     <form phx-change="update">
       <input type="range" min="10" max="630" name="width" value="<%= @width %>" />
       <%= @width %>px

@@ -6,7 +6,7 @@ defmodule DemoWeb.RainbowView do
   @inner_window_width 1200
 
   def render(assigns) do
-    ~E"""
+    ~L"""
     <h1>Silky Smooth SSR</h1>
     <h3>Fast enough to power animations <em>[on the server]</em> at <%= @fps %>FPS</h3>
     <form phx-change="update_fps">
