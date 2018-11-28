@@ -1,3 +1,5 @@
+.none { display: none; }
+
 .keyboarding{
 	width: 840px;
 	font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -16,21 +18,21 @@
 	font-size: 28px;
 	font-family: "Courier New", Courier, monospace;
 }
-.new-line{
+.nl{
 	clear: both;
 	border-bottom: 1px solid #dddddd;
 }
-.highlight-char{
+.hl{
 	background-color: #dddddd;
 }
-.underline-char{
+.ul{
 	margin-bottom: -2px;
 	border-bottom: 2px solid;
 }
-.dim-char{
+.dim{
 	color: #888888;
 }
-.mark-char{
+.mark{
 	background-color: #FFaabb;
 }
 .keyboarding .nav ul{

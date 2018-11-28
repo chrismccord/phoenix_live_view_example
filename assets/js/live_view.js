@@ -74,60 +74,60 @@ const LOADER_TIMEOUT = 100
 const LOADER_ZOOM = 2
 const BINDING_PREFIX = "phx-"
 
-let mapObj = (obj, func) => {
-  return Object.getOwnPropertyNames(obj).map(key => func(key, obj[key]))
-}
-
 let isObject = (obj) => {
   return typeof(obj) === "object" && !(obj instanceof Array)
 }
 
-let deepMerge = (target, source) => {
-  mapObj(source, (key, val) => {
-    if(isObject(val)){
-      if(!target[key]){ Object.assign(target, {[key]: {}}) }
-      deepMerge(target[key], val)
+let recursiveMerge = (target, source) => {
+  for(let key in source){
+    let val = source[key]
+    if(isObject(val) && target[key]){
+      recursiveMerge(target[key], val)
     } else {
-      Object.assign(target, {[key]: val})
+      target[key] = val
     }
-  })
-  return target
+  }
 }
 
 let Rendered = {
 
-  mergeDynamicUpdate(source, compressedDynamic){
-    deepMerge(source, this.decompressDynamic(compressedDynamic))
-  },
-
-  decompressDynamic(compressed){
-    let decompressed = {dynamic: {}}
-    if(isObject(compressed)){
-      mapObj(compressed, (key, val) => {
-        decompressed.dynamic[key] = this.decompressDynamic(val)
-      })
-    } else {
-      decompressed = compressed
-    }
-    return decompressed
-  },
+  mergeDiff(source, diff){ recursiveMerge(source, diff) },
 
   toString(rendered){
-    let {static: statics, dynamic: dynamic} = rendered
-    let output = []
-    for(let i = 0; i < statics.length; i ++){
-      output.push(statics[i] + this.dynamicToString(dynamic[i]))
-    }
-    return output.join("")
+    let output = {buffer: ""}
+    this.toOutputBuffer(rendered, output)
+    return output.buffer
   },
 
-  dynamicToString(rendered){
-    if(!rendered){
-      return ""
-    } else if(rendered.dynamic){
-      return this.toString(rendered)
+  toOutputBuffer(rendered, output){
+    if(rendered.dynamics){ return this.comprehensionToBuffer(rendered, output) }
+    let {static: statics} = rendered
+    
+    output.buffer += statics[0]
+    for(let i = 1; i < statics.length; i++){
+      this.dynamicToBuffer(rendered[i - 1], output)
+      output.buffer += statics[i]
+    }
+  },
+
+  comprehensionToBuffer(rendered, output){
+    let {dynamics: dynamics, static: statics} = rendered
+
+    for(let d = 0; d < dynamics.length; d++){
+      let dynamic = dynamics[d]
+      output.buffer += statics[0]
+      for(let i = 1; i < statics.length; i++){
+        this.dynamicToBuffer(dynamic[i - 1], output)
+        output.buffer += statics[i]
+      }
+    }
+  },
+
+  dynamicToBuffer(rendered, output){
+    if(isObject(rendered)){
+      this.toOutputBuffer(rendered, output)
     } else {
-      return rendered
+      output.buffer += rendered
     }
   }
 }
@@ -138,12 +138,13 @@ export default class LiveSocket {
     this.url = url
     this.opts = opts
     this.views = {}
+    this.activeElement = null
     this.socket = new Socket(url, opts)
   }
 
   connect(){
     if(["complete", "loaded","interactive"].indexOf(document.readyState) >= 0){
-      joinViewChannels()
+      this.joinViewChannels()
     } else {
       document.addEventListener("DOMContentLoaded", () => {
         this.joinViewChannels()
@@ -174,6 +175,24 @@ export default class LiveSocket {
   }
 
   getBindingPrefix(){ return this.bindingPrefix }
+
+  setActiveElement(target){
+    if(this.activeElement === target){ return }
+    this.activeElement = target
+    let cancel = () => {
+      if(target === this.activeElement){ this.activeElement = null }
+    }
+    target.addEventListener("mouseup", cancel)
+    target.addEventListener("touchend", cancel)
+  }
+
+  getActiveElement(){
+    if(document.activeElement === document.body){
+      return this.activeElement || document.activeElement
+    } else {
+      return document.activeElement
+    }
+  }
 }
 
 let Browser = {
@@ -191,8 +210,8 @@ let Browser = {
   }
 }
 
-
 let DOM = {
+
   discardError(el){
     let field = el.getAttribute && el.getAttribute(PHX_ERROR_FOR)
     if(!field) { return }
@@ -208,12 +227,15 @@ let DOM = {
   },
 
   patch(view, container, id, html){
-    let focused = document.activeElement
-    let {selectionStart, selectionEnd} = focused
-    let div = document.createElement("div")
-    div.innerHTML = html
+    let focused = view.liveSocket.getActiveElement()
+    let selectionStart = null
+    let selectionEnd = null
+    if(DOM.isTextualInput(focused)){
+      selectionStart = focused.selectionStart
+      selectionEnd = focused.selectionEnd
+    }
 
-    morphdom(container, div, {
+    morphdom(container, `<div>${html}</div>`, {
       childrenOnly: true,
       onBeforeNodeAdded: function(el){
         //input handling
@@ -316,15 +338,25 @@ class View {
     this.loader.style.top = `-${middle}px`
   }
   
-  update(compressedDynamic){
-    console.log("update", JSON.stringify(compressedDynamic))
-    Rendered.mergeDynamicUpdate(this.rendered, compressedDynamic)
+  onJoin({rendered}){
+    // console.log("join", JSON.stringify(rendered))
+    this.rendered = rendered
+    this.hideLoader()
+    this.el.classList = PHX_CONNECTED_CLASS
+    DOM.patch(this, this.el, this.id, Rendered.toString(this.rendered))
+    if(!this.hasBoundUI){ this.bindUI() }
+    this.hasBoundUI = true
+  }
+
+  update(diff){
+    console.log("update", JSON.stringify(diff))
+    Rendered.mergeDiff(this.rendered, diff)
     let html = Rendered.toString(this.rendered)
     DOM.patch(this, this.el, this.id, html)
   }
 
   bindChannel(){
-    this.channel.on("render", (dynamic) => this.update(dynamic))
+    this.channel.on("render", (diff) => this.update(diff))
     this.channel.on("redirect", ({to, flash}) => Browser.redirect(to, flash) )
     this.channel.on("session", ({token}) => this.joinParams.session = token)
     this.channel.onError(() => this.onError())
@@ -334,16 +366,6 @@ class View {
     this.channel.join()
       .receive("ok", data => this.onJoin(data))
       .receive("error", resp => this.onJoinError(resp))
-  }
-
-  onJoin({rendered}){
-    console.log("join", JSON.stringify(rendered))
-    this.rendered = rendered
-    this.hideLoader()
-    this.el.classList = PHX_CONNECTED_CLASS
-    DOM.patch(this, this.el, this.id, Rendered.toString(this.rendered))
-    if(!this.hasBoundUI){ this.bindUI() }
-    this.hasBoundUI = true
   }
 
   onJoinError(resp){
@@ -377,7 +399,7 @@ class View {
       type: `key${kind}`,
       event: phxEvent,
       id: event.target.id,
-      value: keyElement.value || event.keyCode
+      value: keyElement.value || event.key
     })
   }
 
@@ -442,7 +464,11 @@ class View {
     this.eachChild(`form[${change}] input`, input => {
       let phxEvent = input.form.getAttribute(change)
       this.onInput(input, e => {
-        if(DOM.isTextualInput(input)){ input.setAttribute(PHX_HAS_FOCUSED, true) }
+        if(DOM.isTextualInput(input)){
+          input.setAttribute(PHX_HAS_FOCUSED, true)
+        } else {
+          this.liveSocket.setActiveElement(e.target)
+        }
         this.pushInput(input, e, phxEvent)
       })
     })

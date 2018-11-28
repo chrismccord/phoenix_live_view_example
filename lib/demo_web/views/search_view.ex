@@ -2,14 +2,13 @@ defmodule DemoWeb.SearchView do
   use Phoenix.LiveView
 
   def render(assigns) do
-    ~E"""
+    ~L"""
     <form phx-change="search">
       <input type="text" name="query" list="suggestions" placeholder="Search..."/>
       <datalist id="suggestions">
-          <%= for match <- @suggestions do %>
-            <option value="<%= match %>"><%= match %></option>
-          <% end %>
-        </select>
+        <%= for match <- @suggestions do %>
+          <option value="<%= match %>"><%= match %></option>
+        <% end %>
       </datalist>
     </form>
     """

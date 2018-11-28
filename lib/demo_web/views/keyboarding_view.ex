@@ -3,6 +3,8 @@ defmodule DemoWeb.KeyboardingView do
 
   def render(assigns), do: DemoWeb.PageView.render("keyboard.html", assigns)
 
+  @chars_per_line 30
+
   @meta_keys ["Meta", "Shift", "Escape", "Control", "Alt", "Backspace"]
 
   @fingers %{
@@ -63,6 +65,7 @@ defmodule DemoWeb.KeyboardingView do
         incorrect_count: 0
       )
       |> assign_active_digit()
+      |> populate_chars()
       |> tick()
 
     {:ok, socket}
@@ -111,10 +114,12 @@ defmodule DemoWeb.KeyboardingView do
     |> update(:index, &(&1 + 1))
     |> maybe_proceed_to_next_lesson()
     |> assign_active_digit()
+    |> populate_chars()
   end
 
   defp mark_correct(socket, current_char, typed_char) do
     if current_char == typed_char do
+      IO.inspect({:correct, current_char, typed_char})
       update(socket, :correct_count, &(&1 + 1))
     else
       socket
@@ -166,4 +171,59 @@ defmodule DemoWeb.KeyboardingView do
       trunc((max(correct, 1) / max(correct + incorrect, 1)) * 100)
     end)
   end
+
+  defp populate_chars(socket) do
+    user_index = socket.assigns.index
+    incorrect = socket.assigns.incorrect_indexes
+
+    {_idx, _len, chars} =
+      socket.assigns.chapter_text
+      |> String.split(" ")
+      |> Enum.reduce({0, 0, []}, fn word, {idx, len, acc} ->
+        word_len = String.length(word)
+
+        word
+        |> String.codepoints()
+        |> Enum.reduce({idx, len, acc}, fn
+          char, {idx, :break, acc} ->
+            {idx + 1, :break, [build_char(char, idx, user_index, incorrect) | acc]}
+
+          char, {idx, len, acc} ->
+            new_acc = [build_char(char, idx, user_index, incorrect) | acc]
+            if word_len + len >= @chars_per_line do
+              {idx + 1, :break, new_acc}
+            else
+              {idx + 1, len + 1, new_acc}
+            end
+        end)
+        |> append_space(user_index, incorrect)
+      end)
+
+    assign(socket, :chars, Enum.reverse(chars))
+  end
+
+  defp append_space({idx, :break, acc}, idx, incorrect) do
+    {idx + 1, 0, [build_char(" ", idx, idx, incorrect, %{newline: true}) | acc]}
+  end
+  defp append_space({idx, :break, acc}, user_index, incorrect) do
+    {idx + 1, 0, [build_char(nil, idx, user_index, incorrect, %{newline: true}) | acc]}
+  end
+  defp append_space({idx, len, acc}, idx, incorrect) do
+    {idx + 1, len, [build_char(" ", idx, idx, incorrect) | acc]}
+  end
+  defp append_space({idx, len, acc}, user_index, incorrect) do
+    {idx + 1, len, [build_char(" ", idx, user_index, incorrect) | acc]}
+  end
+
+  defp build_char(text, idx, user_index, incorrect_indexes, attrs \\ %{}) do
+    Map.merge(%{
+      text: char_text(text),
+      dim: user_index > idx,
+      highlight: user_index == idx,
+      newline: false,
+      mark: text not in [" ", nil] && MapSet.member?(incorrect_indexes, idx),
+    }, attrs)
+  end
+  defp char_text(" "), do: raw("&nbsp;")
+  defp char_text(val), do: val
 end

@@ -13,7 +13,10 @@ defmodule DemoWeb.RainbowView do
       <input type="range" min="1" max="100" value="<%= @fps %>" name="fps"/>
     </form>
     <div class="animated-sin-wave" phx-click="switch" style="background: <%= @bg %>;">
-      <%= render_rainbow(assigns) %>
+      <%= for bar <- @bars do %>
+        <div class="bar" id="<%= bar.id %>" style="width: <%= bar.width %>%; left: <%= bar.x %>%; transform: scale(0.8,.5) translateY(<%= bar.translate_y %>%) rotate(<%= bar.rotation %>deg); background-color: hsl(<%= bar.hue %>,95%,55%);">
+        </div>
+      <% end %>
     </div>
     <br/>
     <h3>
@@ -25,29 +28,39 @@ defmodule DemoWeb.RainbowView do
     """
   end
 
-  defp render_rainbow(%{count: count, bar_count: bar_count}) do
+  defp assign_bars(socket) do
+    bar_count = socket.assigns.bar_count
+    count = socket.assigns.count
     bar_width = 100 / bar_count
 
-    for i <- 0..bar_count do
-      translate_y = :math.sin(count / 10 + i / 5) * 100 * 0.5
-      hue = rem(trunc(360 / bar_count * i - count), 360)
-      color = "hsl(#{hue},95%,55%)"
-      rotation = rem(trunc(count + i), 360)
-      bar_x = bar_width * i
-      style = "width: #{bar_width}%; left: #{bar_x}%; transform: scale(0.8,.5) translateY(#{translate_y}%) rotate(#{rotation}deg); background-color: #{color};"
-      ~E|<div class="bar" style="<%= style %>"></div>|
-    end
+    bars =
+      for i <- 0..bar_count do
+        %{
+          id: "bar#{System.unique_integer([:positive])}",
+          x: bar_width * i,
+          translate_y: :math.sin(count / 10 + i / 5) * 100 * 0.5,
+          rotation: rem(trunc(count + i), 360),
+          width: bar_width,
+          hue: rem(trunc(360 / bar_count * i - count), 360)
+        }
+      end
+
+    assign(socket, bars: bars)
   end
 
   def mount(_session, socket) do
-    socket = assign(socket, %{
-      bg: "white",
-      fps: @fps,
-      step: 0.5,
-      count: 0,
-      inner_window_width: @inner_window_width,
-      bar_count: Enum.min([200, trunc(:math.floor(@inner_window_width / 15))])
-    })
+    socket =
+      socket
+      |> assign(%{
+        bg: "white",
+        fps: @fps,
+        step: 0.5,
+        count: 0,
+        inner_window_width: @inner_window_width,
+        bar_count: Enum.min([200, trunc(:math.floor(@inner_window_width / 15))])
+      })
+      |> assign_bars()
+
     if connected?(socket), do: schedule_next_frame(socket)
 
     {:ok, socket}
@@ -60,7 +73,13 @@ defmodule DemoWeb.RainbowView do
   def handle_info(:next_frame, socket) do
     schedule_next_frame(socket)
     %{count: count, step: step} = socket.assigns
-    {:noreply, assign(socket, count: count + step)}
+
+    socket =
+      socket
+      |> assign(count: count + step)
+      |> assign_bars()
+
+    {:noreply, socket}
   end
 
   def handle_event("switch", _id, _val, %{assigns: assigns} = socket) do

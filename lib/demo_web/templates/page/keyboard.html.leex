@@ -9,12 +9,11 @@
     </ul>
   </div>
   <div id="doc-text">
-    <%= each_char @socket, fn text, idx -> %>
-      <%= if idx == @index do %>
-        <span data-char class="highlight-char underline-char"><%= text %></span>
-      <% else %>
-        <span data-char class="<%= char_class(@socket, idx) %>"><%= text %></span>
-      <% end %>
+    <%= for char <- @chars do %>
+      <span data-char class="<%= if char.highlight, do: "hl ul " %><%= if char.dim, do: "dim " %><%= if char.mark, do: "mark " %>">
+        <%= char.text %>
+      </span>
+      <div class="<%= if char.newline, do: "nl", else: "none" %>"></div>
     <% end %>
   </div>
   <div id="chars-typed"></div>

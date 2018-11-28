@@ -6,6 +6,9 @@ defmodule DemoWeb.ClockView do
     ~L"""
     <div phx-click="boom">
       <h2>It's <%= strftime!(@date, "%r") %>(<%= @mod %>)</h2>
+      <%= for name <- @names do %>
+        <br/><%= name %>
+      <% end %>
     </div>
     """
   end
@@ -23,6 +26,6 @@ defmodule DemoWeb.ClockView do
   defp put_date(socket) do
     {_, {_, _, sec}} = time = :calendar.local_time()
 
-    assign(socket, mod: rem(sec, 10) == 0, date: time)
+    assign(socket, mod: rem(sec, 10) == 0, date: time, names: ["max", "chris", to_string(rem(sec, 10) == 0)])
   end
 end

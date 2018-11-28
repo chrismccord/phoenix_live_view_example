@@ -24,6 +24,7 @@ defmodule DemoWeb.ImageView do
     <button phx-click="boom">boom</button>
     <br/>
     <img src="/images/phx.png" width="<%= @width %>" style="background: <%= @bg %>;" />
+    <%= if @width > 200, do: DemoWeb.PageView.render("px.html", px: @width) %>
     """
   end
 
