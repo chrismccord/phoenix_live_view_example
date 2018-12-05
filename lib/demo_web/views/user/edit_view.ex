@@ -17,7 +17,7 @@ defmodule DemoWeb.User.EditView do
 
   def render(assigns), do: UserView.render("edit.html", assigns)
 
-  def handle_event("validate", _id, %{"user" => params}, socket) do
+  def handle_event("validate", %{"user" => params}, socket) do
     changeset =
       socket.assigns.user
       |> Demo.Accounts.change_user(params)
@@ -26,7 +26,7 @@ defmodule DemoWeb.User.EditView do
     {:noreply, assign(socket, changeset: changeset)}
   end
 
-  def handle_event("save", _id, %{"user" => user_params}, socket) do
+  def handle_event("save", %{"user" => user_params}, socket) do
     case Accounts.update_user(socket.assigns.user, user_params) do
       {:ok, user} ->
         socket

@@ -7,7 +7,7 @@ defmodule DemoWeb.User.ShowView do
   alias Phoenix.LiveView.Socket
 
   def render(assigns) do
-    ~E"""
+    ~L"""
     <h2>Show User</h2>
     <ul>
       <li><b>Username:</b> <%= @user.username %></li>

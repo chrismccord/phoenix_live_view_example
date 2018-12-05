@@ -32,7 +32,7 @@ defmodule DemoWeb.ImageView do
     {:ok, assign(socket, width: 100, bg: "white")}
   end
 
-  def handle_event("update", _, %{"width" => width, "bg" => bg}, socket) do
+  def handle_event("update", %{"width" => width, "bg" => bg}, socket) do
     {:noreply, assign(socket, width: String.to_integer(width), bg: bg)}
   end
 end

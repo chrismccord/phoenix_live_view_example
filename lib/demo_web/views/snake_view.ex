@@ -65,41 +65,33 @@ defmodule DemoWeb.SnakeView do
           <option value="500" <%= if @tick == 500, do: "selected" %>>500</option>
         </select>
         <input type="range" min="5" max="50" name="width" value="<%= @width %>" />
-        <button phx-click="smaller">-</button>
-        <button phx-click="bigger">+</button>
         <%= @width %>px
       </form>
     </div>
     <div class="snake-container" phx-keydown="keydown" phx-target="window">
-      <div class="dpad">
-        <div class="control up"><a href="#" phx-click="keydown" phx-value="ArrowUp">➤</a></div>
-        <div class="control down"><a href="#" phx-click="keydown" phx-value="ArrowDown">➤</a></div>
-        <div class="control left"><a href="#" phx-click="keydown" phx-value="ArrowLeft">➤</a></div>
-        <div class="control right"><a href="#"phx-click="keydown" phx-value="ArrowRight">➤</a></div>
-      </div>
       <h3 class="score" style="font-size: <%= @width %>px;">SCORE:&nbsp;<%= @score %></h3>
       <%= for block <- @compacted_tail do %>
         <div class="block tail"
             style="left: <%= block.x %>px;
-                    top: <%= block.y %>px;
-                    width: <%= block.width %>px;
-                    height: <%= block.height %>px;
+                   top: <%= block.y %>px;
+                   width: <%= block.width %>px;
+                   height: <%= block.height %>px;
         "></div>
       <% end %>
       <%= for {row, col} <- @cherries do %>
         <div class="block cherry"
             style="left: <%= x(col, @width) %>px;
-                    top: <%= y(row, @width) %>px;
-                    width: <%= @width %>px;
-                    height: <%= @width %>px;
+                   top: <%= y(row, @width) %>px;
+                   width: <%= @width %>px;
+                   height: <%= @width %>px;
         "></div>
       <% end %>
       <%= for {_, block} <- @blocks, block.type !== :empty do %>
         <div class="block <%= block.type %>"
             style="left: <%= block.x %>px;
-                    top: <%= block.y %>px;
-                    width: <%= block.width %>px;
-                    height: <%= block.width %>px;
+                   top: <%= block.y %>px;
+                   width: <%= block.width %>px;
+                   height: <%= block.width %>px;
         "></div>
       <% end %>
     </div>
@@ -130,7 +122,6 @@ defmodule DemoWeb.SnakeView do
       socket
       |> assign(defaults)
       |> build_board()
-      |> game_loop()
       |> compact_tail()
 
     if connected?(new_socket) do
@@ -138,13 +129,6 @@ defmodule DemoWeb.SnakeView do
     else
       new_socket
     end
-  end
-
-  def handle_event("smaller", _, socket) do
-    {:noreply, update_size(socket, socket.assigns.width - 5)}
-  end
-  def handle_event("bigger", _, socket) do
-    {:noreply, update_size(socket, socket.assigns.width + 5)}
   end
 
   def handle_event("update_size", %{"width" => width}, socket) do
@@ -189,45 +173,6 @@ defmodule DemoWeb.SnakeView do
   defp turn(socket, _, _), do: socket
 
   defp go(socket, heading), do: assign(socket, pending_heading: heading)
-
-  defp build_board(socket) do
-    width = socket.assigns.width
-
-    {_, blocks} =
-      Enum.reduce(@board, {0, %{}}, fn row, {y_idx, acc} ->
-        {_, blocks} =
-          Enum.reduce(row, {0, acc}, fn
-            "X", {x_idx, acc} ->
-              {x_idx + 1, Map.put(acc, {y_idx, x_idx}, wall(x_idx, y_idx, width))}
-
-            "0", {x_idx, acc} ->
-              {x_idx + 1, Map.put(acc, {y_idx, x_idx}, empty(x_idx, y_idx, width))}
-          end)
-
-        {y_idx + 1, blocks}
-      end)
-
-    assign(socket, :blocks, blocks)
-  end
-  defp wall(x_idx, y_idx, width) do
-    %{type: :wall, x: x_idx * width, y: y_idx * width, width: width}
-  end
-  defp empty(x_idx, y_idx, width) do
-    %{type: :empty, x: x_idx * width, y: y_idx * width, width: width}
-  end
-
-  defp place_cherries(socket, count) do
-    Enum.reduce(0..(count - 1), socket, fn _, acc -> place_random_cherry(acc) end)
-  end
-  def place_random_cherry(socket) do
-    place_cherry(socket, Enum.random(0..(@board_rows - 1)), Enum.random(0..(@board_cols - 1)))
-  end
-  defp place_cherry(socket, row, col) do
-    case block(socket, row, col) do
-      :empty -> assign(socket, :cherries, [{row, col} | socket.assigns.cherries])
-      _ -> place_random_cherry(socket)
-    end
-  end
 
   defp game_loop(%{assigns: %{pending_heading: :stationary}} = socket), do: socket
   defp game_loop(socket) do
@@ -304,6 +249,45 @@ defmodule DemoWeb.SnakeView do
   defp y(y, width), do: y * width
 
   defp coord(socket), do: {socket.assigns.row, socket.assigns.col}
+
+  defp build_board(socket) do
+    width = socket.assigns.width
+
+    {_, blocks} =
+      Enum.reduce(@board, {0, %{}}, fn row, {y_idx, acc} ->
+        {_, blocks} =
+          Enum.reduce(row, {0, acc}, fn
+            "X", {x_idx, acc} ->
+              {x_idx + 1, Map.put(acc, {y_idx, x_idx}, wall(x_idx, y_idx, width))}
+
+            "0", {x_idx, acc} ->
+              {x_idx + 1, Map.put(acc, {y_idx, x_idx}, empty(x_idx, y_idx, width))}
+          end)
+
+        {y_idx + 1, blocks}
+      end)
+
+    assign(socket, :blocks, blocks)
+  end
+  defp wall(x_idx, y_idx, width) do
+    %{type: :wall, x: x_idx * width, y: y_idx * width, width: width}
+  end
+  defp empty(x_idx, y_idx, width) do
+    %{type: :empty, x: x_idx * width, y: y_idx * width, width: width}
+  end
+
+  defp place_cherries(socket, count) do
+    Enum.reduce(0..(count - 1), socket, fn _, acc -> place_random_cherry(acc) end)
+  end
+  def place_random_cherry(socket) do
+    place_cherry(socket, Enum.random(0..(@board_rows - 1)), Enum.random(0..(@board_cols - 1)))
+  end
+  defp place_cherry(socket, row, col) do
+    case block(socket, row, col) do
+      :empty -> assign(socket, :cherries, [{row, col} | socket.assigns.cherries])
+      _ -> place_random_cherry(socket)
+    end
+  end
 
   defp compact([{row, col} | tail], width) do
     {_, _, compacted} =

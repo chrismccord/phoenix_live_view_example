@@ -82,11 +82,11 @@ defmodule DemoWeb.RainbowView do
     {:noreply, socket}
   end
 
-  def handle_event("switch", _id, _val, %{assigns: assigns} = socket) do
+  def handle_event("switch",  _val, %{assigns: assigns} = socket) do
     {:noreply, assign(socket, step: assigns.step * -1)}
   end
 
-  def handle_event("update_fps", _, %{"fps" => fps}, socket) do
+  def handle_event("update_fps", %{"fps" => fps}, socket) do
     fps = String.to_integer(fps)
     {:noreply, assign(socket, :fps, fps)}
   end

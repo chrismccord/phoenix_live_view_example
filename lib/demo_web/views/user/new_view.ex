@@ -15,7 +15,8 @@ defmodule DemoWeb.User.NewView do
 
   def render(assigns), do: UserView.render("new.html", assigns)
 
-  def handle_event("validate", _id, %{"user" => params}, socket) do
+  def handle_event("validate", %{"user" => params}, socket) do
+    IO.inspect(params)
     changeset =
       %User{}
       |> Demo.Accounts.change_user(params)
@@ -24,7 +25,7 @@ defmodule DemoWeb.User.NewView do
     {:noreply, assign(socket, changeset: changeset)}
   end
 
-  def handle_event("save", _id, %{"user" => user_params}, socket) do
+  def handle_event("save", %{"user" => user_params}, socket) do
     case Accounts.create_user(user_params) do
       {:ok, user} ->
         socket

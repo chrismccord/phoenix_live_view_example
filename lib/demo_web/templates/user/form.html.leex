@@ -10,7 +10,7 @@
   <%= error_tag f, :username %>
 
   <%= label f, :email %>
-  <%= text_input f, :email %>
+  <%= text_input f, :email, oninput: "return Email.upcase(event)" %>
   <%= error_tag f, :email %>
 
   <%= label f, :phone_number %>
