@@ -359,7 +359,7 @@ class View {
   }
 
   update(diff){
-    // console.log("update", JSON.stringify(diff))
+    console.log("update", JSON.stringify(diff))
     Rendered.mergeDiff(this.rendered, diff)
     let html = Rendered.toString(this.rendered)
     DOM.patch(this, this.el, this.id, html)

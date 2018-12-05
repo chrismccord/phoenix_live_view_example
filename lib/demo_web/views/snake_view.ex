@@ -78,12 +78,12 @@ defmodule DemoWeb.SnakeView do
         <div class="control right"><a href="#"phx-click="keydown" phx-value="ArrowRight">➤</a></div>
       </div>
       <h3 class="score" style="font-size: <%= @width %>px;">SCORE:&nbsp;<%= @score %></h3>
-      <%= for {row, col} <- [{@row, @col} | @tail] do %>
+      <%= for block <- @compacted_tail do %>
         <div class="block tail"
-            style="left: <%= x(col, @width) %>px;
-                    top: <%= y(row, @width) %>px;
-                    width: <%= @width %>px;
-                    height: <%= @width %>px;
+            style="left: <%= block.x %>px;
+                    top: <%= block.y %>px;
+                    width: <%= block.width %>px;
+                    height: <%= block.height %>px;
         "></div>
       <% end %>
       <%= for {row, col} <- @cherries do %>
@@ -117,6 +117,7 @@ defmodule DemoWeb.SnakeView do
       heading: :stationary,
       pending_heading: :stationary,
       width: @width,
+      compacted_tail: [],
       tick: @tick,
       row: 1,
       col: 6,
@@ -130,9 +131,10 @@ defmodule DemoWeb.SnakeView do
       |> assign(defaults)
       |> build_board()
       |> game_loop()
+      |> compact_tail()
 
     if connected?(new_socket) do
-      place_cherries(new_socket, 2)
+      place_cherries(new_socket, 10)
     else
       new_socket
     end
@@ -164,6 +166,7 @@ defmodule DemoWeb.SnakeView do
       socket
       |> assign(:tick, tick)
       |> game_loop()
+      |> compact_tail()
 
     {:noreply, new_socket}
   end
@@ -172,6 +175,7 @@ defmodule DemoWeb.SnakeView do
     socket
     |> assign(width: width)
     |> build_board()
+    |> compact_tail()
   end
 
   defp turn(socket, :right, "ArrowLeft"), do: socket
@@ -258,6 +262,11 @@ defmodule DemoWeb.SnakeView do
     end
   end
 
+  defp compact_tail(socket) do
+    tail = compact([coord(socket) | socket.assigns.tail], socket.assigns.width)
+    assign(socket, :compacted_tail, tail)
+  end
+
   def handle_collision(socket, :wall), do: game_over(socket)
   def handle_collision(socket, :tail), do: game_over(socket)
   def handle_collision(socket, :cherry), do: level_up(socket)
@@ -295,4 +304,29 @@ defmodule DemoWeb.SnakeView do
   defp y(y, width), do: y * width
 
   defp coord(socket), do: {socket.assigns.row, socket.assigns.col}
+
+  defp compact([{row, col} | tail], width) do
+    {_, _, compacted} =
+      Enum.reduce(tail, {row, col, [{:horizontal, row, [col]}]}, fn
+        {row, new_col}, {row, _prev_col, [{:horizontal, row, cols} | acc]} ->
+          {row, new_col, [{:horizontal, row, [new_col | cols]} | acc]}
+
+        {new_row, col}, {_prev_row, col, [{:vertical, rows, col} | acc]} ->
+          {new_row, col, [{:vertical, [new_row | rows], col} | acc]}
+
+        {row, new_col}, {row, _prev_col, [{:vertical, _rows, _col} | _] = acc} ->
+          {row, new_col, [{:horizontal, row, [new_col]} | acc]}
+
+        {new_row, col}, {_prev_row, col, [{:horizontal, _row, _cols} | _] = acc} ->
+          {new_row, col, [{:vertical, [new_row], col} | acc]}
+      end)
+
+    Enum.map(compacted, fn
+      {:horizontal, row, [_|_] = cols} ->
+        %{x: x(Enum.min(cols), width), y: y(row, width), width: length(cols) * width, height: width}
+
+      {:vertical, [_|_] = rows, col} ->
+        %{x: x(col, width), y: y(Enum.min(rows), width), height: length(rows) * width, width: width}
+    end)
+  end
 end
