@@ -3,7 +3,12 @@
 @import "./phoenix.css";
 @import "./live_view.css";
 @import "./keyboarding.css";
+@import "./pacman.css";
+@import "./snake.css";
 
+pre{
+  padding: 1em;
+}
 .animated-sin-wave {
   position: relative;
   height: 150px;

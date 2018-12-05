@@ -17,6 +17,8 @@ defmodule DemoWeb.Router do
   scope "/" do
     pipe_through :browser
 
+    get "/snake", DemoWeb.PageController, :snake
+    get "/pacman", Phoenix.LiveView, DemoWeb.PacmanView
     get "/keyboarding", Phoenix.LiveView, DemoWeb.KeyboardingView
     get "/game", Phoenix.LiveView, DemoWeb.GameView
     get "/search", Phoenix.LiveView, DemoWeb.SearchView

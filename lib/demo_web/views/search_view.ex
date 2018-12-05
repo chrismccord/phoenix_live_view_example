@@ -3,28 +3,35 @@ defmodule DemoWeb.SearchView do
 
   def render(assigns) do
     ~L"""
-    <form phx-change="search">
-      <input type="text" name="query" list="suggestions" placeholder="Search..."/>
-      <datalist id="suggestions">
-        <%= for match <- @suggestions do %>
+    <form phx-change="suggest" phx-submit="search">
+      <input type="text" name="q" list="matches" placeholder="Search..."
+             <%= if @loading, do: "readonly" %>/>
+      <datalist id="matches">
+        <%= for match <- @matches do %>
           <option value="<%= match %>"><%= match %></option>
         <% end %>
       </datalist>
+      <%= if @result do %><pre><%= @result %></pre><% end %>
     </form>
     """
   end
 
   def mount(_session, socket) do
-    {:ok, assign(socket, query: "", suggestions: [])}
+    {:ok, assign(socket, result: nil, loading: false, matches: [])}
   end
 
-  def handle_event("search", _, %{"query" => query}, socket) do
-    {:noreply, suggest(socket, query)}
+  def handle_event("suggest", %{"q" => query}, socket) when byte_size(query) <= 100 do
+    {words, _} = System.cmd("grep", ~w"^#{query}.* -m 5 /usr/share/dict/words")
+    {:noreply, assign(socket, matches: String.split(words, "\n"))}
   end
 
-  defp suggest(socket, ""), do: assign(socket, suggestions: [])
-  defp suggest(socket, query) do
-    {matches, _} = System.cmd("grep", ["^#{query}.*", "-m", "5", "/usr/share/dict/words"])
-    assign(socket, :suggestions, String.split(matches, "\n"))
+  def handle_event("search", %{"q" => query}, socket) when byte_size(query) <= 100 do
+    send(self(), {:search, query})
+    {:noreply, assign(socket, result: "Searching...", loading: true, matches: [])}
+  end
+
+  def handle_info({:search, query}, socket) do
+    {result, _} = System.cmd("dict", ["#{query}"], stderr_to_stdout: true)
+    {:noreply, assign(socket, loading: false, result: result, matches: [])}
   end
 end

@@ -1,0 +1,128 @@
+@import url(https://fonts.googleapis.com/css?family=Press+Start+2P);
+
+html{
+  overflow-x:hidden;
+}
+
+.game-container{
+  position: absolute;
+}
+.pacman{
+  position: relative;
+  z-index: 999;
+}
+.game-container .block{
+  display: block;
+  position: absolute;
+
+}
+.game-container .block.tail{ background: yellow; }
+.game-container .block.wall{ background: blue; }
+.game-container .block.empty{ background: #000000; }
+
+.pacman-top{
+  background-color:yellow;
+  border-radius:100px 100px 0 0;
+  animation: spin1 0.5s infinite linear;
+}
+
+.pacman-bottom{
+  background-color:yellow;
+  border-radius:0 0 100px 100px;
+  animation: spin2 0.5s infinite linear;
+}
+
+/* Animation*/
+
+@keyframes spin1 {
+  0%  {transform: rotate(0deg);}
+  50%{transform: rotate(-35deg);}
+
+}
+@keyframes spin2 {
+  0%  {transform: rotate(0deg);}
+  50%{transform: rotate(35deg);}
+}
+
+@-moz-keyframes spin1 {
+  0%  {transform: rotate(0deg);}
+  50%{transform: rotate(-35deg);}
+
+}
+@-moz-keyframes spin2 {
+  0%  {transform: rotate(0deg);}
+  50%{transform: rotate(35deg);}
+}
+
+@-webkit-keyframes spin1 {
+  0%  {transform: rotate(0deg);}
+  50%{transform: rotate(-35deg);}
+
+}
+@-webkit-keyframes spin2 {
+  0%  {transform: rotate(0deg);}
+  50%{transform: rotate(35deg);}
+}
+
+@keyframes eat {
+  0% { box-shadow:
+       100px 65px 0 0 white,
+       300px 65px 0 0 white,
+       500px 65px 0 0 white,
+       700px 65px 0 0 white,
+       900px 65px 0 0 white,
+       1100px 65px 0 0 white,
+       1300px 65px 0 0 white;}
+
+  100% { box-shadow:
+         0px 65px 0 0 white,
+         100px 65px 0 0 white,
+         300px 65px 0 0 white,
+         500px 65px 0 0 white,
+         700px 65px 0 0 white,
+         900px 65px 0 0 white,
+         1100px 65px 0 0 white;}
+}
+
+
+ @-moz-keyframes eat {
+   0% { box-shadow:
+        100px 65px 0 0 white,
+        300px 65px 0 0 white,
+        500px 65px 0 0 white,
+        700px 65px 0 0 white,
+        900px 65px 0 0 white,
+        1100px 65px 0 0 white,
+        1300px 65px 0 0 white;}
+
+   100% { box-shadow:
+          0px 65px 0 0 white,
+          100px 65px 0 0 white,
+          300px 65px 0 0 white,
+          500px 65px 0 0 white,
+          700px 65px 0 0 white,
+          900px 65px 0 0 white,
+          1100px 65px 0 0 white;}
+ }
+
+
+
+ @-webkit-keyframes eat {
+   0% { box-shadow:
+        100px 65px 0 0 white,
+        300px 65px 0 0 white,
+        500px 65px 0 0 white,
+        700px 65px 0 0 white,
+        900px 65px 0 0 white,
+        1100px 65px 0 0 white,
+        1300px 65px 0 0 white;}
+
+   100% { box-shadow:
+          0px 65px 0 0 white,
+          100px 65px 0 0 white,
+          300px 65px 0 0 white,
+          500px 65px 0 0 white,
+          700px 65px 0 0 white,
+          900px 65px 0 0 white,
+          1100px 65px 0 0 white;}
+ }

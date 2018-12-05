@@ -1,0 +1,204 @@
+html{
+  overflow-x:hidden;
+}
+
+body {
+  background: #000000;
+}
+
+
+.dpad{
+  opacity: 0.5;
+  font-size: 60px;
+  color: blue;
+  position: absolute;
+  top: 70px;
+  left: 80px;
+  z-index: 999999;
+
+}
+
+.dpad .control{
+  position: absolute;
+}
+
+.dpad .up{
+  transform: rotate(-90deg);
+  top: -60px;
+  left: 0px;
+}
+.dpad .down{
+  transform: rotate(90deg);
+  top: 60px;
+  left: -5px;
+}
+.dpad .right{
+  top: 0px;
+  left: 55px;
+}
+.dpad .left{
+  transform: rotate(180deg);
+  top: -5px;
+  left: -60px;
+}
+
+.snake-controls *{
+  color: #ffffff;
+}
+
+.snake-container{
+  width: 100%;
+  position: absolute;
+  color: #ffffff;
+}
+
+.game-over {
+  text-align: center;
+}
+.snake-container h1{
+  width: 100%;
+}
+.snake{
+  position: relative;
+  z-index: 999;
+}
+.snake-container .block{
+  display: block;
+  position: absolute;
+  z-index: 1;
+
+}
+.snake-container .score{
+  color: #ffffff;
+  position: absolute;
+  z-index: 3;
+}
+
+.snake-container .block.cherry{
+  z-index: 2;
+  background: red;
+}
+.snake-container .block.tail{
+  z-index: 2;
+  background: yellow;
+}
+.snake-container .block.wall{
+  background: blue;
+}
+.snake-container .block.empty{
+  background: #000000;
+}
+
+.snake-top{
+  background-color:yellow;
+  border-radius:0 100px 0 0;
+  animation: snake-spin1 0.5s infinite linear;
+}
+
+.snake-middle{
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: yellow;
+  border-radius:0 100px 100px 0;
+}
+.snake-bottom{
+  background-color:yellow;
+  border-radius:0 0 100px 0;
+  animation: snake-spin2 0.5s infinite linear;
+}
+
+/* Animation*/
+
+@keyframes snake-spin1 {
+  0%  {transform: rotate(0deg);}
+  50%{transform: rotate(-35deg);}
+
+}
+@keyframes snake-spin2 {
+  0%  {transform: rotate(0deg);}
+  50%{transform: rotate(35deg);}
+}
+
+@-moz-keyframes snake-spin1 {
+  0%  {transform: rotate(0deg);}
+  50%{transform: rotate(-35deg);}
+
+}
+@-moz-keyframes snake-spin2 {
+  0%  {transform: rotate(0deg);}
+  50%{transform: rotate(35deg);}
+}
+
+@-webkit-keyframes snake-spin1 {
+  0%  {transform: rotate(0deg);}
+  50%{transform: rotate(-35deg);}
+
+}
+@-webkit-keyframes snake-spin2 {
+  0%  {transform: rotate(0deg);}
+  50%{transform: rotate(35deg);}
+}
+
+@keyframes eat {
+  0% { box-shadow:
+       100px 65px 0 0 white,
+       300px 65px 0 0 white,
+       500px 65px 0 0 white,
+       700px 65px 0 0 white,
+       900px 65px 0 0 white,
+       1100px 65px 0 0 white,
+       1300px 65px 0 0 white;}
+
+  100% { box-shadow:
+         0px 65px 0 0 white,
+         100px 65px 0 0 white,
+         300px 65px 0 0 white,
+         500px 65px 0 0 white,
+         700px 65px 0 0 white,
+         900px 65px 0 0 white,
+         1100px 65px 0 0 white;}
+}
+
+
+ @-moz-keyframes eat {
+   0% { box-shadow:
+        100px 65px 0 0 white,
+        300px 65px 0 0 white,
+        500px 65px 0 0 white,
+        700px 65px 0 0 white,
+        900px 65px 0 0 white,
+        1100px 65px 0 0 white,
+        1300px 65px 0 0 white;}
+
+   100% { box-shadow:
+          0px 65px 0 0 white,
+          100px 65px 0 0 white,
+          300px 65px 0 0 white,
+          500px 65px 0 0 white,
+          700px 65px 0 0 white,
+          900px 65px 0 0 white,
+          1100px 65px 0 0 white;}
+ }
+
+
+
+ @-webkit-keyframes eat {
+   0% { box-shadow:
+        100px 65px 0 0 white,
+        300px 65px 0 0 white,
+        500px 65px 0 0 white,
+        700px 65px 0 0 white,
+        900px 65px 0 0 white,
+        1100px 65px 0 0 white,
+        1300px 65px 0 0 white;}
+
+   100% { box-shadow:
+          0px 65px 0 0 white,
+          100px 65px 0 0 white,
+          300px 65px 0 0 white,
+          500px 65px 0 0 white,
+          700px 65px 0 0 white,
+          900px 65px 0 0 white,
+          1100px 65px 0 0 white;}
+ }
