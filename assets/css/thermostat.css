@@ -1,0 +1,243 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700");
+
+[data-phx-view="DemoWeb.ThermostatView"]{
+  height: 800px;
+}
+
+.controls_radius, .thermostat, .thermostat .bar, .thermostat .controls, .thermostat .controls .reading {
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+
+.thermostat {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: #6D697F;
+  box-shadow: inset 0px -6px 1px 2px rgba(0, 0, 0, 0.35), 0px 7px 40px 11px rgba(84, 81, 97, 0.4);
+}
+.thermostat:hover .number {
+  opacity: 1;
+}
+.thermostat .shadow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%) rotateZ(10deg);
+          transform: translate(-50%, -50%) rotateZ(10deg);
+  width: 25px;
+  height: 86%;
+  text-align: center;
+  transition: 0.7s ease;
+  -webkit-animation: shadow 1.4s ease-out both;
+          animation: shadow 1.4s ease-out both;
+}
+.thermostat .shadow .shadow-cube {
+  position: absolute;
+  top: 0;
+  width: 25px;
+  height: 0px;
+  box-shadow: 0 0 45px 13px rgba(255, 158, 35, 0.5);
+}
+.thermostat .number {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%) rotateZ(10deg);
+          transform: translate(-50%, -50%) rotateZ(10deg);
+  width: 40px;
+  height: 82%;
+  text-align: center;
+  transition: 0.7s ease;
+  opacity: 0;
+}
+.thermostat .number .ext {
+  font-size: 16px;
+  color: white;
+  font-weight: 1000;
+  text-shadow: 1px 3px 3px #302e38;
+}
+.thermostat .bar.heating {
+  background: linear-gradient(to bottom, #6e72f2 0%,#ff9d3b 0%,#ff9021 0%,#ff3a3a 100%,#ff8001 100%,#ff3a3a 100%);
+}
+.thermostat .bar.cooling {
+  background: linear-gradient(to bottom, #6db3f2 0%,#54a3ee 0%,#3690f0 51%,#1e69de 100%);
+}
+
+.thermostat .bar {
+  background-color: #3a3749;
+  position: absolute;
+  width: 356px;
+  height: 356px;
+}
+.thermostat .bar .inner_bar {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 344px;
+  height: 344px;
+  margin-left: -172px;
+  margin-top: -172px;
+  border-radius: 100%;
+  background-color: #6D697F;
+  z-index: 4;
+}
+.thermostat .bar .inner_bar:after {
+  content: '';
+  display: block;
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-top: 70px solid transparent;
+  border-left: 70px solid transparent;
+  border-right: 70px solid transparent;
+  border-bottom: 150px solid #6D697F;
+  bottom: -7px;
+  left: 50%;
+  -webkit-transform: translatex(-50%);
+          transform: translatex(-50%);
+}
+.thermostat .bar .hold {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  clip: rect(0px, 356px, 356px, 178px);
+  border-radius: 100%;
+  background-color: #3a3749;
+}
+.thermostat .bar .fill {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  clip: rect(0px, 178px, 356px, 0px);
+}
+.thermostat .bar .fill1 {
+  background: orange;
+}
+.thermostat .bar .fill2 {
+  background: orange;
+}
+.thermostat .bar .right {
+  z-index: 3;
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+.thermostat .bar .right .fill {
+  z-index: 3;
+  transform: rotate(180deg);
+}
+.thermostat .bar .left .fill {
+  z-index: 1;
+  -webkit-animation: left 0.3s linear both;
+          animation: left 0.3s linear both;
+  -webkit-animation-delay: 1s;
+          animation-delay: 1s;
+  transition: -webkit-transform 0.6s;
+  transition: transform 0.6s;
+  transition: transform 0.6s, -webkit-transform 0.6s;
+}
+.thermostat .bar span {
+  width: 356px;
+  font-weight: 800;
+  position: absolute;
+  top: 18px;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 15px;
+  color: #ffffff;
+  z-index: 10;
+}
+.thermostat .bar a {
+  width: 356px;
+  font-weight: 800;
+  position: absolute;
+  bottom: 10px;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 15px;
+  color: #ffffff;
+  z-index: 10;
+}
+.thermostat .controls {
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  background: #e3e4ed;
+  -webkit-animation: bound-in 0.6s ease forwards;
+          animation: bound-in 0.6s ease forwards;
+}
+.thermostat button.minus, .thermostat button.plus {
+  background: none;
+  border: 0;
+  position: absolute;
+  color: #b9b6c8;
+  font-size: 60px;
+  font-weight: 500;
+  line-height: 260px;
+  cursor: pointer;
+}
+
+.thermostat .controls .minus {
+  position: absolute;
+  left: -14px;
+}
+.thermostat .controls .plus {
+  position: absolute;
+  right: -20px;
+}
+.thermostat .controls .reading {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  background: #F8F9FA;
+  text-align: center;
+
+  line-height: 150px;
+  font-size: 59px;
+  color: #57545f;
+  font-weight: 300;
+}
+.thermostat .controls .reading:after {
+  content: '°';
+  display: block;
+  position: absolute;
+  font-size: 40px;
+  top: -20px;
+  right: 30px;
+}
+
+@-webkit-keyframes shadow {
+  0% {
+    -webkit-transform: translate(-50%, -50%) rotate(-190deg);
+            transform: translate(-50%, -50%) rotate(-190deg);
+  }
+  100% {
+    -webkit-transform: translate(-50%, -50%) rotate(10deg);
+            transform: translate(-50%, -50%) rotate(10deg);
+  }
+}
+@-webkit-keyframes right {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(180deg);
+            transform: rotate(180deg);
+  }
+}
+@-webkit-keyframes left {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(10deg);
+            transform: rotate(10deg);
+  }
+}

@@ -139,6 +139,7 @@ export default class LiveSocket {
     this.opts = opts
     this.views = {}
     this.activeElement = null
+    this.prevActive = null
     this.socket = new Socket(url, opts)
   }
 
@@ -193,6 +194,17 @@ export default class LiveSocket {
       return document.activeElement
     }
   }
+
+  restorePreviouslyActiveFocus(){
+    if(this.prevActive && this.prevActive !== document.body){
+      this.prevActive.focus()
+    }
+  }
+
+  blurActiveElement(){
+    this.prevActive = this.getActiveElement()
+    if(this.prevActive !== document.body){ this.prevActive.blur() }
+  }
 }
 
 let Browser = {
@@ -228,6 +240,7 @@ let DOM = {
 
   patch(view, container, id, html){
     let focused = view.liveSocket.getActiveElement()
+    view.liveSocket.restorePreviouslyActiveFocus()
     let selectionStart = null
     let selectionEnd = null
     if(DOM.isTextualInput(focused)){
@@ -270,7 +283,7 @@ let DOM = {
         }
         DOM.discardError(toEl)
 
-        if(fromEl === focused){
+        if(DOM.isTextualInput(fromEl) && fromEl === focused){
           DOM.mergeInputs(fromEl, toEl)
           return false
         } else {
@@ -504,6 +517,7 @@ class View {
   submitForm(form, phxEvent, e){
     form.setAttribute(PHX_HAS_SUBMITTED, "true")
     form.querySelectorAll("input").forEach(input => input.readOnly = true)
+    this.liveSocket.blurActiveElement()
     this.pushFormSubmit(form, e, phxEvent)
   }
 
@@ -526,7 +540,6 @@ class View {
     this.bindKey(el, "up")
     this.bindKey(el, "down")
     this.bindKey(el, "press")
-
   }
 
   binding(kind){ return `${this.bindingPrefix}${kind}` }
@@ -568,4 +581,3 @@ class View {
     }
   }
 }
-

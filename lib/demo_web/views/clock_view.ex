@@ -4,11 +4,12 @@ defmodule DemoWeb.ClockView do
 
   def render(assigns) do
     ~L"""
-    <div phx-click="boom">
+    <div>
       <h2>It's <%= strftime!(@date, "%r") %>(<%= @mod %>)</h2>
       <%= for name <- @names do %>
         <br/><%= name %>
       <% end %>
+      <a href="#" onclick="history.pushState({}, 'New Tab', 'foo'); event.preventDefault();" phx-click="nav" phx-value="foo">click</a>
     </div>
     """
   end
@@ -21,6 +22,11 @@ defmodule DemoWeb.ClockView do
 
   def handle_info(:tick, socket) do
     {:noreply, put_date(socket)}
+  end
+
+  def handle_event("nav", path, socket) do
+    IO.inspect(path)
+    {:noreply, socket}
   end
 
   defp put_date(socket) do

@@ -7,7 +7,6 @@ defmodule Demo.Application do
     children = [
       Demo.Repo,
       DemoWeb.Endpoint,
-      DemoWeb.DynamicSupervisor,
       DemoWeb.Presence
     ]
 

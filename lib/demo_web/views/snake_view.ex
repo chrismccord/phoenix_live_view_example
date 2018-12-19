@@ -107,7 +107,7 @@ defmodule DemoWeb.SnakeView do
       score: 0,
       game_state: :playing,
       heading: :stationary,
-      pending_heading: :stationary,
+      pending_headings: {:stationary, []},
       width: @width,
       compacted_tail: [],
       tick: @tick,
@@ -141,7 +141,7 @@ defmodule DemoWeb.SnakeView do
   end
 
   def handle_event("keydown", key, socket) do
-    {:noreply, turn(socket, socket.assigns.heading, key)}
+    {:noreply, turn(socket, key)}
   end
 
   def handle_event("tick", %{"tick" => tick}, socket) do
@@ -162,21 +162,36 @@ defmodule DemoWeb.SnakeView do
     |> compact_tail()
   end
 
-  defp turn(socket, :right, "ArrowLeft"), do: socket
-  defp turn(socket, _, "ArrowLeft"), do: go(socket, :left)
-  defp turn(socket, :up, "ArrowDown"), do: socket
-  defp turn(socket, _, "ArrowDown"), do: go(socket, :down)
-  defp turn(socket, :down, "ArrowUp"), do: socket
-  defp turn(socket, _, "ArrowUp"), do: go(socket, :up)
-  defp turn(socket, :left, "ArrowRight"), do: socket
-  defp turn(socket, _, "ArrowRight"), do: go(socket, :right)
-  defp turn(socket, _, _), do: socket
+  defp turn(socket, "ArrowLeft"), do: go(socket, :left)
+  defp turn(socket, "ArrowDown"), do: go(socket, :down)
+  defp turn(socket, "ArrowUp"), do: go(socket, :up)
+  defp turn(socket, "ArrowRight"), do: go(socket, :right)
+  defp turn(socket, _), do: socket
 
-  defp go(socket, heading), do: assign(socket, pending_heading: heading)
+  defp go(socket, heading) do
+    update(socket, :pending_headings, fn
+      {^heading, prev} -> {heading, prev}
+      {_, prev} -> {heading, prev ++ [heading]}
+    end)
+  end
 
-  defp game_loop(%{assigns: %{pending_heading: :stationary}} = socket), do: socket
+  defp next_heading(socket) do
+    {next, pending} =
+      case {socket.assigns.heading, socket.assigns.pending_headings} do
+        {current, {_, []}} -> {current, []}
+        {:left, {_, [:right | rest]}} -> {:left, rest}
+        {:right, {_, [:left | rest]}} -> {:right, rest}
+        {:up, {_, [:down | rest]}} -> {:up, rest}
+        {:down, {_, [:up | rest]}} -> {:down, rest}
+        {_current, {_, [new | rest]}} -> {new, rest}
+      end
+
+    {next, {next, pending}}
+  end
+
+  defp game_loop(%{assigns: %{pending_headings: {:stationary, []}}} = socket), do: socket
   defp game_loop(socket) do
-    %{pending_heading: heading} = socket.assigns
+    {heading, new_pending} = next_heading(socket)
     {row_before, col_before} = coord(socket)
     maybe_row = row(row_before, heading)
     maybe_col = col(col_before, heading)
@@ -191,9 +206,10 @@ defmodule DemoWeb.SnakeView do
 
     socket
     |> advance_tail({row_before, row}, {col_before, col})
-    |> assign(:row, row)
-    |> assign(:col, col)
-    |> assign(:heading, heading)
+    |> update(:row, fn _ -> row end)
+    |> update(:col, fn _ -> col end)
+    |> update(:heading, fn _ -> heading end)
+    |> update(:pending_headings, fn _ -> new_pending end)
     |> handle_collision(collision)
   end
 

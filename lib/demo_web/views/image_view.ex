@@ -1,12 +1,10 @@
 defmodule DemoWeb.ImageView do
   use Phoenix.LiveView
 
-  def radio_tag(name, field_val, checked_val) do
-    ~E"""
-    <input type="radio"
-      name="<%= name %>"
-      value="<%= field_val %>"
-      <%= if field_val == checked_val, do: "checked" %> />
+  def radio_tag(assigns) do
+    ~L"""
+    <input type="radio" name="<%= @name %>" value="<%= @value %>"
+      <%= if @value == @checked, do: "checked" %> />
     """
   end
 
@@ -16,15 +14,13 @@ defmodule DemoWeb.ImageView do
       <input type="range" min="10" max="630" name="width" value="<%= @width %>" />
       <%= @width %>px
       <fieldset>
-        White <%= radio_tag(:bg, "white", @bg) %>
-        Black <%= radio_tag(:bg, "black", @bg) %>
-        Blue <%= radio_tag(:bg, "blue", @bg) %>
+        White <%= radio_tag(name: :bg, value: "white", checked: @bg) %>
+        Black <%= radio_tag(name: :bg, value: "black", checked: @bg) %>
+        Blue <%= radio_tag(name: :bg, value: "blue", checked: @bg) %>
       </fieldset>
     </form>
-    <button phx-click="boom">boom</button>
     <br/>
     <img src="/images/phx.png" width="<%= @width %>" style="background: <%= @bg %>;" />
-    <%= if @width > 200, do: DemoWeb.PageView.render("px.html", px: @width) %>
     """
   end
 

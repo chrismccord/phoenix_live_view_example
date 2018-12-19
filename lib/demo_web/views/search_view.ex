@@ -4,7 +4,7 @@ defmodule DemoWeb.SearchView do
   def render(assigns) do
     ~L"""
     <form phx-change="suggest" phx-submit="search">
-      <input type="text" name="q" list="matches" placeholder="Search..."
+      <input type="text" name="q" value="<%= @query %>" list="matches" placeholder="Search..."
              <%= if @loading, do: "readonly" %>/>
       <datalist id="matches">
         <%= for match <- @matches do %>
@@ -17,7 +17,7 @@ defmodule DemoWeb.SearchView do
   end
 
   def mount(_session, socket) do
-    {:ok, assign(socket, result: nil, loading: false, matches: [])}
+    {:ok, assign(socket, query: nil, result: nil, loading: false, matches: [])}
   end
 
   def handle_event("suggest", %{"q" => query}, socket) when byte_size(query) <= 100 do
@@ -27,7 +27,7 @@ defmodule DemoWeb.SearchView do
 
   def handle_event("search", %{"q" => query}, socket) when byte_size(query) <= 100 do
     send(self(), {:search, query})
-    {:noreply, assign(socket, result: "Searching...", loading: true, matches: [])}
+    {:noreply, assign(socket, query: query, result: "Searching...", loading: true, matches: [])}
   end
 
   def handle_info({:search, query}, socket) do

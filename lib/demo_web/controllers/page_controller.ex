@@ -15,4 +15,10 @@ defmodule DemoWeb.PageController do
     |> put_layout(:game)
     |> Phoenix.LiveView.live_render(DemoWeb.SnakeView, session: %{})
   end
+
+  def thermostat(conn, _) do
+    conn
+    |> put_layout(:bare)
+    |> Phoenix.LiveView.live_render(DemoWeb.ThermostatView, session: %{})
+  end
 end
