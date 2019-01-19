@@ -68,6 +68,7 @@ defmodule DemoWeb.Presence do
   information, while maintaining the required `:metas` field from the
   original presence data.
   """
-  use Phoenix.Presence, otp_app: :demo,
-                        pubsub_server: Demo.PubSub
+  use Phoenix.Presence,
+    otp_app: :demo,
+    pubsub_server: Demo.PubSub
 end

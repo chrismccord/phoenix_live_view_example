@@ -48,6 +48,7 @@ defmodule DemoWeb.KeyboardingView do
   def mount(_, socket) do
     current_chapter = 1
     current_lesson = 0
+
     socket =
       assign(socket,
         left_digit: 1,
@@ -74,6 +75,7 @@ defmodule DemoWeb.KeyboardingView do
   def handle_event("keyup", _, key, socket) when key in @meta_keys do
     {:noreply, socket}
   end
+
   def handle_event("keyup", _, key, socket) do
     {:noreply, next_char(socket, key)}
   end
@@ -101,7 +103,8 @@ defmodule DemoWeb.KeyboardingView do
       {:ok, "rf" <> digit} ->
         assign(socket, left_digit: 1, right_digit: digit)
 
-      :error -> assign(socket, left_digit: 1, right_digit: 1)
+      :error ->
+        assign(socket, left_digit: 1, right_digit: 1)
     end
   end
 
@@ -147,6 +150,7 @@ defmodule DemoWeb.KeyboardingView do
   defp update_completed_words(socket, current_char) when current_char in [" ", "."] do
     update(socket, :completed_words, &(&1 + 1))
   end
+
   defp update_completed_words(socket, _current_char) do
     socket
   end
@@ -161,14 +165,15 @@ defmodule DemoWeb.KeyboardingView do
   end
 
   defp calculate_wpm(socket) do
-   %{elapsed_seconds: seconds, completed_words: word_count} = socket.assigns
-   update(socket, :wpm, fn _ -> trunc((word_count / seconds) * 60) end)
+    %{elapsed_seconds: seconds, completed_words: word_count} = socket.assigns
+    update(socket, :wpm, fn _ -> trunc(word_count / seconds * 60) end)
   end
 
   defp calculate_accuracy(socket) do
     %{incorrect_count: incorrect, correct_count: correct} = socket.assigns
+
     update(socket, :accuracy, fn _ ->
-      trunc((max(correct, 1) / max(correct + incorrect, 1)) * 100)
+      trunc(max(correct, 1) / max(correct + incorrect, 1) * 100)
     end)
   end
 
@@ -190,6 +195,7 @@ defmodule DemoWeb.KeyboardingView do
 
           char, {idx, len, acc} ->
             new_acc = [build_char(char, idx, user_index, incorrect) | acc]
+
             if word_len + len >= @chars_per_line do
               {idx + 1, :break, new_acc}
             else
@@ -205,25 +211,32 @@ defmodule DemoWeb.KeyboardingView do
   defp append_space({idx, :break, acc}, idx, incorrect) do
     {idx + 1, 0, [build_char(" ", idx, idx, incorrect, %{newline: true}) | acc]}
   end
+
   defp append_space({idx, :break, acc}, user_index, incorrect) do
     {idx + 1, 0, [build_char(nil, idx, user_index, incorrect, %{newline: true}) | acc]}
   end
+
   defp append_space({idx, len, acc}, idx, incorrect) do
     {idx + 1, len, [build_char(" ", idx, idx, incorrect) | acc]}
   end
+
   defp append_space({idx, len, acc}, user_index, incorrect) do
     {idx + 1, len, [build_char(" ", idx, user_index, incorrect) | acc]}
   end
 
   defp build_char(text, idx, user_index, incorrect_indexes, attrs \\ %{}) do
-    Map.merge(%{
-      text: char_text(text),
-      dim: user_index > idx,
-      highlight: user_index == idx,
-      newline: false,
-      mark: text not in [" ", nil] && MapSet.member?(incorrect_indexes, idx),
-    }, attrs)
+    Map.merge(
+      %{
+        text: char_text(text),
+        dim: user_index > idx,
+        highlight: user_index == idx,
+        newline: false,
+        mark: text not in [" ", nil] && MapSet.member?(incorrect_indexes, idx)
+      },
+      attrs
+    )
   end
+
   defp char_text(" "), do: raw("&nbsp;")
   defp char_text(val), do: val
 end

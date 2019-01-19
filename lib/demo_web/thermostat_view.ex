@@ -29,7 +29,7 @@ defmodule DemoWeb.ThermostatView do
   end
 
   def handle_event("inc", _, socket) do
-    if socket.assigns.val >= 75, do: raise "boom"
+    if socket.assigns.val >= 75, do: raise("boom")
     {:noreply, update(socket, :val, &(&1 + 1))}
   end
 

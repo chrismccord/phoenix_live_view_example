@@ -14,8 +14,7 @@ config :demo, DemoWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "zlMbr9KIbSMRg9BXFBpsWgVUqeDm09NBI9124BQ8u+2R6ZRk9hcPe9iC4ciM5rZ4",
   render_errors: [view: DemoWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Demo.PubSub,
-           adapter: Phoenix.PubSub.PG2],
+  pubsub: [name: Demo.PubSub, adapter: Phoenix.PubSub.PG2],
   live_view: [signing_salt: "NZIguRPO"]
 
 # Configures Elixir's Logger
@@ -27,9 +26,8 @@ config :logger, :console,
 config :phoenix, :json_library, Jason
 config :ecto, :json_library, Jason
 
-config :phoenix, :template_engines,
-  leex: Phoenix.LiveView.Engine
+config :phoenix, :template_engines, leex: Phoenix.LiveView.Engine
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
+import_config "#{Mix.env()}.exs"

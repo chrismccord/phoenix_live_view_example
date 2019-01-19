@@ -32,6 +32,10 @@ defmodule DemoWeb.ClockView do
   defp put_date(socket) do
     {_, {_, _, sec}} = time = :calendar.local_time()
 
-    assign(socket, mod: rem(sec, 10) == 0, date: time, names: ["max", "chris", to_string(rem(sec, 10) == 0)])
+    assign(socket,
+      mod: rem(sec, 10) == 0,
+      date: time,
+      names: ["max", "chris", to_string(rem(sec, 10) == 0)]
+    )
   end
 end

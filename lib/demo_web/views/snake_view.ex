@@ -39,7 +39,7 @@ defmodule DemoWeb.SnakeView do
     ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
     ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
     ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X),
+    ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X)
   ]
   @board_rows length(@board)
   @board_cols length(hd(@board))
@@ -54,6 +54,7 @@ defmodule DemoWeb.SnakeView do
     </div>
     """
   end
+
   def render(%{game_state: :playing} = assigns) do
     ~L"""
     <div class="snake-controls">
@@ -115,7 +116,7 @@ defmodule DemoWeb.SnakeView do
       col: 6,
       max_length: @snake_length,
       tail: [{1, 6}],
-      cherries: [],
+      cherries: []
     }
 
     new_socket =
@@ -146,6 +147,7 @@ defmodule DemoWeb.SnakeView do
 
   def handle_event("tick", %{"tick" => tick}, socket) do
     {tick, ""} = Integer.parse(tick)
+
     new_socket =
       socket
       |> assign(:tick, tick)
@@ -190,6 +192,7 @@ defmodule DemoWeb.SnakeView do
   end
 
   defp game_loop(%{assigns: %{pending_headings: {:stationary, []}}} = socket), do: socket
+
   defp game_loop(socket) do
     {heading, new_pending} = next_heading(socket)
     {row_before, col_before} = coord(socket)
@@ -214,12 +217,14 @@ defmodule DemoWeb.SnakeView do
   end
 
   defp advance_tail(socket, {row, row}, {col, col}), do: socket
+
   defp advance_tail(socket, {row, _}, {col, _}) do
     tail = [{row, col} | socket.assigns.tail]
+
     if length(tail) < socket.assigns.max_length do
-      assign(socket, :tail,  tail)
+      assign(socket, :tail, tail)
     else
-      assign(socket, :tail,  Enum.drop(tail, -1))
+      assign(socket, :tail, Enum.drop(tail, -1))
     end
   end
 
@@ -236,7 +241,7 @@ defmodule DemoWeb.SnakeView do
   defp game_over(socket), do: assign(socket, :game_state, :over)
 
   defp level_up(socket) do
-    new_cherries = Enum.filter(socket.assigns.cherries, (&(&1 !== coord(socket))))
+    new_cherries = Enum.filter(socket.assigns.cherries, &(&1 !== coord(socket)))
 
     socket
     |> assign(:score, socket.assigns.score + 10)
@@ -285,9 +290,11 @@ defmodule DemoWeb.SnakeView do
 
     assign(socket, :blocks, blocks)
   end
+
   defp wall(x_idx, y_idx, width) do
     %{type: :wall, x: x_idx * width, y: y_idx * width, width: width}
   end
+
   defp empty(x_idx, y_idx, width) do
     %{type: :empty, x: x_idx * width, y: y_idx * width, width: width}
   end
@@ -295,9 +302,11 @@ defmodule DemoWeb.SnakeView do
   defp place_cherries(socket, count) do
     Enum.reduce(0..(count - 1), socket, fn _, acc -> place_random_cherry(acc) end)
   end
+
   def place_random_cherry(socket) do
     place_cherry(socket, Enum.random(0..(@board_rows - 1)), Enum.random(0..(@board_cols - 1)))
   end
+
   defp place_cherry(socket, row, col) do
     case block(socket, row, col) do
       :empty -> assign(socket, :cherries, [{row, col} | socket.assigns.cherries])
@@ -322,11 +331,21 @@ defmodule DemoWeb.SnakeView do
       end)
 
     Enum.map(compacted, fn
-      {:horizontal, row, [_|_] = cols} ->
-        %{x: x(Enum.min(cols), width), y: y(row, width), width: length(cols) * width, height: width}
+      {:horizontal, row, [_ | _] = cols} ->
+        %{
+          x: x(Enum.min(cols), width),
+          y: y(row, width),
+          width: length(cols) * width,
+          height: width
+        }
 
-      {:vertical, [_|_] = rows, col} ->
-        %{x: x(col, width), y: y(Enum.min(rows), width), height: length(rows) * width, width: width}
+      {:vertical, [_ | _] = rows, col} ->
+        %{
+          x: x(col, width),
+          y: y(Enum.min(rows), width),
+          height: length(rows) * width,
+          width: width
+        }
     end)
   end
 end

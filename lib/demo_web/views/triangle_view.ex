@@ -1,6 +1,7 @@
 defmodule DemoWeb.TriangleView do
   use Phoenix.LiveView
 end
+
 #   @container_style %{
 #     position: "absolute",
 #     "transform-origin": "0 0",
@@ -75,7 +76,6 @@ end
 # #           );
 # #         }
 # #       }
-
 
 #   defp build_dots(socket) do
 #     current_count = socket.assigns.current_count

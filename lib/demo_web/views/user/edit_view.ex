@@ -8,11 +8,12 @@ defmodule DemoWeb.User.EditView do
   def mount(%{params: %{"id" => id}}, socket) do
     user = Accounts.get_user!(id)
 
-    {:ok, assign(socket, %{
-      count: 0,
-      user: user,
-      changeset: Accounts.change_user(user),
-    })}
+    {:ok,
+     assign(socket, %{
+       count: 0,
+       user: user,
+       changeset: Accounts.change_user(user)
+     })}
   end
 
   def render(assigns), do: UserView.render("edit.html", assigns)

@@ -7,16 +7,18 @@ defmodule DemoWeb.User.NewView do
   alias Demo.Accounts.User
 
   def mount(_session, socket) do
-    {:ok, assign(socket, %{
-      count: 0,
-      changeset: Accounts.change_user(%User{}),
-    })}
+    {:ok,
+     assign(socket, %{
+       count: 0,
+       changeset: Accounts.change_user(%User{})
+     })}
   end
 
   def render(assigns), do: UserView.render("new.html", assigns)
 
   def handle_event("validate", %{"user" => params}, socket) do
     IO.inspect(params)
+
     changeset =
       %User{}
       |> Demo.Accounts.change_user(params)
