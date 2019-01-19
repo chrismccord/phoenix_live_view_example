@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "morphdom": "^2.3.3",
-    "phoenix": "file:~/oss/phoenix",
+    "phoenix": "../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html"
   },
   "devDependencies": {
