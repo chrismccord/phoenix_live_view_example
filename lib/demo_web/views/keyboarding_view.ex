@@ -122,7 +122,6 @@ defmodule DemoWeb.KeyboardingView do
 
   defp mark_correct(socket, current_char, typed_char) do
     if current_char == typed_char do
-      IO.inspect({:correct, current_char, typed_char})
       update(socket, :correct_count, &(&1 + 1))
     else
       socket

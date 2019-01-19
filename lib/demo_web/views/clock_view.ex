@@ -24,8 +24,7 @@ defmodule DemoWeb.ClockView do
     {:noreply, put_date(socket)}
   end
 
-  def handle_event("nav", path, socket) do
-    IO.inspect(path)
+  def handle_event("nav", _path, socket) do
     {:noreply, socket}
   end
 

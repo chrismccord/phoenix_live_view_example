@@ -17,8 +17,6 @@ defmodule DemoWeb.User.NewView do
   def render(assigns), do: UserView.render("new.html", assigns)
 
   def handle_event("validate", %{"user" => params}, socket) do
-    IO.inspect(params)
-
     changeset =
       %User{}
       |> Demo.Accounts.change_user(params)

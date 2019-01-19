@@ -39,7 +39,7 @@ defmodule DemoWeb.Router do
     # Use the default browser stack
     pipe_through :browser
 
-    # resources "/users", UserController
+    resources "/users", UserController
     get "/", PageController, :index
     get "/testing", PageController, :index
     get "/products/:foo", ProductController, :show
