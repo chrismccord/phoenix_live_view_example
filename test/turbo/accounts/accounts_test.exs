@@ -6,8 +6,18 @@ defmodule Demo.AccountsTest do
   describe "users" do
     alias Demo.Accounts.User
 
-    @valid_attrs %{country: "some country", email: "some email", state: "some state", username: "some username"}
-    @update_attrs %{country: "some updated country", email: "some updated email", state: "some updated state", username: "some updated username"}
+    @valid_attrs %{
+      country: "some country",
+      email: "some email",
+      state: "some state",
+      username: "some username"
+    }
+    @update_attrs %{
+      country: "some updated country",
+      email: "some updated email",
+      state: "some updated state",
+      username: "some updated username"
+    }
     @invalid_attrs %{country: nil, email: nil, state: nil, username: nil}
 
     def user_fixture(attrs \\ %{}) do

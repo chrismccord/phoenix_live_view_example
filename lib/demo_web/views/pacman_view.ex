@@ -24,7 +24,7 @@ defmodule DemoWeb.PacmanView do
     ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
     ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
     ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
+    ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X)
   ]
   @board_rows length(@board)
   @board_cols length(hd(@board))
@@ -77,7 +77,7 @@ defmodule DemoWeb.PacmanView do
         row: 1,
         col: 1,
         x: nil,
-        y: nil,
+        y: nil
       })
       |> build_board()
       |> advance()
@@ -89,8 +89,9 @@ defmodule DemoWeb.PacmanView do
     end
   end
 
-    def handle_event("update_size", %{"width" => width}, socket) do
+  def handle_event("update_size", %{"width" => width}, socket) do
     {width, ""} = Integer.parse(width)
+
     new_socket =
       socket
       |> assign(width: width)
@@ -105,6 +106,7 @@ defmodule DemoWeb.PacmanView do
 
   def handle_event("tick", %{"tick" => tick}, socket) do
     {tick, ""} = Integer.parse(tick)
+
     new_socket =
       socket
       |> assign(:tick, tick)
@@ -121,6 +123,7 @@ defmodule DemoWeb.PacmanView do
   defp turn(socket, _), do: socket
 
   defp go(%{assigns: %{heading: heading}} = socket, heading), do: socket
+
   defp go(socket, heading) do
     socket
     |> assign(rotation: Map.fetch!(@rotation, heading))
@@ -145,10 +148,22 @@ defmodule DemoWeb.PacmanView do
         {_, blocks} =
           Enum.reduce(row, {0, acc}, fn
             "X", {x_index, acc} ->
-              {x_index + 1, Map.put(acc, {y_index, x_index}, %{type: :wall, x: x_index * width, y: y_index * width, width: width})}
+              {x_index + 1,
+               Map.put(acc, {y_index, x_index}, %{
+                 type: :wall,
+                 x: x_index * width,
+                 y: y_index * width,
+                 width: width
+               })}
 
             "0", {x_index, acc} ->
-              {x_index + 1, Map.put(acc, {y_index, x_index}, %{type: :empty, x: x_index * width, y: y_index * width, width: width})}
+              {x_index + 1,
+               Map.put(acc, {y_index, x_index}, %{
+                 type: :empty,
+                 x: x_index * width,
+                 y: y_index * width,
+                 width: width
+               })}
           end)
 
         {y_index + 1, blocks}

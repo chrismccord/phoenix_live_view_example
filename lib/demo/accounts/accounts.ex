@@ -13,6 +13,7 @@ defmodule Demo.Accounts do
   def subscribe do
     Phoenix.PubSub.subscribe(Demo.PubSub, @topic)
   end
+
   def subscribe(user_id) do
     Phoenix.PubSub.subscribe(Demo.PubSub, @topic <> "#{user_id}")
   end
@@ -120,5 +121,6 @@ defmodule Demo.Accounts do
     Phoenix.PubSub.broadcast(Demo.PubSub, @topic <> "#{result.id}", {__MODULE__, event, result})
     {:ok, result}
   end
+
   defp notify_subscribers({:error, reason}, _event), do: {:error, reason}
 end

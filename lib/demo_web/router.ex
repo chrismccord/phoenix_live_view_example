@@ -36,9 +36,10 @@ defmodule DemoWeb.Router do
   end
 
   scope "/", DemoWeb do
-    pipe_through :browser # Use the default browser stack
+    # Use the default browser stack
+    pipe_through :browser
 
-    # resources "/users", UserController
+    resources "/users", UserController
     get "/", PageController, :index
     get "/testing", PageController, :index
     get "/products/:foo", ProductController, :show

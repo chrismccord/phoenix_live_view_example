@@ -82,7 +82,7 @@ defmodule DemoWeb.RainbowView do
     {:noreply, socket}
   end
 
-  def handle_event("switch",  _val, %{assigns: assigns} = socket) do
+  def handle_event("switch", _val, %{assigns: assigns} = socket) do
     {:noreply, assign(socket, step: assigns.step * -1)}
   end
 

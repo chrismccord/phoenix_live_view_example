@@ -3,8 +3,18 @@ defmodule DemoWeb.UserControllerTest do
 
   alias Demo.Accounts
 
-  @create_attrs %{country: "some country", email: "some email", state: "some state", username: "some username"}
-  @update_attrs %{country: "some updated country", email: "some updated email", state: "some updated state", username: "some updated username"}
+  @create_attrs %{
+    country: "some country",
+    email: "some email",
+    state: "some state",
+    username: "some username"
+  }
+  @update_attrs %{
+    country: "some updated country",
+    email: "some updated email",
+    state: "some updated state",
+    username: "some updated username"
+  }
   @invalid_attrs %{country: nil, email: nil, state: nil, username: nil}
 
   def fixture(:user) do
@@ -14,14 +24,14 @@ defmodule DemoWeb.UserControllerTest do
 
   describe "index" do
     test "lists all users", %{conn: conn} do
-      conn = get conn, Routes.user_path(conn, :index)
+      conn = get(conn, Routes.user_path(conn, :index))
       assert html_response(conn, 200) =~ "Listing Users"
     end
   end
 
   describe "new user" do
     test "renders form", %{conn: conn} do
-      conn = get conn, Routes.user_path(conn, :new)
+      conn = get(conn, Routes.user_path(conn, :new))
       assert html_response(conn, 200) =~ "New User"
     end
   end
@@ -33,7 +43,7 @@ defmodule DemoWeb.UserControllerTest do
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == Routes.user_path(conn, :show, id)
 
-      conn = get conn, Routes.user_path(conn, :show, id)
+      conn = get(conn, Routes.user_path(conn, :show, id))
       assert html_response(conn, 200) =~ "Show User"
     end
 
@@ -47,7 +57,7 @@ defmodule DemoWeb.UserControllerTest do
     setup [:create_user]
 
     test "renders form for editing chosen user", %{conn: conn, user: user} do
-      conn = get conn, Routes.user_path(conn, :edit, user)
+      conn = get(conn, Routes.user_path(conn, :edit, user))
       assert html_response(conn, 200) =~ "Edit User"
     end
   end
@@ -59,7 +69,7 @@ defmodule DemoWeb.UserControllerTest do
       conn = put conn, Routes.user_path(conn, :update, user), user: @update_attrs
       assert redirected_to(conn) == Routes.user_path(conn, :show, user)
 
-      conn = get conn, Routes.user_path(conn, :show, user)
+      conn = get(conn, Routes.user_path(conn, :show, user))
       assert html_response(conn, 200) =~ "some updated country"
     end
 
@@ -73,10 +83,11 @@ defmodule DemoWeb.UserControllerTest do
     setup [:create_user]
 
     test "deletes chosen user", %{conn: conn, user: user} do
-      conn = delete conn, Routes.user_path(conn, :delete, user)
+      conn = delete(conn, Routes.user_path(conn, :delete, user))
       assert redirected_to(conn) == Routes.user_path(conn, :index)
+
       assert_error_sent 404, fn ->
-        get conn, Routes.user_path(conn, :show, user)
+        get(conn, Routes.user_path(conn, :show, user))
       end
     end
   end

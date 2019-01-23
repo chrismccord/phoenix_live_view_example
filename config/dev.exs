@@ -14,13 +14,18 @@ config :demo, DemoWeb.Endpoint,
   check_origin: false,
   protocol_options: [
     max_header_name_length: 64,
-    max_header_value_length: 140096,
+    max_header_value_length: 140_096,
     max_headers: 100
   ],
-  watchers: [node: ["node_modules/webpack/bin/webpack.js", "--mode", "development", "--watch-stdin",
-                    cd: Path.expand("../assets", __DIR__)]]
-
-
+  watchers: [
+    node: [
+      "node_modules/webpack/bin/webpack.js",
+      "--mode",
+      "development",
+      "--watch-stdin",
+      cd: Path.expand("../assets", __DIR__)
+    ]
+  ]
 
 # ## SSL Support
 #
@@ -62,7 +67,6 @@ config :phoenix, :plug_init_mode, :runtime
 
 # Configure your database
 config :demo, Demo.Repo,
-  adapter: Ecto.Adapters.Postgres,
   username: "postgres",
   password: "postgres",
   database: "demo_dev",

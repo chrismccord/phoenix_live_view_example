@@ -6,9 +6,9 @@ defmodule Demo.Mixfile do
       app: :demo,
       version: "0.1.0",
       elixir: "~> 1.5",
-      elixirc_paths: elixirc_paths(Mix.env),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers,
-      start_permanent: Mix.env == :prod,
+      elixirc_paths: elixirc_paths(Mix.env()),
+      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+      start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
     ]
@@ -26,7 +26,7 @@ defmodule Demo.Mixfile do
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_),     do: ["lib"]
+  defp elixirc_paths(_), do: ["lib"]
 
   # Specifies your project dependencies.
   #
@@ -34,18 +34,19 @@ defmodule Demo.Mixfile do
   defp deps do
     [
       {:phoenix, github: "phoenixframework/phoenix", override: true},
-      {:phoenix_live_view, path: "~/oss/phoenix_live_view"},
+      {:phoenix_live_view, git: "git@github.com:chrismccord/phoenix_live_view.git"},
       {:plug_cowboy, "~> 2.0"},
       {:plug, "~> 1.7"},
       {:phoenix_pubsub, "~> 1.1"},
-      {:phoenix_ecto, "~> 3.2"},
+      {:phoenix_ecto, "~> 4.0"},
+      {:ecto_sql, "~> 3.0"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.13", github: "phoenixframework/phoenix_html", override: true},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:cowboy, "~> 2.0"},
-      {:calendar, "~> 0.17.4"},
+      {:calendar, "~> 0.17.4"}
     ]
   end
 
