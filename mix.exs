@@ -34,7 +34,7 @@ defmodule Demo.Mixfile do
   defp deps do
     [
       {:phoenix, "~> 1.4.1"},
-      {:phoenix_live_view, path: "~/oss/phoenix_live_view"},
+      {:phoenix_live_view, git: "git@github.com:chrismccord/phoenix_live_view.git"},
       {:plug_cowboy, "~> 2.0"},
       {:plug, "~> 1.7"},
       {:phoenix_pubsub, "~> 1.1"},
