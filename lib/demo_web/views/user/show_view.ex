@@ -33,8 +33,9 @@ defmodule DemoWeb.User.ShowView do
   end
 
   def handle_info({Accounts, [:user, :deleted], _}, socket) do
-    socket
-    |> put_flash(:error, "This user has been deleted from the system")
-    |> redirect(to: Routes.user_path(DemoWeb.Endpoint, DemoWeb.User.IndexView))
+    {:stop,
+     socket
+     |> put_flash(:error, "This user has been deleted from the system")
+     |> redirect(to: Routes.user_path(DemoWeb.Endpoint, DemoWeb.User.IndexView))}
   end
 end

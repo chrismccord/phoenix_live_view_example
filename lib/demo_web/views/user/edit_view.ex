@@ -30,9 +30,10 @@ defmodule DemoWeb.User.EditView do
   def handle_event("save", %{"user" => user_params}, socket) do
     case Accounts.update_user(socket.assigns.user, user_params) do
       {:ok, user} ->
-        socket
-        |> put_flash(:info, "User updated successfully.")
-        |> redirect(to: Routes.user_path(DemoWeb.Endpoint, DemoWeb.User.ShowView, user))
+        {:stop,
+         socket
+         |> put_flash(:info, "User updated successfully.")
+         |> redirect(to: Routes.user_path(DemoWeb.Endpoint, DemoWeb.User.ShowView, user))}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}
