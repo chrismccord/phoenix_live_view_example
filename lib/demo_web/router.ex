@@ -34,21 +34,4 @@ defmodule DemoWeb.Router do
     get "/users/:id", Phoenix.LiveView, DemoWeb.User.ShowView, as: :user
     get "/users/:id/edit", Phoenix.LiveView, DemoWeb.User.EditView, as: :user
   end
-
-  scope "/", DemoWeb do
-    # Use the default browser stack
-    pipe_through :browser
-
-    resources "/users", UserController
-    get "/", PageController, :index
-    get "/testing", PageController, :index
-    get "/products/:foo", ProductController, :show
-    get "/products/:foo/:bar", ProductController, :show
-    get "/products/:foo/:bar/:rebar", ProductController, :show
-  end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", DemoWeb do
-  #   pipe_through :api
-  # end
 end

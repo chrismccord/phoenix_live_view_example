@@ -2,6 +2,7 @@ defmodule DemoWeb.ImageView do
   use Phoenix.LiveView
 
   def radio_tag(assigns) do
+    assigns = Enum.into(assigns, %{})
     ~L"""
     <input type="radio" name="<%= @name %>" value="<%= @value %>"
       <%= if @value == @checked, do: "checked" %> />
@@ -20,7 +21,7 @@ defmodule DemoWeb.ImageView do
       </fieldset>
     </form>
     <br/>
-    <img src="/images/phx.png" width="<%= @width %>" style="background: <%= @bg %>;" />
+    <img phx-click="boom" src="/images/phx.png" width="<%= @width %>" style="background: <%= @bg %>;" />
     """
   end
 

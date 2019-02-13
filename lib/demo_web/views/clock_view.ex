@@ -5,11 +5,8 @@ defmodule DemoWeb.ClockView do
   def render(assigns) do
     ~L"""
     <div>
-      <h2>It's <%= strftime!(@date, "%r") %>(<%= @mod %>)</h2>
-      <%= for name <- @names do %>
-        <br/><%= name %>
-      <% end %>
-      <a href="#" onclick="history.pushState({}, 'New Tab', 'foo'); event.preventDefault();" phx-click="nav" phx-value="foo">click</a>
+      <h2 phx-click="boom">It's <%= strftime!(@date, "%r") %></h2>
+      <%= live_render(@socket, DemoWeb.ImageView) %>
     </div>
     """
   end
@@ -29,12 +26,6 @@ defmodule DemoWeb.ClockView do
   end
 
   defp put_date(socket) do
-    {_, {_, _, sec}} = time = :calendar.local_time()
-
-    assign(socket,
-      mod: rem(sec, 10) == 0,
-      date: time,
-      names: ["max", "chris", to_string(rem(sec, 10) == 0)]
-    )
+    assign(socket, date: :calendar.local_time())
   end
 end

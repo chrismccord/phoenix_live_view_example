@@ -33,8 +33,8 @@ defmodule Demo.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, github: "phoenixframework/phoenix", override: true},
-      {:phoenix_live_view, git: "git@github.com:chrismccord/phoenix_live_view.git"},
+      {:phoenix, "~> 1.4.1"},
+      {:phoenix_live_view, path: "~/oss/phoenix_live_view"},
       {:plug_cowboy, "~> 2.0"},
       {:plug, "~> 1.7"},
       {:phoenix_pubsub, "~> 1.1"},
