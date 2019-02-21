@@ -19,6 +19,7 @@ html{
 .game-container .block.tail{ background: yellow; }
 .game-container .block.wall{ background: blue; }
 .game-container .block.empty{ background: #000000; }
+.game-container .block.cherry{ background: #000000; }
 
 .pacman-top{
   background-color:yellow;

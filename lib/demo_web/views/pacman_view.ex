@@ -62,6 +62,12 @@ defmodule DemoWeb.PacmanView do
                     height: <%= block.width %>px;
         "></div>
       <% end %>
+      <div class="block cherry"
+        style="left: <%= @cherry.x * @width %>px;
+                top: <%= @cherry.y * @width %>px;
+                width: <%= @width %>px;
+                height: <%= @width %>px;
+        ">&#x1F352;</div>
     </div>
     """
   end
@@ -80,6 +86,7 @@ defmodule DemoWeb.PacmanView do
         y: nil
       })
       |> build_board()
+      |> set_cherry_loc()
       |> advance()
 
     if connected?(socket) do
@@ -173,7 +180,7 @@ defmodule DemoWeb.PacmanView do
   end
 
   defp advance(socket) do
-    %{width: width, heading: heading, blocks: blocks} = socket.assigns
+    %{width: width, heading: heading, blocks: blocks, cherry: cherry} = socket.assigns
     col_before = socket.assigns.col
     row_before = socket.assigns.row
     maybe_row = row(row_before, heading)
@@ -183,6 +190,12 @@ defmodule DemoWeb.PacmanView do
       case block(maybe_row, maybe_col, blocks) do
         :wall -> {row_before, col_before}
         :empty -> {maybe_row, maybe_col}
+      end
+
+    socket =
+      case cherry do
+        %{x: ^col, y: ^row} -> set_cherry_loc(socket)
+        _ -> socket
       end
 
     socket
@@ -199,6 +212,16 @@ defmodule DemoWeb.PacmanView do
   defp row(val, :up) when val - 1 >= 1, do: val - 1
   defp row(val, :down) when val + 1 < @board_rows - 1, do: val + 1
   defp row(val, _), do: val
+
+  defp set_cherry_loc(%{assigns: %{blocks: blocks}} = socket) do
+    x = :rand.uniform(@board_cols) - 1
+    y = :rand.uniform(@board_rows) - 1
+
+    case block(y, x, blocks) do
+      :wall -> set_cherry_loc(socket)
+      :empty -> assign(socket, :cherry, %{x: x, y: y})
+    end
+  end
 
   def block(row, col, blocks) do
     Map.fetch!(blocks, {row, col}).type
