@@ -7,6 +7,10 @@ html{
 .game-container{
   position: absolute;
 }
+
+.stats-container{
+  position: absolute;
+}
 .pacman{
   position: relative;
   z-index: 999;
@@ -16,18 +20,16 @@ html{
   position: absolute;
 
 }
-.game-container .block.tail{ background: yellow; }
 .game-container .block.wall{ background: blue; }
 .game-container .block.empty{ background: #000000; }
+.game-container .block.cherry{ background: #000000; }
 
 .pacman-top{
-  background-color:yellow;
   border-radius:100px 100px 0 0;
   animation: spin1 0.5s infinite linear;
 }
 
 .pacman-bottom{
-  background-color:yellow;
   border-radius:0 0 100px 100px;
   animation: spin2 0.5s infinite linear;
 }

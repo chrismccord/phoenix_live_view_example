@@ -6,6 +6,7 @@ defmodule Demo.Application do
   def start(_type, _args) do
     children = [
       Demo.Repo,
+      Demo.GameServer.Pacman,
       DemoWeb.Endpoint,
       DemoWeb.Presence
     ]
