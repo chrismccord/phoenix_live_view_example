@@ -1,65 +1,36 @@
+require Logger
+
 defmodule DemoWeb.PacmanView do
   use Phoenix.LiveView
 
-  @tick 200
-  @width 25
-  @rotation %{left: 180, right: 0, up: -90, down: 90}
+  alias Demo.GameServer.Pacman, as: PMGameServer
 
-  @board [
-    ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
-    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 0 X X X X X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X)
-  ]
-  @board_rows length(@board)
-  @board_cols length(hd(@board))
+  @width 20
 
   def render(assigns) do
     ~L"""
     <form phx-change="update_size" phx-submit="tick" phx-submit-every="<%= @tick %>">
-      <select name="tick" onchange="this.blur()">
+      <select style="display: none;" name="tick" onchange="this.blur()">
         <option value="50" <%= if @tick == 50, do: "selected" %>>50</option>
         <option value="100" <%= if @tick == 100, do: "selected" %>>100</option>
         <option value="200" <%= if @tick == 200, do: "selected" %>>200</option>
         <option value="500" <%= if @tick == 500, do: "selected" %>>500</option>
       </select>
-      <input type="range" min="10" max="50" name="width" value="<%= @width %>" onmouseup="blur()"/>
+      <input type="range" min="10" max="50" name="width" value="<%= @width %>"/>
       <%= @width %>px
+      <input type="text" value="<%= @me.name %>">
     </form>
     <div class="game-container">
-      <div phx-keydown="keydown"
-          phx-target="window"
-          class="pacman"
-          style="transform: rotate(<%= @rotation %>deg);
-                 left: <%= @x %>px;
-                 top: <%= @y %>px;
-                 width: <%= @width %>px;
-                 height: <%= @width %>px;
-      ">
-        <div class="pacman-top" style="width: <%= @width %>px; height: <%= @width / 2 %>px;"></div>
-        <div class="pacman-bottom" style="width: <%= @width %>px; height: <%= @width / 2 %>px;"></div>
-      </div>
-      <%= for {_, block} <- @blocks do %>
-        <div class="block <%= block.type %>"
-            style="left: <%= block.x %>px;
-                    top: <%= block.y %>px;
-                    width: <%= block.width %>px;
-                    height: <%= block.width %>px;
+      <%= draw_pacman(@me, @width) %>
+      <%= for player <- @others do %>
+        <%= draw_pacman(player, @width) %>
+      <% end %>
+      <%= for {{y, x}, type} <- @blocks do %>
+        <div class="block <%= type %>"
+            style="left: <%= x * @width %>px;
+                    top: <%= y * @width %>px;
+                    width: <%= @width %>px;
+                    height: <%= @width %>px;
         "></div>
       <% end %>
       <div class="block cherry"
@@ -67,33 +38,34 @@ defmodule DemoWeb.PacmanView do
                 top: <%= @cherry.y * @width %>px;
                 width: <%= @width %>px;
                 height: <%= @width %>px;
+                font-size: <%= @width %>px;
         ">&#x1F352;</div>
+      <div class="stats-container" style="left: <%= @width * @board_cols + 10 %>px; top: 1px">
+        You:
+        <table>
+          <%= player_row(@me, @width) %>
+        </table>
+        Leaderboard:
+        <table>
+          <%= for player <- @players do %>
+            <%= player_row(player, @width) %>
+          <% end %>
+        </table>
+      </div>
     </div>
     """
   end
 
   def mount(_session, socket) do
+    PMGameServer.join_game()
+
     socket =
       socket
-      |> assign(%{
-        heading: :stationary,
-        width: @width,
-        tick: @tick,
-        rotation: 0,
-        row: 1,
-        col: 1,
-        x: nil,
-        y: nil
-      })
-      |> build_board()
-      |> set_cherry_loc()
+      |> assign(width: @width)
       |> advance()
+      |> update_assigns()
 
-    if connected?(socket) do
-      {:ok, schedule_tick(socket)}
-    else
-      {:ok, socket}
-    end
+    {:ok, socket}
   end
 
   def handle_event("update_size", %{"width" => width}, socket) do
@@ -102,7 +74,6 @@ defmodule DemoWeb.PacmanView do
     new_socket =
       socket
       |> assign(width: width)
-      |> build_board()
 
     {:noreply, new_socket}
   end
@@ -118,7 +89,6 @@ defmodule DemoWeb.PacmanView do
       socket
       |> assign(:tick, tick)
       |> game_loop()
-      |> schedule_tick()
 
     {:noreply, new_socket}
   end
@@ -129,12 +99,11 @@ defmodule DemoWeb.PacmanView do
   defp turn(socket, "ArrowRight"), do: go(socket, :right)
   defp turn(socket, _), do: socket
 
-  defp go(%{assigns: %{heading: heading}} = socket, heading), do: socket
+  defp go(%{assigns: %{me: %{heading: heading}}} = socket, heading), do: socket
 
   defp go(socket, heading) do
-    socket
-    |> assign(rotation: Map.fetch!(@rotation, heading))
-    |> assign(heading: heading)
+    PMGameServer.set_heading(heading)
+    update_assigns(socket)
   end
 
   def game_loop(socket) do
@@ -142,88 +111,60 @@ defmodule DemoWeb.PacmanView do
     |> advance()
   end
 
-  defp schedule_tick(socket) do
-    # Process.send_after(self(), :tick, @tick)
-    socket
-  end
-
-  defp build_board(socket) do
-    width = socket.assigns.width
-
-    {_, blocks} =
-      Enum.reduce(@board, {0, %{}}, fn row, {y_index, acc} ->
-        {_, blocks} =
-          Enum.reduce(row, {0, acc}, fn
-            "X", {x_index, acc} ->
-              {x_index + 1,
-               Map.put(acc, {y_index, x_index}, %{
-                 type: :wall,
-                 x: x_index * width,
-                 y: y_index * width,
-                 width: width
-               })}
-
-            "0", {x_index, acc} ->
-              {x_index + 1,
-               Map.put(acc, {y_index, x_index}, %{
-                 type: :empty,
-                 x: x_index * width,
-                 y: y_index * width,
-                 width: width
-               })}
-          end)
-
-        {y_index + 1, blocks}
-      end)
-
-    assign(socket, :blocks, blocks)
-  end
-
   defp advance(socket) do
-    %{width: width, heading: heading, blocks: blocks, cherry: cherry} = socket.assigns
-    col_before = socket.assigns.col
-    row_before = socket.assigns.row
-    maybe_row = row(row_before, heading)
-    maybe_col = col(col_before, heading)
+    PMGameServer.move()
+    update_assigns(socket)
+  end
 
-    {row, col} =
-      case block(maybe_row, maybe_col, blocks) do
-        :wall -> {row_before, col_before}
-        :empty -> {maybe_row, maybe_col}
-      end
+  defp update_assigns(socket) do
+    %{players: players, cherry: cherry, tick: tick, blocks: blocks, board_cols: board_cols} =
+      PMGameServer.get_state()
 
-    socket =
-      case cherry do
-        %{x: ^col, y: ^row} -> set_cherry_loc(socket)
-        _ -> socket
-      end
+    {[me], others} = Enum.split_with(players, fn %{pid: pid} -> pid == self() end)
 
     socket
-    |> assign(:row, row)
-    |> assign(:col, col)
-    |> assign(:x, col * width)
-    |> assign(:y, row * width)
+    |> assign(me: me)
+    |> assign(others: others)
+    |> assign(cherry: cherry)
+    |> assign(tick: tick)
+    |> assign(blocks: blocks)
+    |> assign(players: players)
+    |> assign(others: others)
+    |> assign(board_cols: board_cols)
   end
 
-  defp col(val, :left) when val - 1 >= 1, do: val - 1
-  defp col(val, :right) when val + 1 < @board_cols - 1, do: val + 1
-  defp col(val, _), do: val
+  def draw_pacman(pacman, width, at_origin \\ false) do
+    {x, y, absolute} =
+      if at_origin do
+        {0, 0, ""}
+      else
+        {pacman.x, pacman.y, "position: absolute;"}
+      end
 
-  defp row(val, :up) when val - 1 >= 1, do: val - 1
-  defp row(val, :down) when val + 1 < @board_rows - 1, do: val + 1
-  defp row(val, _), do: val
+    assigns = %{pacman: pacman, width: width, x: x, y: y, absolute: absolute}
 
-  defp set_cherry_loc(%{assigns: %{blocks: blocks}} = socket) do
-    x = :rand.uniform(@board_cols) - 1
-    y = :rand.uniform(@board_rows) - 1
-
-    case block(y, x, blocks) do
-      :wall -> set_cherry_loc(socket)
-      :empty -> assign(socket, :cherry, %{x: x, y: y})
-    end
+    ~L"""
+    <div class="pacman"
+          phx-keydown="keydown"
+          phx-target="window"
+            style="transform: rotate(<%= @pacman.rotation %>deg);
+                  <%= absolute %>
+                  left: <%= @x * @width %>px;
+                  top: <%= @y * @width %>px;
+                  width: <%= @width %>px;
+                  height: <%= @width %>px;
+        ">
+      <div class="pacman-top" style="width: <%= @width %>px; height: <%= @width / 2 %>px; background-color: #<%= @pacman.color %>;"></div>
+      <div class="pacman-bottom" style="width: <%= @width %>px; height: <%= @width / 2 %>px; background-color: #<%= @pacman.color %>;"></div>
+    </div>
+    """
   end
 
-  def block(row, col, blocks) do
-    Map.fetch!(blocks, {row, col}).type
+  def player_row(player, width) do
+    assigns = %{player: player, width: width}
+
+    ~L"""
+    <tr><td><%= player.score %></td><td><%= draw_pacman(player, @width, true) %></td><td><%= player.name %></td></tr>
+    """
   end
 end
