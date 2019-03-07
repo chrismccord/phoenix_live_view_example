@@ -6,7 +6,6 @@
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
-    "morphdom": "^2.3.3",
     "phoenix": "../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "phoenix_live_view": "file:../deps/phoenix_live_view"
