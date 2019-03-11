@@ -1,5 +1,6 @@
 defmodule DemoWeb.KeyboardingView do
   use Phoenix.LiveView
+  import Phoenix.HTML
 
   def render(assigns), do: DemoWeb.PageView.render("keyboard.html", assigns)
 

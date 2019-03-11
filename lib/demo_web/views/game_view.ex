@@ -1,5 +1,6 @@
 defmodule DemoWeb.GameView do
   use Phoenix.LiveView
+  import Phoenix.HTML
 
   def render(assigns) do
     ~E"""

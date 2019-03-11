@@ -14,24 +14,24 @@ defmodule DemoWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/" do
+  scope "/", DemoWeb do
     pipe_through :browser
 
-    get "/thermostat", DemoWeb.PageController, :thermostat
-    get "/snake", DemoWeb.PageController, :snake
-    get "/pacman", Phoenix.LiveView, DemoWeb.PacmanView
-    get "/keyboarding", Phoenix.LiveView, DemoWeb.KeyboardingView
-    get "/game", Phoenix.LiveView, DemoWeb.GameView
-    get "/search", Phoenix.LiveView, DemoWeb.SearchView
-    get "/image", Phoenix.LiveView, DemoWeb.ImageView
-    get "/rainbow", Phoenix.LiveView, DemoWeb.RainbowView
-    get "/clock", Phoenix.LiveView, DemoWeb.ClockView
-    get "/count", DemoWeb.PageController, :count
-    get "/counter", Phoenix.LiveView, DemoWeb.CounterView
-    get "/presence_users", Phoenix.LiveView, DemoWeb.User.PresenceIndexView, as: :user
-    get "/users", Phoenix.LiveView, DemoWeb.User.IndexView, as: :user
-    get "/users/new", Phoenix.LiveView, DemoWeb.User.NewView, as: :user
-    get "/users/:id", Phoenix.LiveView, DemoWeb.User.ShowView, as: :user
-    get "/users/:id/edit", Phoenix.LiveView, DemoWeb.User.EditView, as: :user
+    get "/thermostat", PageController, :thermostat
+    get "/snake", PageController, :snake
+    get "/pacman", PageController, :pacman
+    get "/keyboarding", PageController, :keyboarding
+    get "/game", PageController, :game
+    get "/search", PageController, :search
+    get "/image", PageController, :image
+    get "/rainbow", PageController, :rainbow
+    get "/clock", PageController, :clock
+    get "/count", PageController, :count
+    get "/counter", PageController, :counter
+    get "/presence_users", UserController, :presence_users
+    get "/users", UserController, :index
+    get "/users/new", UserController, :new
+    get "/users/:id", UserController, :show
+    get "/users/:id/edit", UserController, :edit
   end
 end

@@ -14,8 +14,8 @@ defmodule DemoWeb.User.ShowView do
       <li><b>Email:</b> <%= @user.email %></li>
       <li><b>Phone:</b> <%= @user.phone_number %></li>
     </ul>
-    <span><%= link "Edit", to: Routes.user_path(DemoWeb.Endpoint, DemoWeb.User.EditView, @user) %></span>
-    <span><%= link "Back", to: Routes.user_path(DemoWeb.Endpoint, DemoWeb.User.IndexView) %></span>
+    <span><%= link "Edit", to: Routes.user_path(DemoWeb.Endpoint, :edit, @user) %></span>
+    <span><%= link "Back", to: Routes.user_path(DemoWeb.Endpoint, :index) %></span>
     """
   end
 
@@ -36,6 +36,6 @@ defmodule DemoWeb.User.ShowView do
     {:stop,
      socket
      |> put_flash(:error, "This user has been deleted from the system")
-     |> redirect(to: Routes.user_path(DemoWeb.Endpoint, DemoWeb.User.IndexView))}
+     |> redirect(to: Routes.user_path(DemoWeb.Endpoint, :index))}
   end
 end

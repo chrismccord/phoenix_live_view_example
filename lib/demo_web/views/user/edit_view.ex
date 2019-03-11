@@ -33,7 +33,7 @@ defmodule DemoWeb.User.EditView do
         {:stop,
          socket
          |> put_flash(:info, "User updated successfully.")
-         |> redirect(to: Routes.user_path(DemoWeb.Endpoint, DemoWeb.User.ShowView, user))}
+         |> redirect(to: Routes.user_path(DemoWeb.Endpoint, :show, user))}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}
