@@ -1,4 +1,4 @@
-defmodule DemoWeb.SnakeView do
+defmodule DemoWeb.SnakeLive do
   use Phoenix.LiveView
 
   @tick 100
@@ -10,10 +10,10 @@ defmodule DemoWeb.SnakeView do
     ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
     ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
     ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+    ~w(X 0 0 0 0 X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+    ~w(X 0 0 0 0 X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+    ~w(X 0 0 0 0 X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+    ~w(X 0 0 0 0 X X X X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
     ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
     ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
     ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
@@ -58,7 +58,7 @@ defmodule DemoWeb.SnakeView do
   def render(%{game_state: :playing} = assigns) do
     ~L"""
     <div class="snake-controls">
-      <form phx-change="update_size" phx-submit="tick" phx-submit-every="<%= @tick %>">
+      <form phx-change="update_settings">
         <select name="tick" onchange="this.blur()">
           <option value="50" <%= if @tick == 50, do: "selected" %>>50</option>
           <option value="100" <%= if @tick == 100, do: "selected" %>>100</option>
@@ -100,7 +100,7 @@ defmodule DemoWeb.SnakeView do
   end
 
   def mount(_session, socket) do
-    {:ok, new_game(socket)}
+    {:ok, socket |> new_game() |> schedule_tick()}
   end
 
   defp new_game(socket) do
@@ -132,9 +132,16 @@ defmodule DemoWeb.SnakeView do
     end
   end
 
-  def handle_event("update_size", %{"width" => width}, socket) do
+  def handle_event("update_settings", %{"width" => width, "tick" => tick}, socket) do
     {width, ""} = Integer.parse(width)
-    {:noreply, update_size(socket, width)}
+    {tick, ""} = Integer.parse(tick)
+
+    new_socket =
+      socket
+      |> update_size(width)
+      |> update_tick(tick)
+
+    {:noreply, new_socket}
   end
 
   def handle_event("new_game", _, socket) do
@@ -145,16 +152,23 @@ defmodule DemoWeb.SnakeView do
     {:noreply, turn(socket, key)}
   end
 
-  def handle_event("tick", %{"tick" => tick}, socket) do
-    {tick, ""} = Integer.parse(tick)
-
+  def handle_info(:tick, socket) do
     new_socket =
       socket
-      |> assign(:tick, tick)
       |> game_loop()
       |> compact_tail()
+      |> schedule_tick()
 
     {:noreply, new_socket}
+  end
+
+  defp update_tick(socket, tick) when tick <= 1000 and tick >= 50 do
+    assign(socket, :tick, tick)
+  end
+
+  defp schedule_tick(socket) do
+    Process.send_after(self(), :tick, socket.assigns.tick)
+    socket
   end
 
   defp update_size(socket, width) do

@@ -1,7 +1,7 @@
-defmodule DemoWeb.PacmanView do
+defmodule DemoWeb.PacmanLive do
   use Phoenix.LiveView
 
-  @tick 200
+  @tick 100
   @width 25
   @rotation %{left: 180, right: 0, up: -90, down: 90}
 
@@ -31,7 +31,7 @@ defmodule DemoWeb.PacmanView do
 
   def render(assigns) do
     ~L"""
-    <form phx-change="update_size" phx-submit="tick" phx-submit-every="<%= @tick %>">
+    <form phx-change="update_settings">
       <select name="tick" onchange="this.blur()">
         <option value="50" <%= if @tick == 50, do: "selected" %>>50</option>
         <option value="100" <%= if @tick == 100, do: "selected" %>>100</option>
@@ -89,12 +89,23 @@ defmodule DemoWeb.PacmanView do
     end
   end
 
-  def handle_event("update_size", %{"width" => width}, socket) do
+  def handle_info(:tick, socket) do
+    new_socket =
+      socket
+      |> game_loop()
+      |> schedule_tick()
+
+    {:noreply, new_socket}
+  end
+
+  def handle_event("update_settings", %{"width" => width, "tick" => tick}, socket) do
     {width, ""} = Integer.parse(width)
+    {tick, ""} = Integer.parse(tick)
 
     new_socket =
       socket
       |> assign(width: width)
+      |> update_tick(tick)
       |> build_board()
 
     {:noreply, new_socket}
@@ -104,16 +115,8 @@ defmodule DemoWeb.PacmanView do
     {:noreply, turn(socket, key)}
   end
 
-  def handle_event("tick", %{"tick" => tick}, socket) do
-    {tick, ""} = Integer.parse(tick)
-
-    new_socket =
-      socket
-      |> assign(:tick, tick)
-      |> game_loop()
-      |> schedule_tick()
-
-    {:noreply, new_socket}
+  defp update_tick(socket, tick) when tick >= 50 and tick <= 1000 do
+    assign(socket, :tick, tick)
   end
 
   defp turn(socket, "ArrowLeft"), do: go(socket, :left)
@@ -136,7 +139,7 @@ defmodule DemoWeb.PacmanView do
   end
 
   defp schedule_tick(socket) do
-    # Process.send_after(self(), :tick, @tick)
+    Process.send_after(self(), :tick, socket.assigns.tick)
     socket
   end
 

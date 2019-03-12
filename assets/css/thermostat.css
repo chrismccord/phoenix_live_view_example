@@ -190,6 +190,28 @@
   position: absolute;
   right: -20px;
 }
+
+
+.thermostat .controls .weather input {
+  max-width: 90px;
+  background: transparent;
+  border: 0;
+  outline: none;
+  font-size: 19px;
+  color: #57545f;
+  font-weight: 300;
+  text-decoration: underline;
+}
+.thermostat .controls .weather {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: 10px;
+  font-size: 19px;
+  color: #57545f;
+  font-weight: 300;
+}
+
 .thermostat .controls .reading {
   position: absolute;
   width: 150px;

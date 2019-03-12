@@ -1,7 +1,8 @@
-defmodule DemoWeb.User.ShowView do
+defmodule DemoWeb.UserLive.Show do
   use Phoenix.LiveView
   use Phoenix.HTML
 
+  alias DemoWeb.UserLive
   alias DemoWeb.Router.Helpers, as: Routes
   alias Demo.Accounts
   alias Phoenix.LiveView.Socket
@@ -14,12 +15,12 @@ defmodule DemoWeb.User.ShowView do
       <li><b>Email:</b> <%= @user.email %></li>
       <li><b>Phone:</b> <%= @user.phone_number %></li>
     </ul>
-    <span><%= link "Edit", to: Routes.user_path(DemoWeb.Endpoint, DemoWeb.User.EditView, @user) %></span>
-    <span><%= link "Back", to: Routes.user_path(DemoWeb.Endpoint, DemoWeb.User.IndexView) %></span>
+    <span><%= link "Edit", to: Routes.live_path(@socket, UserLive.Edit, @user) %></span>
+    <span><%= link "Back", to: Routes.live_path(@socket, UserLive.Index) %></span>
     """
   end
 
-  def mount(%{params: %{"id" => id}}, socket) do
+  def mount(%{path_params: %{"id" => id}}, socket) do
     if connected?(socket), do: Demo.Accounts.subscribe(id)
     {:ok, fetch(assign(socket, id: id))}
   end
@@ -36,6 +37,6 @@ defmodule DemoWeb.User.ShowView do
     {:stop,
      socket
      |> put_flash(:error, "This user has been deleted from the system")
-     |> redirect(to: Routes.user_path(DemoWeb.Endpoint, DemoWeb.User.IndexView))}
+     |> redirect(to: Routes.live_path(socket, UserLive.Index))}
   end
 end

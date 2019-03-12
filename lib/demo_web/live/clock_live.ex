@@ -1,4 +1,4 @@
-defmodule DemoWeb.ClockView do
+defmodule DemoWeb.ClockLive do
   use Phoenix.LiveView
   import Calendar.Strftime
 
@@ -6,7 +6,7 @@ defmodule DemoWeb.ClockView do
     ~L"""
     <div>
       <h2 phx-click="boom">It's <%= strftime!(@date, "%r") %></h2>
-      <%= live_render(@socket, DemoWeb.ImageView) %>
+      <%= live_render(@socket, DemoWeb.ImageLive) %>
     </div>
     """
   end

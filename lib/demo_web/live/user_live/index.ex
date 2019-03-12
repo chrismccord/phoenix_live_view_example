@@ -1,4 +1,4 @@
-defmodule DemoWeb.User.IndexView do
+defmodule DemoWeb.UserLive.Index do
   use Phoenix.LiveView
 
   alias Demo.Accounts

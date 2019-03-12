@@ -1,4 +1,4 @@
-defmodule DemoWeb.RainbowClientControlledView do
+defmodule DemoWeb.RainbowLive do
   use Phoenix.LiveView
   use Phoenix.HTML
 
@@ -9,8 +9,8 @@ defmodule DemoWeb.RainbowClientControlledView do
     ~L"""
     <h1>Silky Smooth SSR</h1>
     <h3>Fast enough to power animations <em>[on the server]</em> at <%= @fps %>FPS</h3>
-    <form phx-change="update_fps" phx-submit="animate" phx-submit-every="<%= trunc(1000 / @fps) %>">
-      <input type="range" min="1" max="100" value="<%= @fps %>" name="fps" />
+    <form phx-change="update_fps">
+      <input type="range" min="1" max="100" value="<%= @fps %>" name="fps"/>
     </form>
     <div class="animated-sin-wave" phx-click="switch" style="background: <%= @bg %>;">
       <%= for bar <- @bars do %>
@@ -66,40 +66,28 @@ defmodule DemoWeb.RainbowClientControlledView do
     {:ok, socket}
   end
 
-  defp schedule_next_frame(_socket) do
-    # Process.send_after(self(), :next_frame, trunc(1000 / socket.assigns.fps))
+  defp schedule_next_frame(socket) do
+    Process.send_after(self(), :next_frame, trunc(1000 / socket.assigns.fps))
   end
 
-  # def handle_info(:next_frame, socket) do
-  #   # schedule_next_frame(socket)
-  #   %{count: count, step: step} = socket.assigns
-
-  #   socket =
-  #     socket
-  #     |> assign(count: count + step)
-  #     |> assign_bars()
-
-  #   {:noreply, socket}
-  # end
-
-  def handle_event("switch", _id, _val, %{assigns: assigns} = socket) do
-    {:noreply, assign(socket, step: assigns.step * -1)}
-  end
-
-  def handle_event("animate", _, %{"fps" => fps}, socket) do
-    fps = String.to_integer(fps)
+  def handle_info(:next_frame, socket) do
+    schedule_next_frame(socket)
     %{count: count, step: step} = socket.assigns
 
     socket =
       socket
-      |> assign(fps: fps, count: count + step)
+      |> assign(count: count + step)
       |> assign_bars()
 
     {:noreply, socket}
   end
 
-  def handle_event("update_fps", _, %{"fps" => fps}, socket) do
+  def handle_event("switch", _val, %{assigns: assigns} = socket) do
+    {:noreply, assign(socket, step: assigns.step * -1)}
+  end
+
+  def handle_event("update_fps", %{"fps" => fps}, socket) do
     fps = String.to_integer(fps)
-    {:noreply, assign(socket, fps: fps)}
+    {:noreply, assign(socket, :fps, fps)}
   end
 end

@@ -1,14 +1,14 @@
-defmodule DemoWeb.User.PresenceIndexView do
+defmodule DemoWeb.UserLive.PresenceIndex do
   use Phoenix.LiveView
 
   alias Demo.Accounts
   alias DemoWeb.{UserView, Presence}
   alias Phoenix.Socket.Broadcast
 
-  def init(params, socket) do
+  def mount(%{path_params: %{"name" => name}}, socket) do
     Demo.Accounts.subscribe()
     Phoenix.PubSub.subscribe(Demo.PubSub, "users")
-    Presence.track(self(), "users", params["name"] || "anon", %{})
+    Presence.track(self(), "users", name, %{})
     {:ok, fetch(socket)}
   end
 
@@ -22,17 +22,17 @@ defmodule DemoWeb.User.PresenceIndexView do
   end
 
   def handle_info(%Broadcast{event: "presence_diff"}, socket) do
-    {:ok, fetch(socket)}
+    {:noreply, fetch(socket)}
   end
 
   def handle_info({Accounts, [:user | _], _}, socket) do
-    {:ok, fetch(socket)}
+    {:noreply, fetch(socket)}
   end
 
   def handle_event("delete_user", _, id, socket) do
     user = Accounts.get_user!(id)
     {:ok, _user} = Accounts.delete_user(user)
 
-    {:ok, socket}
+    {:noreply, socket}
   end
 end

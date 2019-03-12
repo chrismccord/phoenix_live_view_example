@@ -2,4 +2,4 @@
 
 <%= render "form.html", assigns %>
 
-<span><%= link "Back", to: Routes.user_path(DemoWeb.Endpoint, DemoWeb.User.IndexView) %></span>
+<span><%= link "Back", to: Routes.live_path(@socket, UserLive.Index) %></span>

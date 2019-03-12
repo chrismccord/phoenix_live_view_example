@@ -1,11 +1,11 @@
-defmodule DemoWeb.User.EditView do
+defmodule DemoWeb.UserLive.Edit do
   use Phoenix.LiveView
 
-  alias DemoWeb.UserView
+  alias DemoWeb.UserLive
   alias DemoWeb.Router.Helpers, as: Routes
   alias Demo.Accounts
 
-  def mount(%{params: %{"id" => id}}, socket) do
+  def mount(%{path_params: %{"id" => id}}, socket) do
     user = Accounts.get_user!(id)
 
     {:ok,
@@ -16,13 +16,13 @@ defmodule DemoWeb.User.EditView do
      })}
   end
 
-  def render(assigns), do: UserView.render("edit.html", assigns)
+  def render(assigns), do: DemoWeb.UserView.render("edit.html", assigns)
 
   def handle_event("validate", %{"user" => params}, socket) do
     changeset =
       socket.assigns.user
       |> Demo.Accounts.change_user(params)
-      |> Map.put(:action, :insert)
+      |> Map.put(:action, :update)
 
     {:noreply, assign(socket, changeset: changeset)}
   end
@@ -33,7 +33,7 @@ defmodule DemoWeb.User.EditView do
         {:stop,
          socket
          |> put_flash(:info, "User updated successfully.")
-         |> redirect(to: Routes.user_path(DemoWeb.Endpoint, DemoWeb.User.ShowView, user))}
+         |> redirect(to: Routes.live_path(socket, UserLive.Show, user))}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}

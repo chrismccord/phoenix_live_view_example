@@ -1,4 +1,4 @@
-defmodule DemoWeb.SearchView do
+defmodule DemoWeb.SearchLive do
   use Phoenix.LiveView
 
   def render(assigns) do

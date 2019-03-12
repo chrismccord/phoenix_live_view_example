@@ -1,11 +1,10 @@
-defmodule DemoWeb.ThermostatView do
+defmodule DemoWeb.ThermostatLive do
   use Phoenix.LiveView
   import Calendar.Strftime
 
   def render(assigns) do
     ~L"""
     <div class="thermostat">
-
       <div class="bar <%= @mode %>">
         <a href="#" phx-click="toggle-mode"><%= @mode %></a>
         <span><%= strftime!(@time, "%r") %></span>
@@ -14,6 +13,9 @@ defmodule DemoWeb.ThermostatView do
         <span class="reading"><%= @val %></span>
         <button phx-click="dec" class="minus">-</button>
         <button phx-click="inc" class="plus">+</button>
+        <span class="weather">
+          <%= live_render(@socket, DemoWeb.WeatherLive) %>
+        </span>
       </div>
     </div>
     """

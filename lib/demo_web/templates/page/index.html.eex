@@ -1,32 +1,22 @@
 <section class="phx-hero">
-  <h2><%= gettext "Welcome to %{name}!", name: "Phoenix" %></h2>
-  <p>A productive web framework that<br/>does not compromise speed and maintainability.</p>
+  <h2><%= gettext "Welcome to %{name}!", name: "Phoenix LiveView" %></h2>
+  <%= live_render(@conn, DemoWeb.WeatherLive) %>
 </section>
 
 <section class="row">
   <article class="column">
-    <h4>Resources</h4>
+    <h4>LiveView Examples</h4>
     <ul>
-      <li>
-        <a href="https://hexdocs.pm/phoenix/overview.html">Guides &amp; Docs</a>
-      </li>
-      <li>
-        <a href="https://github.com/phoenixframework/phoenix">Source</a>
-      </li>
-    </ul>
-  </article>
-  <article class="column">
-    <h4>Help</h4>
-    <ul>
-      <li>
-        <a href="https://elixirforum.com/c/phoenix-forum">Forum</a>
-      </li>
-      <li>
-        <a href="https://webchat.freenode.net/?channels=elixir-lang">#elixir-lang on Freenode IRC</a>
-      </li>
-      <li>
-        <a href="https://twitter.com/elixirphoenix">Twitter @elixirphoenix</a>
-      </li>
+      <li><%= link "Thermostat", to: Routes.live_path(@conn, DemoWeb.ThermostatLive) %></li>
+      <li><%= link "Snake", to: Routes.page_path(@conn, :snake) %></li>
+      <li><%= link "Search with Autcomplete", to: Routes.live_path(@conn, DemoWeb.SearchLive) %></li>
+      <li><%= link "Image Editor", to: Routes.live_path(@conn, DemoWeb.ImageLive) %></li>
+      <li><%= link "Clock", to: Routes.live_path(@conn, DemoWeb.ClockLive) %></li>
+      <li><%= link "Pacman", to: Routes.live_path(@conn, DemoWeb.PacmanLive) %></li>
+      <li><%= link "Rainbow", to: Routes.live_path(@conn, DemoWeb.RainbowLive) %></li>
+      <li><%= link "Counter", to: Routes.live_path(@conn, DemoWeb.CounterLive) %></li>
+      <li><%= link "CRUD Users", to: Routes.live_path(@conn, DemoWeb.UserLive.Index) %></li>
+      <li><%= link "Presence Example", to: Routes.live_path(@conn, DemoWeb.UserLive.PresenceIndex, "user#{System.unique_integer([:positive])}") %></li>
     </ul>
   </article>
 </section>

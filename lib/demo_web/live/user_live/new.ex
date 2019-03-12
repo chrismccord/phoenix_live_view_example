@@ -1,7 +1,7 @@
-defmodule DemoWeb.User.NewView do
+defmodule DemoWeb.UserLive.New do
   use Phoenix.LiveView
 
-  alias DemoWeb.UserView
+  alias DemoWeb.UserLive
   alias DemoWeb.Router.Helpers, as: Routes
   alias Demo.Accounts
   alias Demo.Accounts.User
@@ -14,7 +14,7 @@ defmodule DemoWeb.User.NewView do
      })}
   end
 
-  def render(assigns), do: UserView.render("new.html", assigns)
+  def render(assigns), do: DemoWeb.UserView.render("new.html", assigns)
 
   def handle_event("validate", %{"user" => params}, socket) do
     changeset =
@@ -28,9 +28,10 @@ defmodule DemoWeb.User.NewView do
   def handle_event("save", %{"user" => user_params}, socket) do
     case Accounts.create_user(user_params) do
       {:ok, user} ->
-        {:stop, socket
-                |> put_flash(:info, "user created")
-                |> redirect(to: Routes.user_path(DemoWeb.Endpoint, DemoWeb.User.ShowView, user))}
+        {:stop,
+         socket
+         |> put_flash(:info, "user created")
+         |> redirect(to: Routes.live_path(socket, UserLive.Show, user))}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}

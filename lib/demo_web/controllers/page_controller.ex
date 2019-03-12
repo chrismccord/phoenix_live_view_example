@@ -1,23 +1,15 @@
 defmodule DemoWeb.PageController do
   use DemoWeb, :controller
 
+  alias Phoenix.LiveView
+
   def index(conn, _params) do
     render(conn, "index.html")
-  end
-
-  def count(conn, _) do
-    Phoenix.LiveView.live_render(conn, DemoWeb.CounterView, session: %{params: conn.params})
   end
 
   def snake(conn, _) do
     conn
     |> put_layout(:game)
-    |> Phoenix.LiveView.live_render(DemoWeb.SnakeView, session: %{})
-  end
-
-  def thermostat(conn, _) do
-    conn
-    |> put_layout(:bare)
-    |> Phoenix.LiveView.live_render(DemoWeb.ThermostatView, session: %{})
+    |> LiveView.Controller.live_render(DemoWeb.SnakeLive, session: %{})
   end
 end

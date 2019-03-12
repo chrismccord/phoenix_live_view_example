@@ -1,4 +1,4 @@
-defmodule DemoWeb.CounterView do
+defmodule DemoWeb.CounterLive do
   use Phoenix.LiveView
 
   def render(assigns) do
@@ -10,9 +10,9 @@ defmodule DemoWeb.CounterView do
       <button phx-click="inc">+</button>
     </div>
     <%= if @val < 5 do %>
-      <%= live_render(@socket, DemoWeb.ClockView) %>
+      <%= live_render(@socket, DemoWeb.ClockLive) %>
     <% else %>
-      <%= live_render(@socket, DemoWeb.ImageView) %>
+      <%= live_render(@socket, DemoWeb.ImageLive) %>
     <% end %>
     """
   end
