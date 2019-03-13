@@ -23,6 +23,8 @@ config :demo, DemoWeb.Endpoint,
       "--mode",
       "development",
       "--watch-stdin",
+      "--display",
+      "minimal",
       cd: Path.expand("../assets", __DIR__)
     ]
   ]
