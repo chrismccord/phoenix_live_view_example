@@ -1,5 +1,6 @@
 defmodule DemoWeb.ImageLive do
   use Phoenix.LiveView
+  alias DemoWeb.Router.Helpers, as: Routes
 
   def radio_tag(assigns) do
     assigns = Enum.into(assigns, %{})
@@ -22,7 +23,7 @@ defmodule DemoWeb.ImageLive do
         </fieldset>
       </form>
       <br/>
-      <img phx-click="boom" src="/images/phx.png" width="<%= @width %>" style="background: <%= @bg %>;" />
+      <img phx-click="boom" src="<%= Routes.static_path(DemoWeb.Endpoint, "/images/phoenix.png") %>" width="<%= @width %>" style="background: <%= @bg %>;" />
     </div>
     """
   end
