@@ -9,7 +9,7 @@
     <ul>
       <li><%= link "Thermostat", to: Routes.live_path(@conn, DemoWeb.ThermostatLive) %></li>
       <li><%= link "Snake", to: Routes.page_path(@conn, :snake) %></li>
-      <li><%= link "Search with Autcomplete", to: Routes.live_path(@conn, DemoWeb.SearchLive) %></li>
+      <li><%= link "Search with Autocomplete", to: Routes.live_path(@conn, DemoWeb.SearchLive) %></li>
       <li><%= link "Image Editor", to: Routes.live_path(@conn, DemoWeb.ImageLive) %></li>
       <li><%= link "Clock", to: Routes.live_path(@conn, DemoWeb.ClockLive) %></li>
       <li><%= link "Pacman", to: Routes.live_path(@conn, DemoWeb.PacmanLive) %></li>
