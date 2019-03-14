@@ -52,7 +52,8 @@ config :demo, DemoWeb.Endpoint,
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
       ~r{lib/demo_web/views/.*(ex)$},
-      ~r{lib/demo_web/templates/.*(eex)$}
+      ~r{lib/demo_web/templates/.*(eex)$},
+      ~r{lib/demo_web/live/.*(ex)$},
     ]
   ]
 

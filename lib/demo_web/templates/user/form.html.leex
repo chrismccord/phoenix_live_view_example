@@ -18,6 +18,6 @@
   <%= error_tag f, :phone_number %>
 
   <div>
-    <%= submit "Save" %>
+    <%= submit "Save", phx_disable_with: "Saving..." %>
   </div>
 <% end %>
