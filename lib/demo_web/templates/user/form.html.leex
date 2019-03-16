@@ -17,6 +17,15 @@
   <%= text_input f, :phone_number %>
   <%= error_tag f, :phone_number %>
 
+  <%= label f, :hobbies %>
+  <%= inputs_for f, :hobbies, fn hf -> %>
+    <%= text_input hf, :title, placeholder: "hobby" %>
+    <%= error_tag hf, :title %>
+  <% end %>
+  <button phx-click="add_hobby" class="button-outline float-right">+ Add Hobby</button>
+
+  <br/>
+  <br/>
   <div>
     <%= submit "Save", phx_disable_with: "Saving..." %>
   </div>

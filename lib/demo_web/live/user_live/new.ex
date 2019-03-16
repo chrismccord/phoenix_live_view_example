@@ -16,6 +16,10 @@ defmodule DemoWeb.UserLive.New do
 
   def render(assigns), do: DemoWeb.UserView.render("new.html", assigns)
 
+  def handle_event("add_hobby", val, socket) do
+    UserLive.Edit.handle_event("add_hobby", val, socket)
+  end
+
   def handle_event("validate", %{"user" => params}, socket) do
     changeset =
       %User{}

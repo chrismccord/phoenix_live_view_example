@@ -18,6 +18,11 @@ defmodule DemoWeb.UserLive.Edit do
 
   def render(assigns), do: DemoWeb.UserView.render("edit.html", assigns)
 
+  def handle_event("add_hobby", _, socket) do
+    changeset = Accounts.build_hobby(socket.assigns.changeset, %{title: ""})
+    {:noreply, assign(socket, changeset: changeset)}
+  end
+
   def handle_event("validate", %{"user" => params}, socket) do
     changeset =
       socket.assigns.user

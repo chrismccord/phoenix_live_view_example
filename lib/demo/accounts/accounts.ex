@@ -6,7 +6,7 @@ defmodule Demo.Accounts do
   import Ecto.Query, warn: false
   alias Demo.Repo
 
-  alias Demo.Accounts.User
+  alias Demo.Accounts.{User, Hobby}
 
   @topic inspect(__MODULE__)
 
@@ -113,7 +113,18 @@ defmodule Demo.Accounts do
 
   """
   def change_user(user, attrs \\ %{}) do
-    User.changeset(user, attrs)
+    user
+    |> populate_hobbies()
+    |> User.changeset(attrs)
+  end
+  defp populate_hobbies(%User{hobbies: []} = user) do
+    %User{user | hobbies: [%Hobby{title: ""}]}
+  end
+  defp populate_hobbies(%User{} = user), do: user
+
+  def build_hobby(changeset, hobby) do
+    hobbies = Ecto.Changeset.get_field(changeset, :hobbies)
+    Ecto.Changeset.change(changeset, hobbies: hobbies ++ [hobby])
   end
 
   defp notify_subscribers({:ok, result}, event) do

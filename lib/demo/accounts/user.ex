@@ -6,6 +6,7 @@ defmodule Demo.Accounts.User do
     field :username, :string
     field :email, :string
     field :phone_number, :string
+    embeds_many :hobbies, Demo.Accounts.Hobby
 
     timestamps()
   end
@@ -23,6 +24,7 @@ defmodule Demo.Accounts.User do
     |> validate_length(:username, max: 12)
     |> validate_format(:email, ~r/.+@.+/, message: "must be a valid email address")
     |> validate_format(:phone_number, @phone, message: "must be a valid number")
+    |> cast_embed(:hobbies)
     |> unique_constraint(:email)
   end
 end
