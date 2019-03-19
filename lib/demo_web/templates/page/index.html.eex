@@ -16,6 +16,7 @@
       <li><%= link "Rainbow", to: Routes.live_path(@conn, DemoWeb.RainbowLive) %></li>
       <li><%= link "Counter", to: Routes.live_path(@conn, DemoWeb.CounterLive) %></li>
       <li><%= link "Top", to: Routes.live_path(@conn, DemoWeb.TopLive) %></li>
+      <li><%= link "Chat", to: Routes.live_path(@conn, DemoWeb.ChatLive) %></li>
       <li><%= link "CRUD Users", to: Routes.live_path(@conn, DemoWeb.UserLive.Index) %></li>
       <li><%= link "Presence Example", to: Routes.live_path(@conn, DemoWeb.UserLive.PresenceIndex, "user#{System.unique_integer([:positive])}") %></li>
     </ul>
