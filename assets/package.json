@@ -6,9 +6,8 @@
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
-    "phoenix": "../deps/phoenix",
-    "phoenix_html": "file:../deps/phoenix_html",
-    "phoenix_live_view": "file:../deps/phoenix_live_view"
+    "phoenix_live_view": "file:../deps/phoenix_live_view",
+    "phoenix_html": "file:../deps/phoenix_html"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
