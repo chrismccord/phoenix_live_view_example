@@ -24,6 +24,7 @@ defmodule DemoWeb.CounterLive do
         <button>Submit Payment</button>
       </form>
     <% end %>
+    <script>handleStripe()</script>
     """
   end
 

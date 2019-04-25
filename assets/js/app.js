@@ -8,7 +8,7 @@ let liveSocket = new LiveSocket("/live", {})
 liveSocket.connect()
 window.liveSocket = liveSocket
 
-document.addEventListener("DOMContentLoaded", () => {
+window.handleStripe = function(){
     // Create a Stripe client.
     var stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
 
@@ -89,4 +89,4 @@ document.addEventListener("DOMContentLoaded", () => {
       form.dispatchEvent(event)
     }
 
-})
+}
