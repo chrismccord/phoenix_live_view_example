@@ -8,7 +8,7 @@ let liveSocket = new LiveSocket("/live", {})
 liveSocket.connect()
 window.liveSocket = liveSocket
 
-liveSocket.socket.onOpen(() => {
+document.addEventListener("DOMContentLoaded", () => {
     // Create a Stripe client.
     var stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
 
