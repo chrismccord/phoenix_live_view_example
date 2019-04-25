@@ -8,7 +8,18 @@ let liveSocket = new LiveSocket("/live", {})
 liveSocket.connect()
 window.liveSocket = liveSocket
 
-window.handleStripe = function(){
+window.StripePayment = {
+  setup(id){
+    if(["complete", "loaded","interactive"].indexOf(document.readyState) >= 0){
+      this.setupStripe(id)
+    } else {
+      document.addEventListener("DOMContentLoaded", () => {
+        this.setupStripe(id)
+      })
+    }
+  },
+
+  setupStripe(id){
     // Create a Stripe client.
     var stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
 
@@ -38,7 +49,7 @@ window.handleStripe = function(){
     var card = elements.create('card', {style: style});
 
     // Add an instance of the card Element into the `card-element` <div>.
-    card.mount('#card-element');
+    card.mount(id);
 
     window.card = card
     // Handle real-time validation errors from the card Element.
@@ -88,5 +99,5 @@ window.handleStripe = function(){
 
       form.dispatchEvent(event)
     }
-
+  }
 }

@@ -1,10 +1,15 @@
 defmodule DemoWeb.CounterLive do
   use Phoenix.LiveView
-  use Phoenix.LiveView
 
   def render(assigns) do
     ~L"""
+    <div>
+      <h1>The count is: <%= @val %></h1>
+      <button phx-click="dec">-</button>
+      <button phx-click="inc">+</button>
+    </div>
     <script src="//js.stripe.com/v3/"></script>
+
     <%= if @token do %>
       <h3>Payment successful <%= @token %></h3>
     <% else %>
@@ -24,7 +29,7 @@ defmodule DemoWeb.CounterLive do
         <button>Submit Payment</button>
       </form>
     <% end %>
-    <script>handleStripe()</script>
+    <script>StripePayment.setup("#card-element")</script>
     """
   end
 
