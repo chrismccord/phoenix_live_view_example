@@ -9,17 +9,17 @@ liveSocket.connect()
 window.liveSocket = liveSocket
 
 window.StripePayment = {
-  setup(id){
+  setup(paymentNumber){
     if(["complete", "loaded","interactive"].indexOf(document.readyState) >= 0){
-      this.setupStripe(id)
+      this.setupStripe(paymentNumber)
     } else {
       document.addEventListener("DOMContentLoaded", () => {
-        this.setupStripe(id)
+        this.setupStripe(paymentNumber)
       })
     }
   },
 
-  setupStripe(id){
+  setupStripe(paymentNumber){
     // Create a Stripe client.
     var stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
 
@@ -45,16 +45,15 @@ window.StripePayment = {
     };
 
     // Create an instance of the card Element.
-    let wasSuccessful = false;
     var card = elements.create('card', {style: style});
 
     // Add an instance of the card Element into the `card-element` <div>.
-    card.mount(id);
+    card.mount(`#card-element`);
 
     window.card = card
     // Handle real-time validation errors from the card Element.
     card.addEventListener('change', function(event) {
-      var displayError = document.getElementById('card-errors');
+      var displayError = document.getElementById(`card-errors`);
       if (event.error) {
         displayError.textContent = event.error.message;
       } else {
@@ -63,10 +62,8 @@ window.StripePayment = {
     });
 
     // Handle form submission.
-    var form = document.getElementById('payment-form');
-    form.addEventListener('submit', function(event) {
-      if(wasSuccessful){ return true }
-
+    var form = document.getElementById(`payment-form-${paymentNumber}`);
+    let onSubmit = function(event) {
       event.preventDefault();
       event.stopImmediatePropagation();
 
@@ -74,21 +71,21 @@ window.StripePayment = {
         if (result.error) {
           console.log(result.error)
           // Inform the user if there was an error.
-          var errorElement = document.getElementById('card-errors');
+          var errorElement = document.getElementById(`card-errors`);
           errorElement.textContent = result.error.message;
         } else {
-          wasSuccessful = true
           console.log("success", result)
+          form.removeEventListener("submit", onSubmit)
           // Send the token to your server.
           stripeTokenHandler(form, event, result.token);
         }
       });
-    });
+    }
+    form.addEventListener('submit', onSubmit);
 
     // Submit the form with the token ID.
     function stripeTokenHandler(form, event, token) {
       // Insert the token ID into the form so it gets submitted to the server
-      var form = document.getElementById('payment-form');
       var hiddenInput = document.createElement('input');
       hiddenInput.setAttribute('type', 'hidden');
       hiddenInput.setAttribute('name', 'stripeToken');
