@@ -5,6 +5,7 @@ defmodule DemoWeb.CounterLive do
     ~L"""
     <div>
       <h1>Payment: <%= @payment_number %></h1>
+      <button phx-click="updated_script">Update Script</button>
     </div>
     <script src="//js.stripe.com/v3/"></script>
 
@@ -33,6 +34,10 @@ defmodule DemoWeb.CounterLive do
 
   def handle_event("charge", %{"stripeToken" => _token} = params, socket) do
     IO.inspect(params)
+    {:noreply, update(socket, :payment_number, &(&1 + 1))}
+  end
+
+  def handle_event("updated_script", _, socket) do
     {:noreply, update(socket, :payment_number, &(&1 + 1))}
   end
 end

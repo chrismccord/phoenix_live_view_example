@@ -10,6 +10,7 @@ window.liveSocket = liveSocket
 
 window.StripePayment = {
   setup(paymentNumber){
+    console.log("setup", paymentNumber)
     if(["complete", "loaded","interactive"].indexOf(document.readyState) >= 0){
       this.setupStripe(paymentNumber)
     } else {
