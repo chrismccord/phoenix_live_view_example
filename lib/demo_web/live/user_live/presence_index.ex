@@ -16,7 +16,7 @@ defmodule DemoWeb.UserLive.PresenceIndex do
 
   defp fetch(socket) do
     assign(socket, %{
-      users: Accounts.list_users(),
+      users: Accounts.list_users(1, 10),
       online_users: DemoWeb.Presence.list("users")
     })
   end

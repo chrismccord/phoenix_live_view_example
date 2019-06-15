@@ -1,24 +1,6 @@
-<h2>Listing Users</h2>
+<h2>Listing Users, page <%= @page %></h2>
 
-<%= if assigns[:online_users] do %>
-  <table>
-    <thead>
-      <tr>
-        <th>Username</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <%= for {user_key, %{metas: metas}} <- assigns[:online_users] do %>
-        <tr>
-          <td><%= user_key %> (<%= length(metas) %>)</td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% end %>
-
-<table>
+<table phx-keydown="keydown" phx-target="window">
   <thead>
     <tr>
       <th>Username</th>
@@ -47,4 +29,26 @@
   </tbody>
 </table>
 
-<span><%= link "New User", to: Routes.live_path(@socket, UserLive.New) %></span>
+<span>(live)</span>
+<%= if @page > 1 do %>
+  <span><%= live_link "prev", to: Routes.live_path(@socket, UserLive.Index, @page - 1) %></span>
+<% end %>
+<%= for i <- (@page - 5)..(@page + 5), i > 0 do %>
+  <span><%= live_link i, to: Routes.live_path(@socket, UserLive.Index, i) %></span>
+<% end %>
+<span><%= live_link "next", to: Routes.live_path(@socket, UserLive.Index, @page + 1), replace: @page > 10 %></span>
+
+<br/>
+<span>(regular)</span>
+<%= if @page > 1 do %>
+  <span><%= link "prev", to: Routes.live_path(@socket, UserLive.Index, @page - 1) %></span>
+<% end %>
+<%= for i <- (@page - 5)..(@page + 5), i > 0 do %>
+  <span><%= link i, to: Routes.live_path(@socket, UserLive.Index, i) %></span>
+<% end %>
+<span><%= link "next", to: Routes.live_path(@socket, UserLive.Index, @page + 1) %></span>
+<br/>
+<br/>
+<span><%= live_link "New User (live)", to: Routes.live_path(@socket, UserLive.New) %></span>
+<br/>
+<span><%= link "New User (regular)", to: Routes.live_path(@socket, UserLive.New) %></span>

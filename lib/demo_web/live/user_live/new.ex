@@ -9,12 +9,11 @@ defmodule DemoWeb.UserLive.New do
   def mount(_session, socket) do
     {:ok,
      assign(socket, %{
-       count: 0,
        changeset: Accounts.change_user(%User{})
      })}
   end
 
-  def render(assigns), do: DemoWeb.UserView.render("new.html", assigns)
+  def render(assigns), do: Phoenix.View.render(DemoWeb.UserView, "new.html", assigns)
 
   def handle_event("validate", %{"user" => params}, socket) do
     changeset =
