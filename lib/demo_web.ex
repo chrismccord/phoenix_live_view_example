@@ -23,6 +23,7 @@ defmodule DemoWeb do
 
       import Plug.Conn
       import DemoWeb.Gettext
+      import Phoenix.LiveView.Controller, only: [live_render: 3]
       alias DemoWeb.Router.Helpers, as: Routes
     end
   end

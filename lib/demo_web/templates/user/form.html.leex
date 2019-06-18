@@ -1,4 +1,4 @@
-<%= form_for @changeset, "#", [phx_change: :validate, phx_submit: :save], fn f -> %>
+<%= f = form_for @changeset, "#", [phx_change: :validate, phx_submit: :save] %>
   <%= if @changeset.action do %>
     <!-- <div class="alert alert-danger"> -->
     <!--   <p>Oops, something went wrong! Please check the errors below.</p> -->
@@ -20,4 +20,4 @@
   <div>
     <%= submit "Save", phx_disable_with: "Saving..." %>
   </div>
-<% end %>
+</form>
