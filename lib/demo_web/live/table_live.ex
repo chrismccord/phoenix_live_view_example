@@ -59,7 +59,13 @@ defmodule DemoWeb.TableLive do
 
   def handle_params(params, _url, socket) do
     query = params["query"]
-    sort_by = params["sort_by"] || "name"
+    sort_by =
+      case params["sort_by"] do
+        sort_by when sort_by in ~w(name population region) ->
+          params["sort_by"]
+        _ ->
+          "name"
+      end
     sort_order = params["sort_order"] == "asc" && :asc || :desc
     page = String.to_integer(params["page"] || "1")
     page_size = String.to_integer(params["page_size"] || "10")
