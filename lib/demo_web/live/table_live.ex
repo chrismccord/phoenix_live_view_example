@@ -73,7 +73,7 @@ defmodule DemoWeb.TableLive do
   end
 
   def handle_event("search", %{"query" => query}, socket) do
-    {:noreply, assign(socket, query: query, page: 1)}
+    {:noreply, redirect_with_attrs(socket, query: query, page: 1)}
   end
 
   # When the column that is used for sorting is clicked again, we reverse the sort order
@@ -81,22 +81,31 @@ defmodule DemoWeb.TableLive do
     {:noreply, assign(socket, sort_by: sort_by, sort_order: :desc)}
   end
   def handle_event("sort", column, %{assigns: %{sort_by: sort_by, sort_order: :desc}} = socket) when column == sort_by do
-    {:noreply, assign(socket, sort_by: sort_by, sort_order: :asc)}
+    {:noreply, redirect_with_attrs(socket, sort_by: sort_by, sort_order: :asc)}
   end
 
   # A new column has been clicked
   def handle_event("sort", column, socket) do
-    {:noreply, assign(socket, sort_by: column)}
+    {:noreply, redirect_with_attrs(socket, sort_by: column)}
   end
 
   def handle_event("goto-page", page, socket) do
-    {:noreply, assign(socket, page: String.to_integer(page))}
+    {:noreply, redirect_with_attrs(socket, page: String.to_integer(page))}
   end
 
   def handle_event("change-page-size", %{"page_size" => page_size}, socket) do
-    {:noreply, assign(socket, page_size: String.to_integer(page_size), page: 1)}
+    {:noreply, redirect_with_attrs(socket, page_size: String.to_integer(page_size), page: 1)}
   end
 
+  defp redirect_with_attrs(socket, attrs) do
+    query = attrs[:query] || socket.assigns[:query]
+    sort_by = attrs[:sort_by] || socket.assigns[:sort_by]
+    sort_order = attrs[:sort_order] || socket.assigns[:sort_order]
+    page = attrs[:page] || socket.assigns[:page]
+    page_size = attrs[:page_size] || socket.assigns[:page_size]
+
+    live_redirect(socket, to: DemoWeb.Router.Helpers.live_path(socket, __MODULE__, query: query, sort_by: sort_by, sort_order: sort_order, page: page, page_size: page_size))
+  end
 
   defp rows(%{data: data, query: query, sort_by: sort_by, sort_order: sort_order, page: page, page_size: page_size}) do
     data |> filter(query) |> sort(sort_by, sort_order) |> paginate(page, page_size)
