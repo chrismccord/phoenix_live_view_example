@@ -57,6 +57,15 @@ defmodule DemoWeb.TableLive do
     {:ok, assign(socket, data: Demo.Country.list(), query: nil, sort_by: "name", sort_order: :desc, page: 1, page_size: 10)}
   end
 
+  def handle_params(params, _url, socket) do
+    query = params["query"]
+    sort_by = params["sort_by"] || "name"
+    sort_order = params["sort_order"] == "asc" && :asc || :desc
+    page = String.to_integer(params["page"] || "1")
+    page_size = String.to_integer(params["page_size"] || "10")
+    {:noreply, assign(socket, query: query, sort_by: sort_by, sort_order: sort_order, page: page, page_size: page_size)}
+  end
+
   def handle_event("search", %{"query" => query}, socket) do
     {:noreply, assign(socket, query: query, page: 1)}
   end
