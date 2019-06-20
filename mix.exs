@@ -48,6 +48,7 @@ defmodule Demo.Mixfile do
       {:jason, "~> 1.0"},
       {:cowboy, "~> 2.0"},
       {:calendar, "~> 0.17.5"},
+      {:httpotion, "~> 3.1.0"}
     ]
   end
 

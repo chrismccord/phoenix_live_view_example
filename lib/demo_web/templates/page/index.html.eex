@@ -18,6 +18,7 @@
       <li><%= link "Top", to: Routes.live_path(@conn, DemoWeb.TopLive) %></li>
       <li><%= link "CRUD Users with Live pagination", to: Routes.live_path(@conn, DemoWeb.UserLive.Index) %></li>
       <li><%= link "Presence Example", to: Routes.live_path(@conn, DemoWeb.UserLive.PresenceIndex, "user#{System.unique_integer([:positive])}") %></li>
+      <li><%= link "Table Example (pagination, sorting, and filtering)", to: Routes.live_path(@conn, DemoWeb.TableLive) %>
     </ul>
   </article>
 </section>
