@@ -123,7 +123,7 @@ defmodule DemoWeb.TableLive do
 
   defp number_of_pages(%{data: data, query: query, page_size: page_size}) do
     number_of_rows = data |> filter(query) |> length
-    number_of_rows / page_size |> trunc
+    (number_of_rows / page_size) + 1 |> trunc
   end
 
   defp sort_order_icon(column, sort_by, :asc) when column == sort_by, do: "▲"
