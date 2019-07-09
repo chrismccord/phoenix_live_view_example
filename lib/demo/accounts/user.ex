@@ -10,7 +10,7 @@ defmodule Demo.Accounts.User do
     timestamps()
   end
 
-  @phone ~r/^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$/
+  @phone ~r/\s?\+?[0-9.\-\s]+\s?$/
 
   @doc false
   def changeset(user, attrs) do
