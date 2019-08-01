@@ -12,7 +12,7 @@ defmodule DemoWeb.UserLive.PresenceIndex do
     {:ok, fetch(socket)}
   end
 
-  def render(assigns), do: UserView.render("index.html", assigns)
+  def render(assigns), do: UserView.render("table.html", assigns)
 
   defp fetch(socket) do
     assign(socket, %{

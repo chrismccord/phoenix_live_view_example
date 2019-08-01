@@ -1,0 +1,28 @@
+<table phx-keydown="keydown" phx-target="window">
+  <thead>
+    <tr>
+      <th>Username</th>
+      <th>Email</th>
+      <th>Phone #</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for user <- @users do %>
+    <tr>
+      <td><%= user.username %></td>
+      <td><%= user.email %></td>
+      <td><%= user.phone_number %></td>
+
+      <td>
+        <%= link "Show", to: Routes.live_path(@socket, UserLive.Show, user) %>
+        <%= link "Edit", to: Routes.live_path(@socket, UserLive.Edit, user) %>
+        <%= link "Delete", to: "#",
+            phx_click: "delete_user",
+            phx_value: user.id %>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
