@@ -17,6 +17,11 @@
   <%= text_input f, :phone_number %>
   <%= error_tag f, :phone_number %>
 
+  <%= select f, :foo, @options %>
+
+  <%= text_input f, :bar %>
+  <%= select f, :bar, @options %>
+
   <div>
     <%= submit "Save", phx_disable_with: "Saving..." %>
   </div>
