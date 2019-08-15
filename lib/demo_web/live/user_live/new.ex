@@ -7,6 +7,10 @@ defmodule DemoWeb.UserLive.New do
   alias Demo.Accounts.User
 
   def mount(_session, socket) do
+    socket =
+      socket
+      |> assign(:options, [[key: "A", value: "a"], [key: "B", value: "b"]])
+
     {:ok,
      assign(socket, %{
        changeset: Accounts.change_user(%User{})
@@ -19,6 +23,7 @@ defmodule DemoWeb.UserLive.New do
     changeset =
       %User{}
       |> Demo.Accounts.change_user(params)
+      |> Ecto.Changeset.change(bar: params["foo"])
       |> Map.put(:action, :insert)
 
     {:noreply, assign(socket, changeset: changeset)}
