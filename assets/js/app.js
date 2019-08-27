@@ -16,7 +16,7 @@ Hooks.PhoneNumber = {
 }
 
 // <div class="column" phx-hook="Scroll" data-page="<%= @page %>">
-let scrollPercent = () => {
+let scrollAt = () => {
   let scrollTop = document.documentElement.scrollTop || document.body.scrollTop
   let scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight
   let clientHeight = document.documentElement.clientHeight
@@ -24,18 +24,18 @@ let scrollPercent = () => {
   return scrollTop / (scrollHeight - clientHeight) * 100
 }
 
-Hooks.Scroll = {
-  currentPage() { return this.el.dataset.page },
+Hooks.InfiniteScroll = {
+  page() { return this.el.dataset.page },
   mounted(){
-    this.pending = this.currentPage()
+    this.pending = this.page()
     window.addEventListener("scroll", e => {
-      if(this.pending === this.currentPage() && scrollPercent() > 90){
-        this.pending = this.currentPage + 1
+      if(this.pending == this.page() && scrollAt() > 90){
+        this.pending = this.page() + 1
         this.pushEvent("load-more", {})
       }
     })
   },
-  updated(){ this.pending = this.currentPage() }
+  updated(){ this.pending = this.page() }
 }
 
 

@@ -34,7 +34,7 @@ defmodule DemoWeb.Router do
     live "/users/page/:page", UserLive.Index
     live "/users", UserLive.Index
     live "/users-scroll", UserLive.IndexManualScroll
-    live "/users-auto-scroll", UserLive.IndexAutoSroll
+    live "/users-auto-scroll", UserLive.IndexAutoScroll
 
     live "/users/new", UserLive.New
     live "/users/:id", UserLive.Show

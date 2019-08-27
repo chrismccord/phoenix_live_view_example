@@ -85,3 +85,7 @@ pre{
     transform: translateY(0);
   }
 }
+
+form[phx-submit="load-more"] button {
+  margin-bottom: 200px;
+}

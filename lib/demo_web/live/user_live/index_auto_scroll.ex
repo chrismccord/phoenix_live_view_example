@@ -1,25 +1,18 @@
-defmodule DemoWeb.UserLive.IndexAutoSroll do
+defmodule DemoWeb.UserLive.IndexAutoScroll do
   use Phoenix.LiveView
 
-  Plug.Conn
   def render(assigns) do
     ~L"""
-    <div class="column">
-      <h2>Listing Users</h2>
-      <table phx-hook="Scroll" data-page="<%= @page %>">
-        <thead>
-          <tr><th>Username</th><th>Email</th></tr>
-        </thead>
-        <tbody phx-update="append">
-          <%= for user <- @users do %>
-            <tr class="user-row">
-              <td><%= user.username %></td>
-              <td><%= user.email %></td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
+    <table phx-update="append"
+           phx-hook="InfiniteScroll"
+           data-page="<%= @page %>">
+      <%= for user <- @users do %>
+        <tr>
+          <td><%= user.username %></td>
+          <td><%= user.email %></td>
+        </tr>
+      <% end %>
+    </table>
     """
   end
 
@@ -27,21 +20,16 @@ defmodule DemoWeb.UserLive.IndexAutoSroll do
     {:ok,
      socket
      |> configure_temporary_assigns([:users])
-     |> assign(page: 1, per_page: 20, count: 0)
+     |> assign(page: 1, per_page: 10)
      |> fetch()}
   end
 
-  defp fetch(socket) do
-    %{page: page, per_page: per_page} = socket.assigns
-    case Demo.Accounts.list_users(page, per_page) do
-      [] -> assign(socket, users: [], page: page - 1)
-      [_|_] = users -> assign(socket, users: users)
-    end
+  defp fetch(%{assigns: %{page: page, per_page: per}} = socket) do
+    assign(socket, users: Demo.Accounts.list_users(page, per))
   end
 
-  def handle_event("load-more", _, socket) do
-    {:noreply, socket |> assign(page: socket.assigns.page + 1) |> fetch()}
+  def handle_event("load-more", _, %{assigns: assigns} = socket) do
+    {:noreply, socket |> assign(page: assigns.page + 1) |> fetch()}
   end
 end
-
 
