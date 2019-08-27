@@ -7,24 +7,32 @@ defmodule DemoWeb.UserLive.New do
   alias Demo.Accounts.User
 
   def mount(_session, socket) do
-    {:ok,
-     assign(socket, %{
-       changeset: Accounts.change_user(%User{})
-     })}
+    changeset =
+      case get_connect_params(socket) do
+        %{"stashed_form" => encoded} ->
+          %User{}
+          |> Accounts.change_user(Plug.Conn.Query.decode(encoded)["user"])
+          |> Map.put(:action, :insert)
+
+        _ ->
+          Accounts.change_user(%User{})
+      end
+
+    {:ok, assign(socket, changeset: changeset)}
   end
 
   def render(assigns), do: Phoenix.View.render(DemoWeb.UserView, "new.html", assigns)
 
-  def handle_event("validate", %{"user" => params}, socket) do
+  def handle_event("validate", %{"user" => user_params} = params, socket) do
     changeset =
       %User{}
-      |> Demo.Accounts.change_user(params)
+      |> Demo.Accounts.change_user(user_params)
       |> Map.put(:action, :insert)
 
     {:noreply, assign(socket, changeset: changeset)}
   end
 
-  def handle_event("save", %{"user" => user_params}, socket) do
+  def handle_event("save", %{"user" => user_params} = params, socket) do
     case Accounts.create_user(user_params) do
       {:ok, user} ->
         {:stop,

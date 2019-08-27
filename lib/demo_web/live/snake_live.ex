@@ -148,7 +148,7 @@ defmodule DemoWeb.SnakeLive do
     {:noreply, new_game(socket)}
   end
 
-  def handle_event("keydown", key, socket) do
+  def handle_event("keydown", %{"key" => key}, socket) do
     {:noreply, turn(socket, key)}
   end
 
