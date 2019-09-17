@@ -3,13 +3,15 @@ defmodule DemoWeb.UserLive.IndexManualScroll do
 
   def render(assigns) do
     ~L"""
-    <table phx-update="append">
-      <%= for user <- @users do %>
-        <tr class="user-row">
-          <td><%= user.username %></td>
-          <td><%= user.email %></td>
-        </tr>
-      <% end %>
+    <table>
+      <tbody phx-update="append" id="users">
+        <%= for user <- @users do %>
+          <tr class="user-row" id="user-<%= user.id %>" phx-hook="Row">
+            <td><%= user.username %></td>
+            <td><%= user.email %></td>
+          </tr>
+        <% end %>
+      </tbody>
     </table>
     <form phx-submit="load-more">
       <button phx-disable-with="loading...">more</button>
@@ -20,9 +22,8 @@ defmodule DemoWeb.UserLive.IndexManualScroll do
   def mount(_session, socket) do
     {:ok,
      socket
-     |> configure_temporary_assigns([:users])
-     |> assign(page: 1, per_page: 10)
-     |> fetch()}
+     |> assign(page: 1, per_page: 10, val: 0)
+     |> fetch(), temporary_assigns: [:users]}
   end
 
   defp fetch(%{assigns: %{page: page, per_page: per}} = socket) do

@@ -6,6 +6,8 @@ defmodule Demo.Accounts.User do
     field :username, :string
     field :email, :string
     field :phone_number, :string
+    field :password, :string, virtual: true
+    field :password_confirmation, :string, virtual: true
 
     timestamps()
   end
@@ -15,8 +17,9 @@ defmodule Demo.Accounts.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:username, :email, :phone_number])
+    |> cast(attrs, [:username, :email, :phone_number, :password])
     |> validate_required([:username, :email, :phone_number])
+    |> validate_confirmation(:password)
     |> validate_format(:username, ~r/^[a-zA-Z0-9_]*$/,
       message: "only letters, numbers, and underscores please"
     )

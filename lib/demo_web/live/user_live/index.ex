@@ -8,17 +8,12 @@ defmodule DemoWeb.UserLive.Index do
   def render(assigns), do: UserView.render("index.html", assigns)
 
   def mount(_session, socket) do
-    if connected?(socket), do: Demo.Accounts.subscribe()
-
-    {:ok,
-     socket
-     |> assign(:page, 1)
-     |> assign(:per_page, 5)}
+    {:ok, assign(socket, page: 1, per_page: 5)}
   end
 
-  def handle_params(params, _url, socket) do
-    {page_num, ""} = Integer.parse(params["page"] || "1")
-    {:noreply, socket |> assign(page: page_num) |> fetch()}
+  def handle_params(params, url, socket) do
+    {page, ""} = Integer.parse(params["page"] || "1")
+    {:noreply, socket |> assign(page: page) |> fetch()}
   end
 
   defp fetch(socket) do
@@ -26,18 +21,22 @@ defmodule DemoWeb.UserLive.Index do
     assign(socket, users: Accounts.list_users(page, per_page))
   end
 
-
   def handle_info({Accounts, [:user | _], _}, socket) do
     {:noreply, fetch(socket)}
   end
 
-  def handle_event("keydown", "ArrowRight", socket) do
-    {:noreply, go_page(socket, socket.assigns.page + 1)}
-  end
-  def handle_event("keydown", "ArrowLeft", socket) do
+  def handle_event("keydown", %{"code" => "ArrowLeft"}, socket) do
     {:noreply, go_page(socket, socket.assigns.page - 1)}
   end
+  def handle_event("keydown", %{"code" => "ArrowRight"}, socket) do
+    {:noreply, go_page(socket, socket.assigns.page + 1)}
+  end
   def handle_event("keydown", _, socket), do: {:noreply, socket}
+
+  defp go_page(socket, page) when page > 0 do
+    live_redirect(socket, to: Routes.live_path(socket, __MODULE__, page))
+  end
+  defp go_page(socket, page), do: socket
 
   def handle_event("delete_user", id, socket) do
     user = Accounts.get_user!(id)
@@ -45,9 +44,4 @@ defmodule DemoWeb.UserLive.Index do
 
     {:noreply, socket}
   end
-
-  defp go_page(socket, page) when page > 0 do
-    live_redirect(socket, to: Routes.live_path(socket, __MODULE__, page: page))
-  end
-  defp go_page(socket, _page), do: socket
 end

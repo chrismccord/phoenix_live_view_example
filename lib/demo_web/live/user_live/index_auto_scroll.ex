@@ -3,15 +3,18 @@ defmodule DemoWeb.UserLive.IndexAutoScroll do
 
   def render(assigns) do
     ~L"""
-    <table phx-update="append"
-           phx-hook="InfiniteScroll"
-           data-page="<%= @page %>">
-      <%= for user <- @users do %>
-        <tr>
-          <td><%= user.username %></td>
-          <td><%= user.email %></td>
-        </tr>
-      <% end %>
+    <table>
+      <tbody id="users"
+             phx-update="append"
+             phx-hook="InfiniteScroll"
+             data-page="<%= @page %>">
+        <%= for user <- @users do %>
+          <tr class="user-row" id="user-<%= user.id %>">
+            <td><%= user.username %></td>
+            <td><%= user.email %></td>
+          </tr>
+        <% end %>
+      </tbody>
     </table>
     """
   end
@@ -19,9 +22,8 @@ defmodule DemoWeb.UserLive.IndexAutoScroll do
   def mount(_session, socket) do
     {:ok,
      socket
-     |> configure_temporary_assigns([:users])
      |> assign(page: 1, per_page: 10)
-     |> fetch()}
+     |> fetch(), temporary_assigns: [:users]}
   end
 
   defp fetch(%{assigns: %{page: page, per_page: per}} = socket) do
@@ -32,4 +34,3 @@ defmodule DemoWeb.UserLive.IndexAutoScroll do
     {:noreply, socket |> assign(page: assigns.page + 1) |> fetch()}
   end
 end
-

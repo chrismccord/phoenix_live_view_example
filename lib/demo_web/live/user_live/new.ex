@@ -7,17 +7,7 @@ defmodule DemoWeb.UserLive.New do
   alias Demo.Accounts.User
 
   def mount(_session, socket) do
-    changeset =
-      case get_connect_params(socket) do
-        %{"stashed_form" => encoded} ->
-          %User{}
-          |> Accounts.change_user(Plug.Conn.Query.decode(encoded)["user"])
-          |> Map.put(:action, :insert)
-
-        _ ->
-          Accounts.change_user(%User{})
-      end
-
+    changeset = Accounts.change_user(%User{})
     {:ok, assign(socket, changeset: changeset)}
   end
 

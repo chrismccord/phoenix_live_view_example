@@ -14,7 +14,7 @@ defmodule DemoWeb.ThermostatLive do
         <button phx-click="dec" class="minus">-</button>
         <button phx-click="inc" class="plus">+</button>
         <span class="weather">
-          <%= live_render(@socket, DemoWeb.WeatherLive) %>
+          <%= live_render(@socket, DemoWeb.WeatherLive, id: "weather") %>
         </span>
       </div>
     </div>

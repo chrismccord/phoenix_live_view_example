@@ -1,8 +1,10 @@
 import css from "../css/app.css";
 import "phoenix_html"
-import {LiveSocket, debug} from "./phoenix_live_view"
+import {Socket} from "phoenix"
+import {LiveSocket, debug, View} from "phoenix_live_view"
 
 let Hooks = {}
+
 Hooks.PhoneNumber = {
   mounted(){
     let pattern = /^(\d{3})(\d{3})(\d{4})$/
@@ -15,7 +17,6 @@ Hooks.PhoneNumber = {
   }
 }
 
-// <div class="column" phx-hook="Scroll" data-page="<%= @page %>">
 let scrollAt = () => {
   let scrollTop = document.documentElement.scrollTop || document.body.scrollTop
   let scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight
@@ -37,8 +38,6 @@ Hooks.InfiniteScroll = {
   },
   updated(){ this.pending = this.page() }
 }
-
-
 
 let serializeForm = (form) => {
   let formData = new FormData(form)
@@ -65,12 +64,8 @@ Hooks.SavedForm = {
   }
 }
 
-Hooks.Click = {
-  mounted(){
-    this.el.addEventListener("click", e => console.log(this.el.id))
-  },
-}
 
-let socket = new LiveSocket("/live", {hooks: Hooks, viewLogger: debug, params: (view) => Params.get(view)})
-socket.connect()
+let liveSocket = new LiveSocket("/live", Socket, {hooks: Hooks})
+
+liveSocket.connect()
 

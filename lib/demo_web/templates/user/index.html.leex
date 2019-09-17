@@ -29,26 +29,12 @@
   </tbody>
 </table>
 
-<span>(live)</span>
 <%= if @page > 1 do %>
   <span><%= live_link "prev", to: Routes.live_path(@socket, UserLive.Index, @page - 1) %></span>
 <% end %>
 <%= for i <- (@page - 5)..(@page + 5), i > 0 do %>
   <span><%= live_link i, to: Routes.live_path(@socket, UserLive.Index, i) %></span>
 <% end %>
-<span><%= live_link "next", to: Routes.live_path(@socket, UserLive.Index, @page + 1), replace: @page > 10 %></span>
-
-<br/>
-<span>(regular)</span>
-<%= if @page > 1 do %>
-  <span><%= link "prev", to: Routes.live_path(@socket, UserLive.Index, @page - 1) %></span>
-<% end %>
-<%= for i <- (@page - 5)..(@page + 5), i > 0 do %>
-  <span><%= link i, to: Routes.live_path(@socket, UserLive.Index, i) %></span>
-<% end %>
-<span><%= link "next", to: Routes.live_path(@socket, UserLive.Index, @page + 1) %></span>
-<br/>
+<span><%= live_link "next", to: Routes.live_path(@socket, UserLive.Index, @page + 1) <> "#foo", replace: @page > 10 %></span>
 <br/>
 <span><%= live_link "New User (live)", to: Routes.live_path(@socket, UserLive.New) %></span>
-<br/>
-<span><%= link "New User (regular)", to: Routes.live_path(@socket, UserLive.New) %></span>
