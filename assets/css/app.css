@@ -75,6 +75,10 @@ pre{
   animation: slide-up 0.4s ease;
 }
 
+.user-artwork {
+  border-radius: 50%;
+}
+
 @keyframes slide-up {
   0% {
     opacity: 0;

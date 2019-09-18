@@ -10,6 +10,19 @@ defmodule DemoWeb.UserLive.IndexAutoScroll do
              data-page="<%= @page %>">
         <%= for user <- @users do %>
           <tr class="user-row" id="user-<%= user.id %>">
+            <td phx-hook="LazyArtwork">
+              <img
+                class="user-artwork"
+                src=<%= DemoWeb.Router.Helpers.static_url(DemoWeb.Endpoint, "/images/1x1.gif") %> ;
+                data-src=<%= Map.get(user.artwork, "url") %>
+                alt=<%= user.username %>
+                height=<%= Map.get(user.artwork, "height") %>
+                width=<%= Map.get(user.artwork, "width") %>
+                style="background-color: lightgray"
+                role="presentation"
+                data-lazy-artwork
+              />
+            </td>
             <td><%= user.username %></td>
             <td><%= user.email %></td>
           </tr>
@@ -22,7 +35,7 @@ defmodule DemoWeb.UserLive.IndexAutoScroll do
   def mount(_session, socket) do
     {:ok,
      socket
-     |> assign(page: 1, per_page: 10)
+     |> assign(page: 1, per_page: 20)
      |> fetch(), temporary_assigns: [:users]}
   end
 

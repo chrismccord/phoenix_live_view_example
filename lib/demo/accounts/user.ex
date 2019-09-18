@@ -3,6 +3,7 @@ defmodule Demo.Accounts.User do
   import Ecto.Changeset
 
   schema "users" do
+    field :artwork, :map
     field :username, :string
     field :email, :string
     field :phone_number, :string
@@ -17,7 +18,7 @@ defmodule Demo.Accounts.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:username, :email, :phone_number, :password])
+    |> cast(attrs, [:username, :artwork, :email, :phone_number, :password])
     |> validate_required([:username, :email, :phone_number])
     |> validate_confirmation(:password)
     |> validate_format(:username, ~r/^[a-zA-Z0-9_]*$/,

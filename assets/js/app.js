@@ -2,6 +2,7 @@ import css from "../css/app.css";
 import "phoenix_html"
 import {Socket} from "phoenix"
 import {LiveSocket, debug, View} from "phoenix_live_view"
+import IntersectionObserverAdmin from 'intersection-observer-admin';
 
 let Hooks = {}
 
@@ -37,6 +38,48 @@ Hooks.InfiniteScroll = {
     })
   },
   updated(){ this.pending = this.page() }
+}
+
+// TODO: make IE11 compat with rAF
+const observerAdmin = new IntersectionObserverAdmin();
+const observerOptions = { rootMargin: '0px 0px 0px 0px' , threshold: 0 };
+
+Hooks.LazyArtwork = {
+  observerAdmin,
+  artwork() { return this.el.querySelector('img') },
+
+  mounted() {
+    window.requestIdleCallback(() => {
+      let enterCallback = ({ target: img }) => {
+        if (img) {
+            if (img && img.dataset) {
+              img.src = img.dataset.src;
+            }
+        }
+      }
+
+      let exitCallback = ({ isIntersecting, target: img }) => {
+        if (isIntersecting) {
+          this.observerAdmin.unobserve(img, observerOptions);
+        }
+      }
+
+      const artwork = this.artwork();
+      this.observerAdmin.addEnterCallback(
+        artwork,
+        enterCallback
+      )
+      this.observerAdmin.addExitCallback(
+        artwork,
+        exitCallback
+      )
+
+      this.observerAdmin.observe(
+        artwork,
+        observerOptions
+      )
+    });
+  }
 }
 
 let serializeForm = (form) => {
