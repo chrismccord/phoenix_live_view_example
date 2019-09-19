@@ -4,10 +4,7 @@ defmodule DemoWeb.UserLive.IndexAutoScroll do
   def render(assigns) do
     ~L"""
     <table>
-      <tbody id="users"
-             phx-update="append"
-             phx-hook="InfiniteScroll"
-             data-page="<%= @page %>">
+      <tbody id="users" phx-update="append">
         <%= for user <- @users do %>
           <tr class="user-row" id="user-<%= user.id %>">
             <td phx-hook="LazyArtwork">
@@ -30,6 +27,8 @@ defmodule DemoWeb.UserLive.IndexAutoScroll do
         <% end %>
       </tbody>
     </table>
+
+    <div phx-hook="ObserverInfiniteScroll" data-page="<%= @page %>"></div>
     """
   end
 
