@@ -20,6 +20,7 @@ defmodule DemoWeb.UserLive.IndexAutoScroll do
                 width=<%= Map.get(user.artwork, "width") %>
                 style="background-color: lightgray"
                 role="presentation"
+                phx-update="ignore"
                 data-lazy-artwork
               />
             </td>
