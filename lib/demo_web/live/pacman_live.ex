@@ -111,7 +111,7 @@ defmodule DemoWeb.PacmanLive do
     {:noreply, new_socket}
   end
 
-  def handle_event("keydown", key, socket) do
+  def handle_event("keydown", %{"code" => key}, socket) do
     {:noreply, turn(socket, key)}
   end
 
