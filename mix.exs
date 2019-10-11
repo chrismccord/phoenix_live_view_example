@@ -34,7 +34,7 @@ defmodule Demo.Mixfile do
   defp deps do
     [
       {:phoenix, "~> 1.4.9"},
-      {:phoenix_live_view, "~> 0.2.1"},
+      {:phoenix_live_view, "~> 0.2"},
       {:plug_cowboy, "~> 2.0"},
       {:plug, "~> 1.8"},
       {:phoenix_pubsub, "~> 1.1"},
@@ -46,7 +46,7 @@ defmodule Demo.Mixfile do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:cowboy, "~> 2.0"},
-      {:calendar, "~> 0.17.5"},
+      {:calendar, "~> 0.17.5"}
     ]
   end
 
