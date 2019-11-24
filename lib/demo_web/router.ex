@@ -28,7 +28,6 @@ defmodule DemoWeb.Router do
     live "/pacman", PacmanLive
     live "/rainbow", RainbowLive
     live "/counter", CounterLive
-    live "/counters", CountersLive
     live "/top", TopLive
     live "/presence_users/:name", UserLive.PresenceIndex
 
