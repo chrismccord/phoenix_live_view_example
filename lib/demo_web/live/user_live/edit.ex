@@ -5,18 +5,22 @@ defmodule DemoWeb.UserLive.Edit do
   alias DemoWeb.Router.Helpers, as: Routes
   alias Demo.Accounts
 
-  def mount(%{path_params: %{"id" => id}}, socket) do
+  def mount(_session, socket) do
+    {:ok, socket}
+  end
+
+  def render(assigns), do: DemoWeb.UserView.render("edit.html", assigns)
+
+  def handle_params(%{"id" => id}, _uri, socket) do
     user = Accounts.get_user!(id)
 
-    {:ok,
+    {:noreply,
      assign(socket, %{
        count: 0,
        user: user,
        changeset: Accounts.change_user(user)
      })}
   end
-
-  def render(assigns), do: DemoWeb.UserView.render("edit.html", assigns)
 
   def handle_event("validate", %{"user" => params}, socket) do
     changeset =

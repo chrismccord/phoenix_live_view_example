@@ -34,4 +34,8 @@ defmodule DemoWeb.UserLive.New do
         {:noreply, assign(socket, changeset: changeset)}
     end
   end
+
+  def handle_event("blur", %{"value" => _user_params}, socket) do
+    {:noreply, socket}
+  end
 end
