@@ -11,7 +11,7 @@ defmodule DemoWeb.UserLive.Index do
     {:ok, assign(socket, page: 1, per_page: 5)}
   end
 
-  def handle_params(params, url, socket) do
+  def handle_params(params, _url, socket) do
     {page, ""} = Integer.parse(params["page"] || "1")
     {:noreply, socket |> assign(page: page) |> fetch()}
   end

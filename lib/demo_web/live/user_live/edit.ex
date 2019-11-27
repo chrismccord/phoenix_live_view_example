@@ -13,13 +13,9 @@ defmodule DemoWeb.UserLive.Edit do
 
   def handle_params(%{"id" => id}, _uri, socket) do
     user = Accounts.get_user!(id)
-
-    {:noreply,
-     assign(socket, %{
-       count: 0,
-       user: user,
-       changeset: Accounts.change_user(user)
-     })}
+    changeset = Accounts.change_user(user)
+    socket = assign(socket, %{count: 0, user: user, changeset: changeset})
+    {:noreply, socket}
   end
 
   def handle_event("validate", %{"user" => params}, socket) do
@@ -34,7 +30,7 @@ defmodule DemoWeb.UserLive.Edit do
   def handle_event("save", %{"user" => user_params}, socket) do
     case Accounts.update_user(socket.assigns.user, user_params) do
       {:ok, user} ->
-        {:stop,
+        {:noreply,
          socket
          |> put_flash(:info, "User updated successfully.")
          |> redirect(to: Routes.live_path(socket, UserLive.Show, user))}
@@ -42,5 +38,9 @@ defmodule DemoWeb.UserLive.Edit do
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}
     end
+  end
+
+  def handle_event("blur", %{"value" => _ph_number}, socket) do
+    {:noreply, socket}
   end
 end
