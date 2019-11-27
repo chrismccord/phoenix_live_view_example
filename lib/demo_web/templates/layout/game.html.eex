@@ -7,6 +7,7 @@
     <title>Demo · Phoenix Framework</title>
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
     <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+    <%= csrf_meta_tag() %>
   </head>
   <body class="game">
     <main role="main" class="container <%= Enum.at(@conn.path_info, 0) %>">
