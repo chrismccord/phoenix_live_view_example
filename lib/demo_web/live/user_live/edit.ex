@@ -39,8 +39,4 @@ defmodule DemoWeb.UserLive.Edit do
         {:noreply, assign(socket, changeset: changeset)}
     end
   end
-
-  def handle_event("blur", %{"value" => _ph_number}, socket) do
-    {:noreply, socket}
-  end
 end
