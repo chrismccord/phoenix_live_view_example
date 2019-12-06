@@ -37,8 +37,15 @@ defmodule DemoWeb.UserIndexTest do
       for _i <- 1..20 do
         user_fixture()
       end
-      {:ok, view, _html} = live(conn, "/users")
-      render_keydown(view, :keydown, %{"code" => "ArrowRight"}) =~ "page 2"
+      {:ok, view, html} = live(conn, "/users")
+
+      refute html =~ "page 2"
+      html = render_keydown(view, :keydown, %{"code" => "ArrowRight"})
+      assert html =~ "page 2"
+
+      refute html =~ "page 1"
+      html = render_keydown(view, :keydown, %{"code" => "ArrowLeft"})
+      assert html =~ "page 1"
     end
 
     test "can delete a user", %{conn: conn} do
