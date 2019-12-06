@@ -22,7 +22,7 @@
         <%= link "Edit", to: Routes.live_path(@socket, UserLive.Edit, user) %>
         <%= link "Delete", to: "#",
             phx_click: "delete_user",
-            phx_value: user.id %>
+            phx_value_user_id: user.id %>
       </td>
     </tr>
 <% end %>
