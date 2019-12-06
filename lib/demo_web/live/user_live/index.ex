@@ -32,16 +32,18 @@ defmodule DemoWeb.UserLive.Index do
     {:noreply, go_page(socket, socket.assigns.page + 1)}
   end
   def handle_event("keydown", _, socket), do: {:noreply, socket}
-
-  defp go_page(socket, page) when page > 0 do
-    live_redirect(socket, to: Routes.live_path(socket, __MODULE__, page))
-  end
-  defp go_page(socket, page), do: socket
-
   def handle_event("delete_user", %{"user-id" => id}, socket) do
     user = Accounts.get_user!(id)
     {:ok, _user} = Accounts.delete_user(user)
 
+    %{page: page, per_page: per_page} = socket.assigns
+    socket = assign(socket, users: Accounts.list_users(page, per_page))
+
     {:noreply, socket}
   end
+
+  defp go_page(socket, page) when page > 0 do
+    live_redirect(socket, to: Routes.live_path(socket, __MODULE__, page))
+  end
+  defp go_page(socket, _page), do: socket
 end
