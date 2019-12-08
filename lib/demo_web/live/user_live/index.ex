@@ -8,6 +8,8 @@ defmodule DemoWeb.UserLive.Index do
   def render(assigns), do: UserView.render("index.html", assigns)
 
   def mount(_session, socket) do
+    if connected?(socket), do: Demo.Accounts.subscribe()
+
     {:ok, assign(socket, page: 1, per_page: 5)}
   end
 
