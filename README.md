@@ -13,8 +13,8 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 
 ## Learn more
 
-  * Official website: http://www.phoenixframework.org/
-  * Guides: http://phoenixframework.org/docs/overview
+  * Official website: https://www.phoenixframework.org/
+  * Guides: https://phoenixframework.org/docs/overview
   * Docs: https://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
+  * Mailing list: https://groups.google.com/group/phoenix-talk
   * Source: https://github.com/phoenixframework/phoenix
