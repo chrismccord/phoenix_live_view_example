@@ -17,6 +17,7 @@
       <li><%= link "Clock", to: Routes.live_path(@conn, DemoWeb.ClockLive) %></li>
       <li><%= link "Pacman", to: Routes.live_path(@conn, DemoWeb.PacmanLive) %></li>
       <li><%= link "Rainbow", to: Routes.live_path(@conn, DemoWeb.RainbowLive) %></li>
+      <li><%= link "Life", to: Routes.live_path(@conn, DemoWeb.LifeLive) %></li>
       <li><%= link "Counter", to: Routes.live_path(@conn, DemoWeb.CounterLive) %></li>
       <li><%= link "Top", to: Routes.live_path(@conn, DemoWeb.TopLive) %></li>
       <li><%= link "Presence Example", to: Routes.live_path(@conn, DemoWeb.UserLive.PresenceIndex, "user#{System.unique_integer([:positive])}") %></li>
