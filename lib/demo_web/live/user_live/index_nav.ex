@@ -1,17 +1,17 @@
-defmodule DemoWeb.UserLive.Index do
-  use Phoenix.LiveView
+defmodule DemoWeb.UserLive.IndexNav do
+  use Phoenix.LiveView, layout: {DemoWeb.LayoutView, "live.html"}
 
   alias Demo.Accounts
   alias DemoWeb.UserView
   alias DemoWeb.Router.Helpers, as: Routes
 
-  def render(assigns), do: UserView.render("index.html", assigns)
+  def render(assigns), do: UserView.render("index_nav.html", assigns)
 
   def mount(_session, socket) do
     {:ok, assign(socket, page: 1, per_page: 5)}
   end
 
-  def handle_params(params, url, socket) do
+  def handle_params(params, _url, socket) do
     {page, ""} = Integer.parse(params["page"] || "1")
     {:noreply, socket |> assign(page: page) |> fetch()}
   end
@@ -34,15 +34,15 @@ defmodule DemoWeb.UserLive.Index do
   end
   def handle_event("keydown", _, socket), do: {:noreply, socket}
 
-  defp go_page(socket, page) when page > 0 do
-    live_redirect(socket, to: Routes.live_path(socket, __MODULE__, page))
-  end
-  defp go_page(socket, page), do: socket
-
   def handle_event("delete_user", id, socket) do
     user = Accounts.get_user!(id)
     {:ok, _user} = Accounts.delete_user(user)
 
     {:noreply, socket}
   end
+
+  defp go_page(socket, page) when page > 0 do
+    live_redirect(socket, to: Routes.live_path(socket, __MODULE__, page))
+  end
+  defp go_page(socket, _page), do: socket
 end

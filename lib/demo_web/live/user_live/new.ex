@@ -13,7 +13,7 @@ defmodule DemoWeb.UserLive.New do
 
   def render(assigns), do: Phoenix.View.render(DemoWeb.UserView, "new.html", assigns)
 
-  def handle_event("validate", %{"user" => user_params} = params, socket) do
+  def handle_event("validate", %{"user" => user_params}, socket) do
     changeset =
       %User{}
       |> Demo.Accounts.change_user(user_params)
@@ -22,7 +22,7 @@ defmodule DemoWeb.UserLive.New do
     {:noreply, assign(socket, changeset: changeset)}
   end
 
-  def handle_event("save", %{"user" => user_params} = params, socket) do
+  def handle_event("save", %{"user" => user_params}, socket) do
     case Accounts.create_user(user_params) do
       {:ok, user} ->
         {:stop,

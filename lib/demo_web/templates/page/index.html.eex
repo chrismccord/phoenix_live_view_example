@@ -9,17 +9,18 @@
     <ul>
       <li><%= link "Thermostat", to: Routes.live_path(@conn, DemoWeb.ThermostatLive) %></li>
       <li><%= link "Snake", to: Routes.page_path(@conn, :snake) %></li>
-      <li><%= link "Search with Autocomplete", to: Routes.live_path(@conn, DemoWeb.SearchLive) %></li>
-      <li><%= link "CRUD Users with Live pagination", to: Routes.live_path(@conn, DemoWeb.UserLive.Index) %></li>
+      <li><%= link "Search with autocomplete", to: Routes.live_path(@conn, DemoWeb.SearchLive) %></li>
+      <li><%= link "CRUD users with live pagination", to: Routes.live_path(@conn, DemoWeb.UserLive.Index) %></li>
+      <li><%= link "User listing with live layout", to: Routes.live_path(@conn, DemoWeb.UserLive.IndexNav) %></li>
       <li><%= link "Manual infinite scroll with button", to: Routes.live_path(@conn, DemoWeb.UserLive.IndexManualScroll) %></li>
       <li><%= link "Automatic infinite scroll with JS hook", to: Routes.live_path(@conn, DemoWeb.UserLive.IndexAutoScroll) %></li>
       <li><%= link "Image Editor", to: Routes.live_path(@conn, DemoWeb.ImageLive) %></li>
       <li><%= link "Clock", to: Routes.live_path(@conn, DemoWeb.ClockLive) %></li>
       <li><%= link "Pacman", to: Routes.live_path(@conn, DemoWeb.PacmanLive) %></li>
       <li><%= link "Rainbow", to: Routes.live_path(@conn, DemoWeb.RainbowLive) %></li>
-      <li><%= link "Counter", to: Routes.live_path(@conn, DemoWeb.CounterLive) %></li>
       <li><%= link "Top", to: Routes.live_path(@conn, DemoWeb.TopLive) %></li>
       <li><%= link "Presence Example", to: Routes.live_path(@conn, DemoWeb.UserLive.PresenceIndex, "user#{System.unique_integer([:positive])}") %></li>
     </ul>
   </article>
 </section>
+
