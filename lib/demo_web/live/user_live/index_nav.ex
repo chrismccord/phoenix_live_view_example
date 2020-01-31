@@ -1,11 +1,11 @@
-defmodule DemoWeb.UserLive.Index do
-  use Phoenix.LiveView
+defmodule DemoWeb.UserLive.IndexNav do
+  use Phoenix.LiveView, layout: {DemoWeb.LayoutView, "live.html"}
 
   alias Demo.Accounts
   alias DemoWeb.UserView
   alias DemoWeb.Router.Helpers, as: Routes
 
-  def render(assigns), do: UserView.render("index.html", assigns)
+  def render(assigns), do: UserView.render("index_nav.html", assigns)
 
   def mount(_session, socket) do
     {:ok, assign(socket, page: 1, per_page: 5)}

@@ -1,5 +1,3 @@
-<h2>Listing Users, page <%= @page %></h2>
-
 <table phx-keydown-window="keydown" phx-throttle="500">
   <thead>
     <tr>
@@ -30,11 +28,11 @@
 </table>
 
 <%= if @page > 1 do %>
-  <span><%= live_link "prev", to: Routes.live_path(@socket, UserLive.Index, @page - 1) %></span>
+  <span><%= live_link "prev", to: Routes.live_path(@socket, UserLive.IndexNav, @page - 1) %></span>
 <% end %>
 <%= for i <- (@page - 5)..(@page + 5), i > 0 do %>
-  <span><%= live_link i, to: Routes.live_path(@socket, UserLive.Index, i) %></span>
+  <span><%= live_link i, to: Routes.live_path(@socket, UserLive.IndexNav, i) %></span>
 <% end %>
-<span><%= live_link "next", to: Routes.live_path(@socket, UserLive.Index, @page + 1) %></span>
+<span><%= live_link "next", to: Routes.live_path(@socket, UserLive.IndexNav, @page + 1) %></span>
 <br/>
 <span><%= live_link "New User (live)", to: Routes.live_path(@socket, UserLive.New) %></span>

@@ -69,7 +69,7 @@ defmodule DemoWeb.SnakeLive do
         <%= @width %>px
       </form>
     </div>
-    <div class="snake-container" phx-keydown="keydown" phx-target="window">
+    <div class="snake-container" phx-window-keydown="keydown" phx-window-blur="blur" phx-window-focus="focus">
       <h3 class="score" style="font-size: <%= @width %>px;">SCORE:&nbsp;<%= @score %></h3>
       <%= for block <- @compacted_tail do %>
         <div class="block tail"

@@ -1,22 +1,10 @@
-import css from "../css/app.css";
+import css from "../css/app.css"
 import "phoenix_html"
 import {Socket} from "phoenix"
-import {LiveSocket, debug, View} from "phoenix_live_view"
 import IntersectionObserverAdmin from 'intersection-observer-admin';
+import {LiveSocket, debug} from "phoenix_live_view"
 
 let Hooks = {}
-
-Hooks.PhoneNumber = {
-  mounted(){
-    let pattern = /^(\d{3})(\d{3})(\d{4})$/
-    this.el.addEventListener("input", e => {
-      let match = this.el.value.replace(/\D/g, "").match(pattern)
-      if(match) {
-        this.el.value = `${match[1]}-${match[2]}-${match[3]}`
-      }
-    })
-  }
-}
 
 let scrollAt = () => {
   let scrollTop = document.documentElement.scrollTop || document.body.scrollTop
@@ -149,4 +137,3 @@ let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("
 let liveSocket = new LiveSocket("/live", Socket, {hooks: Hooks, params: {_csrf_token: csrfToken}})
 
 liveSocket.connect()
-

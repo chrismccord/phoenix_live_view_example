@@ -20,9 +20,13 @@ defmodule DemoWeb.UserLive.Show do
     """
   end
 
-  def mount(%{path_params: %{"id" => id}}, socket) do
+  def mount(_, socket) do
+    {:ok, socket}
+  end
+
+  def handle_params(%{"id" => id}, _url, socket) do
     if connected?(socket), do: Demo.Accounts.subscribe(id)
-    {:ok, fetch(assign(socket, id: id))}
+    {:noreply, socket |> assign(id: id) |> fetch()}
   end
 
   defp fetch(%Socket{assigns: %{id: id}} = socket) do

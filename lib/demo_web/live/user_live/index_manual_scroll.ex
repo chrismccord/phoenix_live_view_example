@@ -36,7 +36,7 @@ defmodule DemoWeb.UserLive.IndexManualScroll do
     {:ok,
      socket
      |> assign(page: 1, per_page: 20, val: 0)
-     |> fetch(), temporary_assigns: [:users]}
+     |> fetch(), temporary_assigns: [users: []]}
   end
 
   defp fetch(%{assigns: %{page: page, per_page: per}} = socket) do
