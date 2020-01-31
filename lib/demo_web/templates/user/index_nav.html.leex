@@ -1,4 +1,4 @@
-<table phx-keydown-window="keydown" phx-throttle="500">
+<table phx-window-keydown="keydown" phx-throttle="500">
   <thead>
     <tr>
       <th>Username</th>
@@ -10,7 +10,7 @@
   </thead>
   <tbody>
 <%= for user <- @users do %>
-    <tr>
+    <tr id=<%= user.id %>>
       <td><%= user.username %></td>
       <td><%= user.email %></td>
       <td><%= user.phone_number %></td>

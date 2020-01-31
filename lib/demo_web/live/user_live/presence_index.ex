@@ -5,20 +5,24 @@ defmodule DemoWeb.UserLive.PresenceIndex do
   alias DemoWeb.{UserView, Presence}
   alias Phoenix.Socket.Broadcast
 
-  def mount(%{path_params: %{"name" => name}}, socket) do
-    Demo.Accounts.subscribe()
-    Phoenix.PubSub.subscribe(Demo.PubSub, "users")
-    Presence.track(self(), "users", name, %{})
-    {:ok, fetch(socket)}
+  def mount(_session, socket) do
+    {:ok, assign(socket, page: 1, per_page: 5)}
   end
 
   def render(assigns), do: UserView.render("index.html", assigns)
 
+  def handle_params(%{"name" => name}, _uri, socket) do
+    if connected?(socket), do: Demo.Accounts.subscribe()
+    Phoenix.PubSub.subscribe(Demo.PubSub, "users")
+    Presence.track(self(), "users", name, %{})
+    {:noreply, fetch(socket)}
+  end
+
   defp fetch(socket) do
-    assign(socket, %{
-      users: Accounts.list_users(1, 10),
-      online_users: DemoWeb.Presence.list("users")
-    })
+    %{page: page, per_page: per_page} = socket.assigns
+    users = Accounts.list_users(page, per_page)
+    online_users = DemoWeb.Presence.list("users")
+    assign(socket, page: 1, users: users, online_users: online_users)
   end
 
   def handle_info(%Broadcast{event: "presence_diff"}, socket) do

@@ -19,7 +19,7 @@ defmodule DemoWeb.UserLive.IndexNav do
   defp fetch(socket) do
     %{page: page, per_page: per_page} = socket.assigns
     users = Accounts.list_users(page, per_page)
-    assign(socket, users: users, page_title: "Listing Users – Page #{page}")
+    assign(socket, page: 1, users: users, page_title: "Listing Users – Page #{page}")
   end
 
   def handle_info({Accounts, [:user | _], _}, socket) do
