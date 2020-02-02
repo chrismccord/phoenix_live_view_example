@@ -42,7 +42,7 @@ defmodule DemoWeb.UserLive.IndexNav do
   end
 
   defp go_page(socket, page) when page > 0 do
-    live_redirect(socket, to: Routes.live_path(socket, __MODULE__, page))
+    push_patch(socket, to: Routes.live_path(socket, __MODULE__, page))
   end
   defp go_page(socket, _page), do: socket
 end

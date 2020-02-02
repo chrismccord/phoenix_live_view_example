@@ -5,7 +5,7 @@ defmodule Demo.Mixfile do
     [
       app: :demo,
       version: "0.1.0",
-      elixir: "~> 1.5",
+      elixir: "~> 1.10",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -34,19 +34,17 @@ defmodule Demo.Mixfile do
   defp deps do
     [
       {:phoenix, "~> 1.4.9"},
-      {:phoenix_live_view, "~> 0.5.1"},
+      {:phoenix_live_view, github: "phoenixframework/phoenix_live_view"},
       {:plug_cowboy, "~> 2.0"},
       {:plug, "~> 1.8"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_ecto, "~> 4.0"},
-      {:ecto_sql, "~> 3.0"},
+      {:ecto_sql, "~> 3.3"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.13"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
-      {:jason, "~> 1.0"},
-      {:cowboy, "~> 2.0"},
-      {:calendar, "~> 1.0"}
+      {:jason, "~> 1.0"}
     ]
   end
 
