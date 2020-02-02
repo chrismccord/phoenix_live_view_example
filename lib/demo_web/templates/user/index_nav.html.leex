@@ -31,7 +31,7 @@
   <span><%= live_patch "prev", to: Routes.live_path(@socket, UserLive.IndexNav, @page - 1) %></span>
 <% end %>
 <%= for i <- (@page - 5)..(@page + 5), i > 0 do %>
-  <span><%= live_patch i, to: Routes.live_path(@socket, UserLive.IndexNav, i) %></span>
+  <span><%= live_patch "#{i}", to: Routes.live_path(@socket, UserLive.IndexNav, i) %></span>
 <% end %>
 <span><%= live_patch "next", to: Routes.live_path(@socket, UserLive.IndexNav, @page + 1) %></span>
 <br/>

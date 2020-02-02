@@ -7,7 +7,7 @@ defmodule DemoWeb.UserLive.Index do
 
   def render(assigns), do: UserView.render("index.html", assigns)
 
-  def mount(_session, socket) do
+  def mount(_params, _session, socket) do
     {:ok, assign(socket, page: 1, per_page: 5)}
   end
 

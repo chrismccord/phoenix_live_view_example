@@ -16,7 +16,7 @@ defmodule DemoWeb.SearchLive do
     """
   end
 
-  def mount(_session, socket) do
+  def mount(_params, _session, socket) do
     {:ok, assign(socket, query: nil, result: nil, loading: false, matches: [])}
   end
 

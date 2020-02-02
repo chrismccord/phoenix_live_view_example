@@ -66,7 +66,7 @@ defmodule DemoWeb.PacmanLive do
     """
   end
 
-  def mount(_session, socket) do
+  def mount(_params, _session, socket) do
     socket =
       socket
       |> assign(%{

@@ -5,7 +5,7 @@ defmodule DemoWeb.UserLive.PresenceIndex do
   alias DemoWeb.{UserView, Presence}
   alias Phoenix.Socket.Broadcast
 
-  def mount(%{path_params: %{"name" => name}}, socket) do
+  def mount(%{"name" => name}, _session, socket) do
     Demo.Accounts.subscribe()
     Phoenix.PubSub.subscribe(Demo.PubSub, "users")
     Presence.track(self(), "users", name, %{})
@@ -17,7 +17,8 @@ defmodule DemoWeb.UserLive.PresenceIndex do
   defp fetch(socket) do
     assign(socket, %{
       users: Accounts.list_users(1, 10),
-      online_users: DemoWeb.Presence.list("users")
+      online_users: DemoWeb.Presence.list("users"),
+      page: 0
     })
   end
 
