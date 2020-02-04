@@ -5,8 +5,11 @@ defmodule DemoWeb.UserLive.PresenceIndex do
   alias DemoWeb.{UserView, Presence}
   alias Phoenix.Socket.Broadcast
 
-  def mount(_session, socket) do
-    {:ok, assign(socket, page: 1, per_page: 5)}
+  def mount(%{"name" => name}, _session, socket) do
+    Demo.Accounts.subscribe()
+    Phoenix.PubSub.subscribe(Demo.PubSub, "users")
+    Presence.track(self(), "users", name, %{})
+    {:ok, fetch(socket)}
   end
 
   def render(assigns), do: UserView.render("index.html", assigns)

@@ -1,13 +1,12 @@
 defmodule DemoWeb.ThermostatLive do
   use Phoenix.LiveView
-  import Calendar.Strftime
 
   def render(assigns) do
     ~L"""
     <div class="thermostat">
       <div class="bar <%= @mode %>">
         <a href="#" phx-click="toggle-mode"><%= @mode %></a>
-        <span><%= strftime!(@time, "%r") %></span>
+        <span><%= NimbleStrftime.format(@time, "%H:%M:%S") %></span>
       </div>
       <div class="controls">
         <span class="reading"><%= @val %></span>
@@ -21,13 +20,13 @@ defmodule DemoWeb.ThermostatLive do
     """
   end
 
-  def mount(_session, socket) do
+  def mount(_params, _session, socket) do
     if connected?(socket), do: :timer.send_interval(100, self(), :tick)
-    {:ok, assign(socket, val: 72, mode: :cooling, time: :calendar.local_time())}
+    {:ok, assign(socket, val: 72, mode: :cooling, time: NaiveDateTime.local_now())}
   end
 
   def handle_info(:tick, socket) do
-    {:noreply, assign(socket, time: :calendar.local_time())}
+    {:noreply, assign(socket, time: NaiveDateTime.local_now())}
   end
 
   def handle_event("inc", _, socket) do

@@ -61,7 +61,7 @@ defmodule DemoWeb.UserLive.IndexAutoScroll do
     """
   end
 
-  def mount(_session, socket) do
+  def mount(_params, _session, socket) do
     {:ok,
      socket
      |> assign(page: 1, per_page: 10)

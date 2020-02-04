@@ -7,7 +7,7 @@ defmodule DemoWeb.UserLive.IndexNav do
 
   def render(assigns), do: UserView.render("index_nav.html", assigns)
 
-  def mount(_session, socket) do
+  def mount(_params, _session, socket) do
     {:ok, assign(socket, page: 1, per_page: 5)}
   end
 
@@ -42,7 +42,7 @@ defmodule DemoWeb.UserLive.IndexNav do
   end
 
   defp go_page(socket, page) when page > 0 do
-    live_redirect(socket, to: Routes.live_path(socket, __MODULE__, page))
+    push_patch(socket, to: Routes.live_path(socket, __MODULE__, page))
   end
   defp go_page(socket, _page), do: socket
 end

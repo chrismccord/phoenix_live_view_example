@@ -99,7 +99,7 @@ defmodule DemoWeb.SnakeLive do
     """
   end
 
-  def mount(_session, socket) do
+  def mount(_params, _session, socket) do
     {:ok, socket |> new_game() |> schedule_tick()}
   end
 

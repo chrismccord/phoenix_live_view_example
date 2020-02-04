@@ -5,7 +5,7 @@ defmodule DemoWeb.UserLive.Edit do
   alias DemoWeb.Router.Helpers, as: Routes
   alias Demo.Accounts
 
-  def mount(_, socket) do
+  def mount(_params, _session, socket) do
     {:ok, assign(socket, count: 0)}
   end
 

@@ -48,7 +48,7 @@ defmodule DemoWeb.RainbowLive do
     assign(socket, bars: bars)
   end
 
-  def mount(_session, socket) do
+  def mount(_params, _session, socket) do
     socket =
       socket
       |> assign(%{

@@ -6,7 +6,7 @@ defmodule DemoWeb.UserLive.New do
   alias Demo.Accounts
   alias Demo.Accounts.User
 
-  def mount(_session, socket) do
+  def mount(_params, _session, socket) do
     changeset = Accounts.change_user(%User{})
     {:ok, assign(socket, changeset: changeset)}
   end
