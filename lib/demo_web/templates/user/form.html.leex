@@ -1,4 +1,4 @@
-<%= f = form_for @changeset, "#", [phx_change: :validate, phx_submit: :save, phx_hook: "SavedForm"] %>
+<%= f = form_for @changeset, "#", [phx_change: :validate, phx_submit: :save] %>
 
   <%= label f, :username %>
   <%= text_input f, :username, phx_debounce: "blur" %>

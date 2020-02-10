@@ -8,6 +8,7 @@ defmodule DemoWeb.UserLive.Index do
   def render(assigns), do: UserView.render("index.html", assigns)
 
   def mount(_params, _session, socket) do
+    if connected?(socket), do: Demo.Accounts.subscribe()
     {:ok, assign(socket, page: 1, per_page: 5)}
   end
 
@@ -37,6 +38,9 @@ defmodule DemoWeb.UserLive.Index do
   def handle_event("delete_user", %{"id" => id}, socket) do
     user = Accounts.get_user!(id)
     {:ok, _user} = Accounts.delete_user(user)
+
+    %{page: page, per_page: per_page} = socket.assigns
+    socket = assign(socket, users: Accounts.list_users(page, per_page))
 
     {:noreply, socket}
   end

@@ -11,11 +11,9 @@ defmodule DemoWeb.UserLive.Edit do
 
   def handle_params(%{"id" => id}, _url, socket) do
     user = Accounts.get_user!(id)
-    {:noreply,
-     assign(socket, %{
-       user: user,
-       changeset: Accounts.change_user(user)
-     })}
+    changeset = Accounts.change_user(user)
+    socket = assign(socket, %{count: 0, user: user, changeset: changeset})
+    {:noreply, socket}
   end
 
   def render(assigns), do: DemoWeb.UserView.render("edit.html", assigns)
