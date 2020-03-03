@@ -20,7 +20,7 @@ defmodule Demo.Mixfile do
   def application do
     [
       mod: {Demo.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :inets]
     ]
   end
 
@@ -33,7 +33,10 @@ defmodule Demo.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:telemetry_metrics, ">= 0.0.0"},
+      {:telemetry_poller, ">= 0.0.0"},
       {:phoenix_live_view, "~> 0.8.0"},
+      {:phoenix_live_dashboard, path: "../phoenix_live_dashboard"}, #github: "phoenixframework/phoenix_live_dashboard"},
       {:plug_cowboy, "~> 2.0"},
       {:plug, "~> 1.8"},
       {:phoenix_pubsub, "~> 1.1"},

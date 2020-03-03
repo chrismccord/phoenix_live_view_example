@@ -19,6 +19,17 @@ defmodule DemoWeb.Router do
     plug :accepts, ["json"]
   end
 
+  # If enabling the LiveDashboard in prod,
+  # put it behind proper authentication.
+  if Mix.env() == :dev do
+    import Phoenix.LiveDashboard.Router
+
+    scope "/" do
+      pipe_through :browser
+      live_dashboard "/dashboard", metrics: DemoWeb.Telemetry
+    end
+  end
+
   scope "/", DemoWeb do
     pipe_through :browser
 
