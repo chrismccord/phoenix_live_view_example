@@ -18,16 +18,20 @@ defmodule DemoWeb.Telemetry do
     [
       # Phoenix Metrics
       summary("phoenix.endpoint.stop.duration",
+        unit: {:native, :millisecond}
+      ),
+      summary("phoenix.endpoint.stop.duration",
         tags: [:method, :request_path],
         tag_values: &tag_method_and_request_path/1,
         unit: {:native, :millisecond}
       ),
       summary("phoenix.router_dispatch.stop.duration",
-        tags: [:plug],
+        tags: [:controller_action],
+        tag_values: &tag_controller_action/1,
         unit: {:native, :millisecond}
       ),
 
-      # Database Time Metrics
+      # Database Metrics
       summary("demo.repo.query.total_time", unit: {:native, :millisecond}),
       summary("demo.repo.query.decode_time", unit: {:native, :millisecond}),
       summary("demo.repo.query.query_time", unit: {:native, :millisecond}),
@@ -43,11 +47,24 @@ defmodule DemoWeb.Telemetry do
   end
 
   defp periodic_measurements do
-    []
+    [
+      # A module, function and arguments to be invoked periodically.
+      # This function must call :telemetry.execute/3 and a metric must be added above.
+      # {DemoWeb, :count_users, []}
+    ]
   end
 
   # Extracts labels like "GET /"
   defp tag_method_and_request_path(metadata) do
-    Map.merge(metadata, Map.take(metadata.conn, [:method, :request_path]))
+    Map.take(metadata.conn, [:method, :request_path])
+  end
+
+  # Extracts controller#action from route dispatch
+  defp tag_controller_action(%{plug: plug, plug_opts: plug_opts}) when is_atom(plug_opts) do
+    %{controller_action: "#{inspect(plug)}##{plug_opts}"}
+  end
+
+  defp tag_controller_action(%{plug: plug}) do
+    %{controller_action: inspect(plug)}
   end
 end
