@@ -36,7 +36,7 @@ defmodule Demo.Mixfile do
       {:telemetry_metrics, ">= 0.0.0"},
       {:telemetry_poller, ">= 0.0.0"},
       {:phoenix_live_view, "~> 0.8.0"},
-      {:phoenix_live_dashboard, path: "../phoenix_live_dashboard"}, #github: "phoenixframework/phoenix_live_dashboard"},
+      {:phoenix_live_dashboard, phoenix_live_dashboard_opts()},
       {:plug_cowboy, "~> 2.0"},
       {:plug, "~> 1.8"},
       {:phoenix_pubsub, "~> 1.1"},
@@ -49,6 +49,14 @@ defmodule Demo.Mixfile do
       {:jason, "~> 1.0"},
       {:nimble_strftime, ">= 0.0.0"}
     ]
+  end
+
+  defp phoenix_live_dashboard_opts do
+    if path = System.get_env("PHX_DASHBOARD_PATH") do
+      [path: path]
+    else
+      [github: "phoenixframework/phoenix_live_dashboard"]
+    end
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
