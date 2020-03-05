@@ -20,7 +20,7 @@
       <li><%= link "Rainbow", to: Routes.live_path(@conn, DemoWeb.RainbowLive) %></li>
       <li><%= link "Top", to: Routes.live_path(@conn, DemoWeb.TopLive) %></li>
       <li><%= link "Presence Example", to: Routes.live_path(@conn, DemoWeb.UserLive.PresenceIndex, "user#{System.unique_integer([:positive])}") %></li>
-      <li><%= link "Live Dashboard", to: Routes.live_dashboard_path(@conn, :index) %></li>
+      <li><%= link "Live Dashboard", to: Routes.live_dashboard_path(@conn, :home) %></li>
     </ul>
   </article>
 </section>
