@@ -22,11 +22,11 @@ defmodule DemoWeb.ThermostatLive do
 
   def mount(_params, _session, socket) do
     if connected?(socket), do: :timer.send_interval(100, self(), :tick)
-    {:ok, assign(socket, val: 72, mode: :cooling, time: NaiveDateTime.local_now())}
+    {:ok, assign(socket, val: 72, mode: :cooling, time: NaiveDateTime.utc_now())}
   end
 
   def handle_info(:tick, socket) do
-    {:noreply, assign(socket, time: NaiveDateTime.local_now())}
+    {:noreply, assign(socket, time: NaiveDateTime.utc_now())}
   end
 
   def handle_event("inc", _, socket) do

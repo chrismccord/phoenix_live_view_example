@@ -25,6 +25,6 @@ defmodule DemoWeb.ClockLive do
   end
 
   defp put_date(socket) do
-    assign(socket, date: NaiveDateTime.local_now())
+    assign(socket, date: NaiveDateTime.utc_now())
   end
 end
