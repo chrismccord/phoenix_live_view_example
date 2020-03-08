@@ -8,11 +8,11 @@ defmodule DemoWeb.Router do
     plug :fetch_live_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug :put_layout, {DemoWeb.LayoutView, :app}
+    plug :put_live_layout, {DemoWeb.LayoutView, :app}
   end
 
   pipeline :bare do
-    plug :put_layout, {DemoWeb.LayoutView, "bare.html"}
+    plug :put_live_layout, {DemoWeb.LayoutView, :bare}
   end
 
   pipeline :api do
