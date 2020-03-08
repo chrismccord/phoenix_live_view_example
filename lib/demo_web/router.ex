@@ -15,6 +15,10 @@ defmodule DemoWeb.Router do
     plug :put_live_layout, {DemoWeb.LayoutView, :bare}
   end
 
+  pipeline :game do
+    plug :put_live_layout, {DemoWeb.LayoutView, :game}
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
   end
@@ -36,7 +40,6 @@ defmodule DemoWeb.Router do
     get "/", PageController, :index
 
     live "/thermostat", ThermostatLive
-    get "/snake", PageController, :snake
     live "/search", SearchLive
     live "/clock", ClockLive
     live "/image", ImageLive
@@ -56,6 +59,13 @@ defmodule DemoWeb.Router do
 
     resources "/plain/users", UserController
   end
+
+  scope "/", DemoWeb do
+    pipe_through [:browser, :game]
+
+    live "/snake", SnakeLive
+  end
+
 
   scope "/", DemoWeb do
     pipe_through [:browser, :bare]

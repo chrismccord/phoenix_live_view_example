@@ -8,7 +8,7 @@
     <h4>LiveView Examples</h4>
     <ul>
       <li><%= link "Thermostat", to: Routes.live_path(@conn, DemoWeb.ThermostatLive) %></li>
-      <li><%= link "Snake", to: Routes.page_path(@conn, :snake) %></li>
+      <li><%= link "Snake", to: Routes.live_path(@conn, DemoWeb.SnakeLive) %></li>
       <li><%= link "Search with autocomplete", to: Routes.live_path(@conn, DemoWeb.SearchLive) %></li>
       <li><%= link "CRUD users with live pagination", to: Routes.live_path(@conn, DemoWeb.UserLive.Index) %></li>
       <li><%= link "User listing with live layout", to: Routes.live_path(@conn, DemoWeb.UserLive.IndexNav) %></li>
