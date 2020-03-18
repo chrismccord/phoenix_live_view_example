@@ -8,15 +8,18 @@ defmodule DemoWeb.Router do
     plug :fetch_live_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug :put_live_layout, {DemoWeb.LayoutView, :app}
+  end
+
+  pipeline :root_live do
+    plug :put_root_layout, {DemoWeb.LayoutView, :live_app}
   end
 
   pipeline :bare do
-    plug :put_live_layout, {DemoWeb.LayoutView, :bare}
+    plug :put_root_layout, {DemoWeb.LayoutView, :bare}
   end
 
   pipeline :game do
-    plug :put_live_layout, {DemoWeb.LayoutView, :game}
+    plug :put_root_layout, {DemoWeb.LayoutView, :game}
   end
 
   pipeline :api do
@@ -39,6 +42,12 @@ defmodule DemoWeb.Router do
 
     get "/", PageController, :index
 
+
+    resources "/plain/users", UserController
+  end
+
+  scope "/", DemoWeb do
+    pipe_through [:browser, :root_live]
     live "/thermostat", ThermostatLive
     live "/search", SearchLive
     live "/clock", ClockLive
@@ -56,8 +65,6 @@ defmodule DemoWeb.Router do
     live "/users/new", UserLive.New
     live "/users/:id", UserLive.Show
     live "/users/:id/edit", UserLive.Edit
-
-    resources "/plain/users", UserController
   end
 
   scope "/", DemoWeb do
