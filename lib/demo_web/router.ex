@@ -1,6 +1,8 @@
 defmodule DemoWeb.Router do
   use DemoWeb, :router
+
   import Phoenix.LiveView.Router
+  import Phoenix.LiveDashboard.Router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -8,30 +10,15 @@ defmodule DemoWeb.Router do
     plug :fetch_live_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug :put_live_layout, {DemoWeb.LayoutView, :app}
+    plug :put_root_layout, {DemoWeb.LayoutView, :root}
   end
 
   pipeline :bare do
-    plug :put_live_layout, {DemoWeb.LayoutView, :bare}
+    plug :put_root_layout, {DemoWeb.LayoutView, :bare}
   end
 
   pipeline :game do
-    plug :put_live_layout, {DemoWeb.LayoutView, :game}
-  end
-
-  pipeline :api do
-    plug :accepts, ["json"]
-  end
-
-  # If enabling the LiveDashboard in prod,
-  # put it behind proper authentication.
-  if Mix.env() == :dev do
-    import Phoenix.LiveDashboard.Router
-
-    scope "/" do
-      pipe_through :browser
-      live_dashboard "/dashboard", metrics: DemoWeb.Telemetry
-    end
+    plug :put_root_layout, {DemoWeb.LayoutView, :game}
   end
 
   scope "/", DemoWeb do
@@ -57,7 +44,9 @@ defmodule DemoWeb.Router do
     live "/users/:id", UserLive.Show
     live "/users/:id/edit", UserLive.Edit
 
-    resources "/plain/users", UserController
+    # If enabling the LiveDashboard in prod,
+    # put it behind proper authentication.
+    live_dashboard "/dashboard", metrics: DemoWeb.Telemetry
   end
 
   scope "/", DemoWeb do
@@ -65,7 +54,6 @@ defmodule DemoWeb.Router do
 
     live "/snake", SnakeLive
   end
-
 
   scope "/", DemoWeb do
     pipe_through [:browser, :bare]
