@@ -42,8 +42,7 @@ defmodule DemoWeb.PacmanLive do
       <%= @width %>px
     </form>
     <div class="game-container">
-      <div phx-keydown="keydown"
-          phx-target="window"
+      <div phx-window-keydown="keydown"
           class="pacman"
           style="transform: rotate(<%= @rotation %>deg);
                  left: <%= @x %>px;
@@ -111,8 +110,8 @@ defmodule DemoWeb.PacmanLive do
     {:noreply, new_socket}
   end
 
-  def handle_event("keydown", key, socket) do
-    {:noreply, turn(socket, key)}
+  def handle_event("keydown", payload, socket) do
+    {:noreply, turn(socket, payload["code"])}
   end
 
   defp update_tick(socket, tick) when tick >= 50 and tick <= 1000 do
