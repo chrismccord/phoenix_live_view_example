@@ -1,6 +1,7 @@
 import css from "../css/app.css"
 import "phoenix_html"
 import {Socket} from "phoenix"
+import IntersectionObserverAdmin from 'intersection-observer-admin';
 import {LiveSocket, debug} from "phoenix_live_view"
 
 let Hooks = {}
@@ -27,7 +28,112 @@ Hooks.InfiniteScroll = {
   updated(){ this.pending = this.page() }
 }
 
-let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
+// TODO: make IE11 compat with rAF
+const observerAdmin = new IntersectionObserverAdmin();
+const sentinelOptions = { rootMargin: '0px 0px 90px 0px', threshold: 0 };
+const observerOptions = { rootMargin: '0px 0px 0px 0px', threshold: 0 };
+
+Hooks.ObserverInfiniteScroll = {
+  observerAdmin,
+  page() { return this.el.dataset.page },
+  mounted(){
+    this.pending = this.page()
+    let enterCallback = ({ target }) => {
+      if (this.pending == this.page()) {
+        this.pending = this.page() + 1
+        this.pushEvent("load-more", {})
+      }
+    }
+
+    let exitCallback = ({ isIntersecting, target }) => {
+      if (isIntersecting) {
+        this.observerAdmin.unobserve(target, sentinelOptions);
+      }
+    }
+
+    this.observerAdmin.addEnterCallback(
+      this.el,
+      enterCallback.bind(this)
+    )
+    this.observerAdmin.addExitCallback(
+      this.el,
+      exitCallback.bind(this)
+    )
+
+    this.observerAdmin.observe(
+      this.el,
+      sentinelOptions
+    )
+  },
+
+  // after DOM Patch
+  updated(){ this.pending = this.page() }
+}
+
+Hooks.LazyArtwork = {
+  observerAdmin,
+  artwork() { return this.el.querySelector('img') },
+
+  mounted() {
+    window.requestIdleCallback(() => {
+      let enterCallback = ({ target: img }) => {
+        if (img) {
+            if (img && img.dataset) {
+              img.src = img.dataset.src;
+            }
+        }
+      }
+
+      let exitCallback = ({ isIntersecting, target: img }) => {
+        if (isIntersecting) {
+          this.observerAdmin.unobserve(img, observerOptions);
+        }
+      }
+
+      const artwork = this.artwork();
+      this.observerAdmin.addEnterCallback(
+        artwork,
+        enterCallback
+      )
+      this.observerAdmin.addExitCallback(
+        artwork,
+        exitCallback
+      )
+
+      this.observerAdmin.observe(
+        artwork,
+        observerOptions
+      )
+    });
+  }
+}
+
+let serializeForm = (form) => {
+  let formData = new FormData(form)
+  let params = new URLSearchParams()
+  for(let [key, val] of formData.entries()){ params.append(key, val) }
+
+  return params.toString()
+}
+
+let Params = {
+  data: {},
+  set(namespace, key, val){
+    if(!this.data[namespace]){ this.data[namespace] = {}}
+    this.data[namespace][key] = val
+  },
+  get(namespace){ return this.data[namespace] || {} }
+}
+
+Hooks.SavedForm = {
+  mounted(){
+    this.el.addEventListener("input", e => {
+      Params.set(this.viewName, "stashed_form", serializeForm(this.el))
+    })
+  }
+}
+
+let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
 let liveSocket = new LiveSocket("/live", Socket, {hooks: Hooks, params: {_csrf_token: csrfToken}})
 
 liveSocket.connect()
