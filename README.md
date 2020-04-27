@@ -14,7 +14,8 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 ## Learn more
 
   * Official website: https://www.phoenixframework.org/
-  * Guides: https://phoenixframework.org/docs/overview
-  * Docs: https://hexdocs.pm/phoenix
+  * Guides: https://hexdocs.pm/phoenix/overview.html
+  * Docs: https://hexdocs.pm/phoenix/Phoenix.html
   * Mailing list: https://groups.google.com/group/phoenix-talk
   * Source: https://github.com/phoenixframework/phoenix
+  * Slack: https://elixir-lang.slack.com/archives/CD594E0UU
