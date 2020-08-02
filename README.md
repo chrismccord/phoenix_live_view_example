@@ -18,3 +18,5 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
   * Docs: https://hexdocs.pm/phoenix
   * Mailing list: https://groups.google.com/group/phoenix-talk
   * Source: https://github.com/phoenixframework/phoenix
+
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/chrismccord/phoenix_live_view_example)
