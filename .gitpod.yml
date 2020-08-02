@@ -2,5 +2,9 @@ image:
   file: .gitpod.Dockerfile
 
 tasks:
-  - init: 'mix deps.get'
-    command: 'mix phx.server'
+  - init: 'sh ./scripts/dev_setup'
+    command: 'PORT=4000 MIX_ENV=dev mix phx.server'
+
+vscode:
+  extensions:
+    - elixir-lsp.elixir-ls@0.5.0:kdK7hwKmEr6VDtvJDQxhEw==
