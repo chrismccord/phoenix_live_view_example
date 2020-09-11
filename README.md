@@ -14,7 +14,6 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 ## Learn more
 
   * Official website: https://www.phoenixframework.org/
-  * Guides: https://phoenixframework.org/docs/overview
-  * Docs: https://hexdocs.pm/phoenix
+  * Docs and Guides: https://hexdocs.pm/phoenix
   * Mailing list: https://groups.google.com/group/phoenix-talk
   * Source: https://github.com/phoenixframework/phoenix
