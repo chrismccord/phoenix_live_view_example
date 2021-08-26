@@ -5,6 +5,8 @@ defmodule Demo.Application do
 
   def start(_type, _args) do
     children = [
+      #Start the PubSub system
+      {Phoenix.PubSub, name: Demo.PubSub},
       Demo.Repo,
       DemoWeb.Telemetry,
       DemoWeb.Endpoint,
