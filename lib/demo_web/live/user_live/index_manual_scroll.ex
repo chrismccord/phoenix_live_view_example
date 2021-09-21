@@ -1,12 +1,12 @@
 defmodule DemoWeb.UserLive.IndexManualScroll do
-  use Phoenix.LiveView
+  use DemoWeb, :live_view
 
   def render(assigns) do
-    ~L"""
+    ~H"""
     <table>
       <tbody phx-update="append" id="users">
         <%= for user <- @users do %>
-          <tr class="user-row" id="user-<%= user.id %>">
+          <tr class="user-row" id={"user-#{user.id}"}>
             <td><%= user.username %></td>
             <td><%= user.email %></td>
           </tr>

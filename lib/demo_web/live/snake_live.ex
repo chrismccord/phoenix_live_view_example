@@ -1,5 +1,5 @@
 defmodule DemoWeb.SnakeLive do
-  use Phoenix.LiveView
+  use DemoWeb, :live_view
 
   @tick 100
   @width 16
@@ -45,10 +45,10 @@ defmodule DemoWeb.SnakeLive do
   @board_cols length(hd(@board))
 
   def render(%{game_state: :over} = assigns) do
-    ~L"""
+    ~H"""
     <div class="snake-container">
       <div class="game-over">
-        <h1>GAME OVER <small>SCORE: <%= @score %></h1>
+        <h1>GAME OVER <small>SCORE: <%= @score %></small></h1>
         <button phx-click="new_game">NEW GAME</button>
       </div>
     </div>
@@ -56,44 +56,44 @@ defmodule DemoWeb.SnakeLive do
   end
 
   def render(%{game_state: :playing} = assigns) do
-    ~L"""
+    ~H"""
     <div class="snake-controls">
       <form phx-change="update_settings">
         <select name="tick" onchange="this.blur()">
-          <option value="50" <%= if @tick == 50, do: "selected" %>>50</option>
-          <option value="100" <%= if @tick == 100, do: "selected" %>>100</option>
-          <option value="200" <%= if @tick == 200, do: "selected" %>>200</option>
-          <option value="500" <%= if @tick == 500, do: "selected" %>>500</option>
+          <option value="50" selected={@tick == 50}>50</option>
+          <option value="100" selected={@tick == 100}>100</option>
+          <option value="200" selected={@tick == 200}>200</option>
+          <option value="500" selected={@tick == 500}>500</option>
         </select>
-        <input type="range" min="5" max="50" name="width" value="<%= @width %>" />
+        <input type="range" min="5" max="50" name="width" value={@width} />
         <%= @width %>px
       </form>
     </div>
     <div class="snake-container" phx-window-keydown="keydown">
-      <h3 class="score" style="font-size: <%= @width %>px;">SCORE:&nbsp;<%= @score %></h3>
+      <h3 class="score" style={"font-size: #{@width}px;"}>SCORE:&nbsp;<%= @score %></h3>
       <%= for block <- @compacted_tail do %>
         <div class="block tail"
-            style="left: <%= block.x %>px;
-                   top: <%= block.y %>px;
-                   width: <%= block.width %>px;
-                   height: <%= block.height %>px;
-        "></div>
+            style={"left: #{block.x}px;
+                    top: #{block.y}px;
+                    width: #{block.width}px;
+                    height: #{block.height}px;"}
+        ></div>
       <% end %>
       <%= for {row, col} <- @cherries do %>
         <div class="block cherry"
-            style="left: <%= x(col, @width) %>px;
-                   top: <%= y(row, @width) %>px;
-                   width: <%= @width %>px;
-                   height: <%= @width %>px;
-        "></div>
+            style={"left: #{x(col, @width)}px;
+                    top: #{y(row, @width)}px;
+                    width: #{@width}px;
+                    height: #{@width}px;"}
+        ></div>
       <% end %>
       <%= for {_, block} <- @blocks, block.type !== :empty do %>
-        <div class="block <%= block.type %>"
-            style="left: <%= block.x %>px;
-                   top: <%= block.y %>px;
-                   width: <%= block.width %>px;
-                   height: <%= block.width %>px;
-        "></div>
+        <div class={"block #{block.type}"}
+            style={"left: #{block.x}px;
+                    top: #{block.y}px;
+                    width: #{block.width}px;
+                    height: #{block.width}px;"}
+        ></div>
       <% end %>
     </div>
     """

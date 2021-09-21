@@ -1,0 +1,40 @@
+<h2>Listing Users, page <%= @page %></h2>
+
+<table phx-window-keydown="keydown" phx-throttle="500">
+  <thead>
+    <tr>
+      <th>Username</th>
+      <th>Email</th>
+      <th>Phone #</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+		<%= for user <- @users do %>
+			<tr>
+				<td><%= user.username %></td>
+				<td><%= user.email %></td>
+				<td><%= user.phone_number %></td>
+
+				<td>
+					<%= live_redirect "Show", to: Routes.user_show_path(@socket, :show, user) %>
+					<%= live_redirect "Edit", to: Routes.user_edit_path(@socket, :edit, user) %>
+					<%= link "Delete", to: "#",
+							phx_click: "delete_user",
+							phx_value_id: user.id %>
+				</td>
+			</tr>
+		<% end %>
+  </tbody>
+</table>
+
+<%= if @page > 1 do %>
+  <span><%= live_patch "prev", to: Routes.user_index_path(@socket, :index, page: @page - 1) %></span>
+<% end %>
+<%= for i <- (@page - 5)..(@page + 5), i > 0 do %>
+  <span><%= live_patch "#{i}", to: Routes.user_index_path(@socket, :index, page: i) %></span>
+<% end %>
+<span><%= live_patch "next", to: Routes.user_index_path(@socket, :index, page: @page + 1) %></span>
+<br/>
+<span><%= live_redirect "New User (live)", to: Routes.user_new_path(@socket, :new) %></span>

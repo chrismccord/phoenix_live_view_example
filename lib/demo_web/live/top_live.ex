@@ -1,8 +1,8 @@
 defmodule DemoWeb.TopLive do
-  use Phoenix.LiveView
+  use DemoWeb, :live_view
 
   def render(assigns) do
-    ~L"""
+    ~H"""
     <pre>
       <%= @top %>
     </pre>

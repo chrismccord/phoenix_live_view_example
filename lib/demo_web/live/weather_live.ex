@@ -1,11 +1,11 @@
 defmodule DemoWeb.WeatherLive do
-  use Phoenix.LiveView
+  use DemoWeb, :live_view
 
   def render(assigns) do
-    ~L"""
-    <div>
+    ~H"""
+    <div id="weather">
       <form phx-submit="set-location">
-        <input name="location" placeholder="Location" value="<%= @location %>"/>
+        <input name="location" placeholder="Location" value={@location}/>
         <%= @weather %>
       </form>
     </div>
@@ -13,7 +13,7 @@ defmodule DemoWeb.WeatherLive do
   end
 
   def mount(_params, _session, socket) do
-    send(self(), {:put, "Austin"})
+    if connected?(socket), do: send(self(), {:put, "Austin"})
     {:ok, assign(socket, location: nil, weather: "...")}
   end
 

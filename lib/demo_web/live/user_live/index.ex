@@ -1,13 +1,11 @@
 defmodule DemoWeb.UserLive.Index do
-  use Phoenix.LiveView
+  use DemoWeb, :live_view
 
   alias Demo.Accounts
-  alias DemoWeb.UserView
   alias DemoWeb.Router.Helpers, as: Routes
 
-  def render(assigns), do: UserView.render("index.html", assigns)
-
   def mount(_params, _session, socket) do
+    if connected?(socket), do: Accounts.subscribe()
     {:ok, assign(socket, page: 1, per_page: 5)}
   end
 
@@ -26,10 +24,10 @@ defmodule DemoWeb.UserLive.Index do
     {:noreply, fetch(socket)}
   end
 
-  def handle_event("keydown", %{"code" => "ArrowLeft"}, socket) do
+  def handle_event("keydown", %{"key" => "ArrowLeft"}, socket) do
     {:noreply, go_page(socket, socket.assigns.page - 1)}
   end
-  def handle_event("keydown", %{"code" => "ArrowRight"}, socket) do
+  def handle_event("keydown", %{"key" => "ArrowRight"}, socket) do
     {:noreply, go_page(socket, socket.assigns.page + 1)}
   end
   def handle_event("keydown", _, socket), do: {:noreply, socket}
@@ -42,7 +40,7 @@ defmodule DemoWeb.UserLive.Index do
   end
 
   defp go_page(socket, page) when page > 0 do
-    push_patch(socket, to: Routes.live_path(socket, __MODULE__, page))
+    push_patch(socket, to: Routes.user_index_path(socket, :index, page: page))
   end
   defp go_page(socket, _page), do: socket
 end

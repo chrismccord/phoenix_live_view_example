@@ -15,6 +15,7 @@
 
 .thermostat {
   position: absolute;
+  top: 220px;
   width: 400px;
   height: 400px;
   background: #6D697F;

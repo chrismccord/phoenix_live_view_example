@@ -1,0 +1,27 @@
+<h2>Create Your Account</h2>
+
+<.form let={f} for={@changeset} phx-change="validate" phx-submit="save" phx-hook="SavedForm">
+	<%= label f, :username %>
+	<%= text_input f, :username, phx_debounce: "blur" %>
+	<%= error_tag f, :username %>
+
+	<%= label f, :email %>
+	<%= text_input f, :email %>
+	<%= error_tag f, :email %>
+
+	<%= label f, :password %>
+	<%= password_input f, :password, value: input_value(f, :password) %>
+	<%= error_tag f, :password %>
+
+	<%= password_input f, :password_confirmation, value: input_value(f, :password_confirmation) %>
+	<%= error_tag f, :password_confirmation %>
+
+	<%= label f, :phone_number %>
+	<%= text_input f, :phone_number %>
+	<%= error_tag f, :phone_number %>
+	<div>
+		<%= submit "Save", phx_disable_with: "Saving..." %>
+	</div>
+</.form>
+
+<span><%= live_redirect "Back", to: Routes.user_index_path(@socket, :index) %></span>

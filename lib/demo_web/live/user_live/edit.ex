@@ -1,8 +1,6 @@
 defmodule DemoWeb.UserLive.Edit do
-  use Phoenix.LiveView
+  use DemoWeb, :live_view
 
-  alias DemoWeb.UserLive
-  alias DemoWeb.Router.Helpers, as: Routes
   alias Demo.Accounts
 
   def mount(_params, _session, socket) do
@@ -18,8 +16,6 @@ defmodule DemoWeb.UserLive.Edit do
      })}
   end
 
-  def render(assigns), do: DemoWeb.UserView.render("edit.html", assigns)
-
   def handle_event("validate", %{"user" => params}, socket) do
     changeset =
       socket.assigns.user
@@ -32,10 +28,10 @@ defmodule DemoWeb.UserLive.Edit do
   def handle_event("save", %{"user" => user_params}, socket) do
     case Accounts.update_user(socket.assigns.user, user_params) do
       {:ok, user} ->
-        {:stop,
+        {:noreply,
          socket
          |> put_flash(:info, "User updated successfully.")
-         |> redirect(to: Routes.live_path(socket, UserLive.Show, user))}
+         |> redirect(to: Routes.user_show_path(socket, :show, user))}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}

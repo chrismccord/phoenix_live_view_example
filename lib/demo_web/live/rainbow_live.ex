@@ -1,20 +1,19 @@
 defmodule DemoWeb.RainbowLive do
-  use Phoenix.LiveView
-  use Phoenix.HTML
+  use DemoWeb, :live_view
 
   @fps 60
   @inner_window_width 1200
 
   def render(assigns) do
-    ~L"""
+    ~H"""
     <h1>Silky Smooth SSR</h1>
     <h3>Fast enough to power animations <em>[on the server]</em> at <%= @fps %>FPS</h3>
     <form phx-change="update_fps">
-      <input type="range" min="1" max="100" value="<%= @fps %>" name="fps"/>
+      <input type="range" min="1" max="100" value={@fps} name="fps"/>
     </form>
-    <div class="animated-sin-wave" phx-click="switch" style="background: <%= @bg %>;">
+    <div class="animated-sin-wave" phx-click="switch" style={"background: #{@bg};"}>
       <%= for bar <- @bars do %>
-        <div class="bar" id="<%= bar.id %>" style="width: <%= bar.width %>%; left: <%= bar.x %>%; transform: scale(0.8,.5) translateY(<%= bar.translate_y %>%) rotate(<%= bar.rotation %>deg); background-color: hsl(<%= bar.hue %>,95%,55%);">
+        <div class="bar" id={bar.id} style={"width: #{bar.width}%; left: #{bar.x}%; transform: scale(0.8,.5) translateY(#{bar.translate_y}%) rotate(#{bar.rotation}deg); background-color: hsl(#{bar.hue},95%,55%);"}>
         </div>
       <% end %>
     </div>

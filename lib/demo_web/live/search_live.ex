@@ -1,14 +1,13 @@
 defmodule DemoWeb.SearchLive do
-  use Phoenix.LiveView
+  use DemoWeb, :live_view
 
   def render(assigns) do
-    ~L"""
+    ~H"""
     <form phx-change="suggest" phx-submit="search">
-      <input type="text" name="q" value="<%= @query %>" list="matches" placeholder="Search..."
-             <%= if @loading, do: "readonly" %>/>
+      <input type="text" name="q" value={@query} list="matches" placeholder="Search..." {%{readonly: @loading}}/>
       <datalist id="matches">
         <%= for match <- @matches do %>
-          <option value="<%= match %>"><%= match %></option>
+          <option value={match}><%= match %></option>
         <% end %>
       </datalist>
       <%= if @result do %><pre><%= @result %></pre><% end %>

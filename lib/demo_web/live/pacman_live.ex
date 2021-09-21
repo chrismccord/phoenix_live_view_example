@@ -1,5 +1,5 @@
 defmodule DemoWeb.PacmanLive do
-  use Phoenix.LiveView
+  use DemoWeb, :live_view
 
   @tick 100
   @width 25
@@ -30,36 +30,36 @@ defmodule DemoWeb.PacmanLive do
   @board_cols length(hd(@board))
 
   def render(assigns) do
-    ~L"""
+    ~H"""
     <form phx-change="update_settings">
       <select name="tick" onchange="this.blur()">
-        <option value="50" <%= if @tick == 50, do: "selected" %>>50</option>
-        <option value="100" <%= if @tick == 100, do: "selected" %>>100</option>
-        <option value="200" <%= if @tick == 200, do: "selected" %>>200</option>
-        <option value="500" <%= if @tick == 500, do: "selected" %>>500</option>
+        <option value="50" selected={@tick == 50}>50</option>
+        <option value="100" selected={@tick == 100}>100</option>
+        <option value="200" selected={@tick == 200}>200</option>
+        <option value="500" selected={@tick == 500}>500</option>
       </select>
-      <input type="range" min="10" max="50" name="width" value="<%= @width %>" onmouseup="blur()"/>
+      <input type="range" min="10" max="50" name="width" value={@width} onmouseup="blur()"/>
       <%= @width %>px
     </form>
     <div class="game-container">
       <div phx-window-keydown="keydown"
           class="pacman"
-          style="transform: rotate(<%= @rotation %>deg);
-                 left: <%= @x %>px;
-                 top: <%= @y %>px;
-                 width: <%= @width %>px;
-                 height: <%= @width %>px;
-      ">
-        <div class="pacman-top" style="width: <%= @width %>px; height: <%= @width / 2 %>px;"></div>
-        <div class="pacman-bottom" style="width: <%= @width %>px; height: <%= @width / 2 %>px;"></div>
+          style={"transform: rotate(#{@rotation}deg);
+                  left: #{@x}px;
+                  top: #{@y}px;
+                  width: #{@width}px;
+                  height: #{@width}px;"}
+      >
+        <div class="pacman-top" style={"width: #{@width}px; height: #{@width / 2}px;"}></div>
+        <div class="pacman-bottom" style={"width: #{@width}px; height: #{@width / 2}px;"}></div>
       </div>
       <%= for {_, block} <- @blocks do %>
-        <div class="block <%= block.type %>"
-            style="left: <%= block.x %>px;
-                    top: <%= block.y %>px;
-                    width: <%= block.width %>px;
-                    height: <%= block.width %>px;
-        "></div>
+        <div class={"block #{block.type}"}
+            style={"left: #{block.x}px;
+                    top: #{block.y}px;
+                    width: #{block.width}px;
+                    height: #{block.width}px;"}
+        ></div>
       <% end %>
     </div>
     """
@@ -110,8 +110,8 @@ defmodule DemoWeb.PacmanLive do
     {:noreply, new_socket}
   end
 
-  def handle_event("keydown", payload, socket) do
-    {:noreply, turn(socket, payload["code"])}
+  def handle_event("keydown", %{"key" => key}, socket) do
+    {:noreply, turn(socket, key)}
   end
 
   defp update_tick(socket, tick) when tick >= 50 and tick <= 1000 do

@@ -1,16 +1,16 @@
 defmodule DemoWeb.UserLive.Row do
-  use Phoenix.LiveComponent
+  use DemoWeb, :live_component
 
   defmodule Email do
-    use Phoenix.LiveComponent
+    use DemoWeb, :live_component
 
     def mount(socket) do
-      {:ok, assign(socket, count: 0)}
+      {:ok, assign(socket, count: 0), temporary_assigns: [email: nil]}
     end
 
     def render(assigns) do
-      ~L"""
-      <span id="<%= @id %>" phx-click="click" phx-target="#<%= @id %>" phx-hook="Test">
+      ~H"""
+      <span id={@id} phx-click="click" phx-target={@myself}>
         Email: <%= @email %> <%= @count %>
       </span>
       """
@@ -22,12 +22,12 @@ defmodule DemoWeb.UserLive.Row do
   end
 
   def mount(socket) do
-    {:ok, assign(socket, count: 0)}
+    {:ok, assign(socket, count: 0), temporary_assigns: [user: nil]}
   end
 
   def render(assigns) do
-    ~L"""
-    <tr class="user-row" id="<%= @id %>" phx-click="click" phx-target="#<%= @id %>">
+    ~H"""
+    <tr class="user-row" id={@id} phx-click="click" phx-target={@myself}>
       <td><%= @user.username %> <%= @count %></td>
       <td>
         <%= live_component @socket, Email, id: "email-#{@id}", email: @user.email %>
@@ -42,17 +42,17 @@ defmodule DemoWeb.UserLive.Row do
 end
 
 defmodule DemoWeb.UserLive.IndexAutoScroll do
-  use Phoenix.LiveView
+  use DemoWeb, :live_view
 
   alias DemoWeb.UserLive.Row
 
   def render(assigns) do
-    ~L"""
+    ~H"""
     <table>
       <tbody id="users"
              phx-update="append"
              phx-hook="InfiniteScroll"
-             data-page="<%= @page %>">
+             data-page={@page}>
         <%= for user <- @users do %>
           <%= live_component @socket, Row, id: "user-#{user.id}", user: user %>
         <% end %>

@@ -1,10 +1,10 @@
 defmodule DemoWeb.ThermostatLive do
-  use Phoenix.LiveView
+  use DemoWeb, :live_view
 
   def render(assigns) do
-    ~L"""
+    ~H"""
     <div class="thermostat">
-      <div class="bar <%= @mode %>">
+      <div class={"bar #{@mode}"}>
         <a href="#" phx-click="toggle-mode"><%= @mode %></a>
         <span><%= NimbleStrftime.format(@time, "%H:%M:%S") %></span>
       </div>
