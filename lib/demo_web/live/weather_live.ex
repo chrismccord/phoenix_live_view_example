@@ -3,7 +3,7 @@ defmodule DemoWeb.WeatherLive do
 
   def render(assigns) do
     ~H"""
-    <div id="weather">
+    <div>
       <form phx-submit="set-location">
         <input name="location" placeholder="Location" value={@location}/>
         <%= @weather %>
