@@ -38,6 +38,6 @@ defmodule DemoWeb.UserLive.Show do
     {:noreply,
      socket
      |> put_flash(:error, "This user has been deleted from the system")
-     |> redirect(to: Routes.user_index_path(socket, :index))}
+     |> push_redirect(to: Routes.user_index_path(socket, :index))}
   end
 end

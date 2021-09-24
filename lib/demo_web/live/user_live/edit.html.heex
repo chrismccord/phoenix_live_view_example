@@ -1,6 +1,6 @@
 <h2>Edit User <%= @count %></h2>
 
-<.form let={f} for={@changeset} phx-change="validate" phx-submit="save" phx-hook="SavedForm">
+<.form let={f} for={@changeset} phx-change="validate" phx-submit="save">
 	<%= label f, :username %>
 	<%= text_input f, :username, phx_debounce: "blur" %>
 	<%= error_tag f, :username %>
