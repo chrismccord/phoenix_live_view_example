@@ -37,6 +37,17 @@ defmodule DemoWeb.Router do
     live "/users/:id", UserLive.Show, :show
     live "/users/:id/edit", UserLive.Edit, :edit
 
+    live "/posts", PostLive.Index, :index
+    live "/posts/new", PostLive.Index, :new
+    live "/posts/:id/edit", PostLive.Index, :edit
+
+    live "/posts/:id", PostLive.Show, :show
+    live "/posts/:id/show/edit", PostLive.Show, :edit
+
+    live "/upload", UploadLive, :show
+
+    live "/ui", UILive, :show
+
     live_session :game, root_layout: {DemoWeb.LayoutView, :game} do
       live "/snake", SnakeLive
     end

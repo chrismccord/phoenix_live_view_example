@@ -83,13 +83,16 @@ defmodule DemoWeb do
 
       # Import LiveView and .heex helpers (live_render, live_patch, <.form>, etc)
       import Phoenix.LiveView.Helpers
+      import DemoWeb.LiveHelpers
 
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View
 
       import DemoWeb.ErrorHelpers
       import DemoWeb.Gettext
+
       alias DemoWeb.Router.Helpers, as: Routes
+      alias Phoenix.LiveView.JS
     end
   end
 

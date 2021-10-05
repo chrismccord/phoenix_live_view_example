@@ -4,6 +4,53 @@
 @import "./thermostat.css";
 @import "./phoenix.css";
 
+.fade-in-scale {
+  animation: 0.25s ease-in 0s normal forwards 1 fade-in-scale-keys;
+}
+
+.fade-out-scale {
+  animation: 0.25s ease-out 0s normal forwards 1 fade-out-scale-keys;
+}
+
+.fade-in {
+  animation: 0.25s ease-out 0s normal forwards 1 fade-in-keys;
+}
+.fade-out {
+  animation: 0.25s ease-out 0s normal forwards 1 fade-out-keys;
+}
+
+.shake {
+  animation: shake .2s infinite;
+}
+
+@keyframes shake {
+   20% { transform: rotate(0deg); }
+   40% { transform: rotate(5deg); }
+   60% { transform: rotate(0deg); }
+   80% { transform: rotate(-5deg); }
+   100% { transform: rotate(0deg); }
+}
+
+@keyframes fade-in-scale-keys{
+  0% { scale: 0.95; opacity: 0; }
+  100% { scale: 1.0; opacity: 1; }
+}
+
+@keyframes fade-out-scale-keys{
+  0% { scale: 1.0; opacity: 1; }
+  100% { scale: 0.95; opacity: 0; }
+}
+
+@keyframes fade-in-keys{
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes fade-out-keys{
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 /* Alerts and form errors used by phx.new */
 .alert {
   padding: 15px;
@@ -57,7 +104,6 @@
 }
 
 .phx-modal {
-  opacity: 1!important;
   position: fixed;
   z-index: 1;
   left: 0;

@@ -13,6 +13,7 @@ defmodule DemoWeb.PageLive do
         <h4>LiveView Examples</h4>
         <ul>
           <li><%= live_redirect "Thermostat", to: Routes.live_path(@socket, DemoWeb.ThermostatLive) %></li>
+          <li><%= live_redirect "Upload", to: Routes.upload_path(@socket, :show) %></li>
           <li><%= live_redirect "Snake", to: Routes.live_path(@socket, DemoWeb.SnakeLive) %></li>
           <li><%= live_redirect "Search with autocomplete", to: Routes.live_path(@socket, DemoWeb.SearchLive) %></li>
           <li><%= live_redirect "CRUD users with live pagination", to: Routes.user_index_path(@socket, :index) %></li>

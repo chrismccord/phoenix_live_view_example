@@ -1,10 +1,12 @@
 defmodule DemoWeb.WeatherLive do
   use DemoWeb, :live_view
 
+  alias Phoenix.LiveView.JS
+
   def render(assigns) do
     ~H"""
     <div>
-      <form phx-submit="set-location">
+      <form phx-submit="set-location" phx-change={JS.push("toggle-mode", target: ".thermostat")}>
         <input name="location" placeholder="Location" value={@location}/>
         <%= @weather %>
       </form>

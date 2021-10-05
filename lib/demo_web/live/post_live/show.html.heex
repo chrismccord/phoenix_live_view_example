@@ -1,0 +1,27 @@
+<h1>Show Post</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal DemoWeb.PostLive.FormComponent,
+    id: @post.id,
+    title: @page_title,
+    action: @live_action,
+    post: @post,
+    return_to: Routes.post_show_path(@socket, :show, @post) %>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Title:</strong>
+    <%= @post.title %>
+  </li>
+
+  <li>
+    <strong>Age:</strong>
+    <%= @post.age %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.post_show_path(@socket, :edit, @post), class: "button" %></span> |
+<span><%= live_redirect "Back", to: Routes.post_index_path(@socket, :index) %></span>

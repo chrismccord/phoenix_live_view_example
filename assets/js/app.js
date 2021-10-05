@@ -23,7 +23,7 @@ import "../css/app.css"
 import "phoenix_html"
 // Establish Phoenix Socket and LiveView configuration.
 import {Socket} from "phoenix"
-import {LiveSocket} from "phoenix_live_view"
+import {LiveSocket} from "./phoenix_live_view"
 import topbar from "../vendor/topbar"
 
 let Hooks = {}
@@ -52,13 +52,27 @@ Hooks.InfiniteScroll = {
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
-  hooks: Hooks, params: {_csrf_token: csrfToken}
+  hooks: Hooks, params: {_csrf_token: csrfToken},
 })
 
 // Show progress bar on live navigation and form submits
 topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
 window.addEventListener("phx:page-loading-start", info => topbar.show())
 window.addEventListener("phx:page-loading-stop", info => topbar.hide())
+
+let handleCustomEvent = (name, filter) => {
+  filter = filter || function(){ return true }
+  let attr = `phx-handle-${name}`
+  window.addEventListener(`phx:${name}`, (e) => {
+    document.querySelectorAll(`[${attr}]`).forEach(el => {
+      filter(el, e.detail) && liveSocket.execJS(el, el.getAttribute(attr))
+    })
+  })
+}
+
+handleCustomEvent("shake", (el, data) => e.id === data.id)
+
+// handleCustomEvent("shake", (el, detail) => el.id === detail.id)
 
 // connect if there are any LiveViews on the page
 liveSocket.connect()
