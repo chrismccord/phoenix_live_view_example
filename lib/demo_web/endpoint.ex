@@ -20,7 +20,7 @@ defmodule DemoWeb.Endpoint do
     at: "/",
     from: :demo,
     gzip: false,
-    only: ~w(assets fonts images favicon.ico robots.txt)
+    only: ~w(assets fonts images favicon.ico robots.txt loaderio-e88c6cb3d6183c009fcf20dbfbfc769f.txt)
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
