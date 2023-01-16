@@ -24,7 +24,9 @@ defmodule DemoWeb.PageLive do
           <li><%= live_redirect "Rainbow", to: Routes.live_path(@socket, DemoWeb.RainbowLive) %></li>
           <li><%= live_redirect "Top", to: Routes.live_path(@socket, DemoWeb.TopLive) %></li>
           <li><%= live_redirect "Presence Example", to: Routes.live_path(@socket, DemoWeb.UserLive.PresenceIndex, "user#{System.unique_integer([:positive])}") %></li>
+          <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
           <li><%= live_redirect "Live Dashboard", to: Routes.live_dashboard_path(@socket, :home) %></li>
+          <% end %>
         </ul>
       </article>
     </section>
