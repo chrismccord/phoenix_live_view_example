@@ -15,10 +15,10 @@ if config_env() == :prod do
       """
 
   config :demo, Demo.Repo,
-    # ssl: true,
-    # socket_options: [:inet6],
+    ssl: false,
+    socket_options: [:inet6],
     url: database_url,
-    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
+    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "30")
 
   secret_key_base =
     System.get_env("SECRET_KEY_BASE") ||
@@ -28,6 +28,8 @@ if config_env() == :prod do
       """
 
   config :demo, DemoWeb.Endpoint,
+    server: true,
+    url: [host: "liveview-demo.fly.dev", port: 80],
     http: [
       # Enable IPv6 and bind on all interfaces.
       # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
